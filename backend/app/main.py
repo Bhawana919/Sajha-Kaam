@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse
 from sqlmodel import Session
 
 from app.config import settings
-from app.db import engine, init_db
+from app.db import IS_SQLITE, engine, init_db
 from app.routers import anchor, auth, demo, jobs, junior, public
 from app.seed import seed
 
@@ -23,6 +23,8 @@ logging.basicConfig(level=logging.INFO)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    if not IS_SQLITE and settings().jwt_secret.startswith("dev-only"):
+        raise RuntimeError("Set JWT_SECRET to a long random value before using a real database.")
     init_db()
     with Session(engine) as session:
         seed(session)

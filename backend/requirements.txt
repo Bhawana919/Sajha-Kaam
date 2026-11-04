@@ -10,3 +10,4 @@ pynacl==1.6.2               # Ed25519 signatures for proof records
 bcrypt==5.0.0               # password hashing
 pyjwt==2.15.1               # sign-in tokens
 anthropic==2.3.0            # optional AI check (off unless LLM_PROVIDER=anthropic)
+psycopg[binary]==3.2.10    # Postgres driver (hosted database, e.g. Neon free plan)

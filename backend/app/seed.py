@@ -16,11 +16,29 @@ team. All accounts use the demo password.
 
 from datetime import date, timedelta
 
+from sqlalchemy import delete, or_
 from sqlmodel import Session, select
 
 from app.auth import hash_password
 from app.config import load_yaml
-from app.models import AnchorClient, AnchorNote, JoinRequest, JuniorProfile, Notification, Pod, PodMember, User
+from app.models import (
+    AnchorClient,
+    AnchorNote,
+    Invite,
+    Job,
+    JobApplication,
+    JoinRequest,
+    JuniorProfile,
+    LevelChange,
+    LogEntry,
+    Notification,
+    Pod,
+    PodMember,
+    RoomFile,
+    RoomTask,
+    Submission,
+    User,
+)
 from app.services import room, work
 
 RAJAN_ID, ANUSHA_ID, NIMA_ID = "u-anchor-rajan", "u-anchor-anusha", "u-anchor-nima"
@@ -233,8 +251,45 @@ def _finished(session: Session, anchor: User, client: User, junior: User, spec: 
     session.commit()
 
 
+DEMO_DOMAIN = "@demo.sajhakaam"
+
+
+def reset_demo(session: Session) -> None:
+    """Remove the demo people and everything tied to them, and nothing else: real accounts, their teams
+    and their jobs stay. Then seed() puts the demo back as new."""
+    demo = [u.id for u in session.exec(select(User).where(User.email.endswith(DEMO_DOMAIN))).all()]
+    if not demo:
+        return
+    pods = [p.id for p in session.exec(select(Pod).where(Pod.anchor_id.in_(demo))).all()]
+    jobs = [j.id for j in session.exec(select(Job).where(
+        or_(Job.client_id.in_(demo), Job.junior_id.in_(demo), Job.pod_id.in_(pods)))).all()]
+    steps = [
+        delete(JobApplication).where(or_(JobApplication.job_id.in_(jobs), JobApplication.applicant_id.in_(demo),
+                                         JobApplication.pod_id.in_(pods))),
+        delete(Submission).where(Submission.job_id.in_(jobs)),
+        delete(LogEntry).where(LogEntry.job_id.in_(jobs)),
+        delete(RoomTask).where(RoomTask.job_id.in_(jobs)),
+        delete(RoomFile).where(RoomFile.job_id.in_(jobs)),
+        delete(Job).where(Job.id.in_(jobs)),
+        delete(JoinRequest).where(or_(JoinRequest.pod_id.in_(pods), JoinRequest.junior_id.in_(demo))),
+        delete(PodMember).where(or_(PodMember.pod_id.in_(pods), PodMember.junior_id.in_(demo))),
+        delete(LevelChange).where(or_(LevelChange.pod_id.in_(pods), LevelChange.junior_id.in_(demo))),
+        delete(AnchorClient).where(or_(AnchorClient.anchor_id.in_(demo), AnchorClient.client_id.in_(demo))),
+        delete(Invite).where(or_(Invite.anchor_id.in_(demo), Invite.used_by.in_(demo))),
+        delete(AnchorNote).where(AnchorNote.anchor_id.in_(demo)),
+        delete(Notification).where(Notification.user_id.in_(demo)),
+        delete(JuniorProfile).where(JuniorProfile.user_id.in_(demo)),
+        delete(Pod).where(Pod.id.in_(pods)),
+        delete(User).where(User.id.in_(demo)),
+    ]
+    for stmt in steps:
+        session.exec(stmt)
+    session.commit()
+
+
 def seed(session: Session) -> None:
-    if session.exec(select(User)).first():
+    """Create the demo people and their story, unless they are there already."""
+    if session.get(User, RAJAN_ID):
         return
     pw = hash_password(load_yaml("guthi.yaml")["demo_password"])
     rajan = _user(RAJAN_ID, "anchor", "Rajan Shrestha", "Digital marketer · Sydney", "Australia", pw)
@@ -260,6 +315,9 @@ def seed(session: Session) -> None:
         Pod(id=NIMA_TEAM, anchor_id=NIMA_ID, name="Nima's Web Team", skill="web", seats_open=1,
             about="Simple, fast websites for small businesses, built from scratch.",
             test_task="In 3–5 sentences: how would you make a restaurant menu page load fast on a slow phone?"),
+    ])
+    session.flush()  # the teams first: Postgres checks that a member's or request's team exists
+    session.add_all([
         JuniorProfile(user_id=SITA_ID, about="BBS graduate. I write posts for my family's shop and love words.",
                       skills=["writing"], languages=["Nepali", "English"], tools=["Google Docs", "Canva", "Meta Business Suite"],
                       samples=[{"title": "Posts for a Pokhara homestay", "link": "https://docs.google.com/document/d/homestay-posts"}],
@@ -341,7 +399,8 @@ def seed(session: Session) -> None:
     work.create_job(session, momo, dict(JOB_MOMO_REEL), None, job_id=OPEN_JOB)
 
     # The history above is "already seen": the bell starts quiet, so it lights up only for the live demo.
-    for n in session.exec(select(Notification)).all():
+    demo_ids = [u.id for u in session.exec(select(User).where(User.email.endswith(DEMO_DOMAIN))).all()]
+    for n in session.exec(select(Notification).where(Notification.user_id.in_(demo_ids))).all():
         n.read = True
         session.add(n)
     session.commit()

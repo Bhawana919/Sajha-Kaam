@@ -1,7 +1,8 @@
 import os
 import tempfile
 
-os.environ["DATABASE_URL"] = f"sqlite:///{tempfile.mkdtemp()}/test.db"
+# TEST_DATABASE_URL runs the suite on Postgres (for example a local one); else a fresh SQLite file.
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL") or f"sqlite:///{tempfile.mkdtemp()}/test.db"
 os.environ["DEMO_MODE"] = "1"
 os.environ["LLM_PROVIDER"] = "none"
 os.environ["READ_LINKS"] = "0"  # tests never touch the network
@@ -14,7 +15,9 @@ from app.main import app  # noqa: E402
 
 @pytest.fixture
 def client():
+    from app.db import init_db
     with TestClient(app) as c:
+        init_db(reset=True)  # each test starts from an empty database, then the demo
         assert c.post("/demo/reset").status_code == 200
         yield c
 

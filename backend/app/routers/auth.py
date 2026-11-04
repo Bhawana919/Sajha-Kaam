@@ -1,5 +1,7 @@
 """Sign in and sign up. Sample people are one tap away in DEMO_MODE only."""
 
+import time
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
@@ -12,6 +14,18 @@ from app.services import agreement, work
 
 router = APIRouter(prefix="/v1", tags=["auth"])
 ROLE_ORDER = {"anchor": 0, "junior": 1, "client": 2}
+DEMO_DOMAIN = "@demo.sajhakaam"
+
+# Wrong passwords: at most 5 tries per email in 10 minutes, then wait. Kept in memory: one server.
+TRIES, WINDOW_S = 5, 600
+_failed: dict[str, list[float]] = {}
+
+
+def _recent_failures(email: str) -> list[float]:
+    now = time.monotonic()
+    kept = [t for t in _failed.get(email, []) if now - t < WINDOW_S]
+    _failed[email] = kept
+    return kept
 
 
 def me_out(u: User) -> MeOut:
@@ -41,6 +55,8 @@ def register(body: RegisterIn, session: Session = Depends(get_session)) -> dict:
     email = body.email.strip().lower()
     if "@" not in email:
         raise HTTPException(422, "bad_email")
+    if email.endswith(DEMO_DOMAIN):
+        raise HTTPException(422, "bad_email")  # demo addresses sign in with one tap: nobody may sign up as one
     if session.exec(select(User).where(User.email == email)).first():
         raise HTTPException(409, "email_taken")
     if body.role == "anchor" and (len(body.team_name.strip()) < 3 or body.team_skill not in agreement.skills()):
@@ -59,9 +75,14 @@ def register(body: RegisterIn, session: Session = Depends(get_session)) -> dict:
 
 @router.post("/auth/login", response_model=Tokens)
 def login(body: LoginIn, session: Session = Depends(get_session)) -> dict:
-    user = session.exec(select(User).where(User.email == body.email.strip().lower())).first()
+    email = body.email.strip().lower()
+    if len(_recent_failures(email)) >= TRIES:
+        raise HTTPException(429, "too_many_tries")
+    user = session.exec(select(User).where(User.email == email)).first()
     if user is None or not check_password(body.password, user.password_hash):
+        _failed.setdefault(email, []).append(time.monotonic())
         raise HTTPException(401, "wrong_email_or_password")
+    _failed.pop(email, None)
     return issue_tokens(user)
 
 
