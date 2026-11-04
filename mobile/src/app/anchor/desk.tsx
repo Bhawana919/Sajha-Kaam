@@ -58,6 +58,7 @@ export default function Desk() {
             { value: money(usd?.anchor_minor ?? 0, usd?.currency ?? 'USD'), label: t('desk.statYourShare'), tone: 'pine' },
             { value: money(usd?.held_minor ?? 0, usd?.currency ?? 'USD'), label: t('desk.statHeld') },
           ]} />
+          <Button kind="secondary" icon="wallet" label={t('wallet.open')} onPress={() => router.push('/wallet')} />
 
           {d.applied_jobs?.length ? (
             <Section title={t('apply.appliedTitle')}>

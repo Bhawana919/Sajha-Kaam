@@ -32,6 +32,7 @@ export default function Notifications() {
     if (n.kind === 'room_file' || n.kind === 'room_message') router.push(`/job/${n.ref}?tab=room`);
     else if (JOB_KINDS.includes(n.kind)) router.push(`/job/${n.ref}`);
     else if (n.kind === 'join_request') router.push('/requests');
+    else if (n.kind === 'withdrawal_sent') router.push('/wallet');
     else if (n.kind === 'seats_open') router.push('/junior/teams');
     else if (role === 'anchor') router.push('/anchor/team');
     else if (role === 'junior') router.push('/junior/home');

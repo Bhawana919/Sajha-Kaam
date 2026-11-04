@@ -6,7 +6,7 @@ import { useSession } from '@/state/session';
 import { api } from './client';
 import type {
   AnchorJobIn, BlindRequest, CheckOut, ClientHome, Desk, JobDetail, JobIn, JoinIn, JuniorHome, LogEntry, Me, Note, Notification, Room,
-  OpenTeam, Profile, ProfileIn, RegisterIn, SampleIdentity, TeamView, Template, Tokens,
+  OpenTeam, Profile, ProfileIn, RegisterIn, SampleIdentity, TeamView, Template, Tokens, Wallet,
 } from './types';
 
 const signedIn = () => !!useSession.getState().tokens;
@@ -237,6 +237,18 @@ export function useRoomActions(jobId: string) {
 export const useUploads = () =>
   useQuery({ queryKey: ['uploads'], staleTime: Infinity,
     queryFn: () => api<{ video: boolean; max_seconds: number; max_mb: number }>('/v1/uploads', { auth: false }) });
+
+// ---------- wallet (demo withdrawals) ----------
+export const useWallet = () =>
+  useQuery({ queryKey: ['wallet'], queryFn: () => api<Wallet>('/v1/wallet'), enabled: signedIn(), refetchInterval: LIVE + 1000 });
+export function useWithdraw() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (b: { amount_minor: number; currency: string; method: string; account: string }) =>
+      api<Wallet>('/v1/wallet/withdraw', { method: 'POST', body: b }),
+    onSuccess: (w) => { qc.setQueryData(['wallet'], w); qc.invalidateQueries({ queryKey: ['notifications'] }); },
+  });
+}
 
 // ---------- project openings ----------
 export const usePostOpening = () => useAction((id: string) => api(`/v1/jobs/${id}/opening`, { method: 'POST' }));

@@ -541,7 +541,8 @@
     "job_opening": "A new project matches your skills. See your share.",
     "job_join_request": "Someone asked to join your project.",
     "worker_approved": "You are in! Your Leader approved you for a project.",
-    "room_message": "New message in a job room."
+    "room_message": "New message in a job room.",
+    "withdrawal_sent": "Your withdrawal was sent."
   },
   "apply": {
     "title": "Apply for this job",
@@ -708,5 +709,25 @@
     "ask": "Ask to join",
     "waiting": "You asked to join. Waiting for {{name}} to choose.",
     "card": "A new project matches your skills"
+  },
+  "wallet": {
+    "title": "Wallet",
+    "open": "Wallet and withdraw",
+    "available": "Ready to withdraw",
+    "held": "Held for you",
+    "withdrawn": "Withdrawn",
+    "help": "Your share arrives when the client accepts the work. Demo: no real money moves.",
+    "withdrawTitle": "Withdraw",
+    "m_esewa": "eSewa",
+    "m_khalti": "Khalti",
+    "m_bank": "Bank",
+    "phone": "Wallet phone number",
+    "bankAccount": "Bank account number",
+    "amount": "Amount ({{currency}})",
+    "send": "Send {{amount}} to {{method}}",
+    "sent": "{{amount}} sent to {{method}} (demo).",
+    "notEnough": "That is more than you have.",
+    "history": "Withdrawals",
+    "statusSent": "Sent"
   }
 }

@@ -39,6 +39,7 @@ from app.models import (
     RoomTask,
     Submission,
     User,
+    Withdrawal,
 )
 from app.services import room, work
 
@@ -285,6 +286,7 @@ def reset_demo(session: Session) -> None:
         delete(AnchorClient).where(or_(AnchorClient.anchor_id.in_(demo), AnchorClient.client_id.in_(demo))),
         delete(Invite).where(or_(Invite.anchor_id.in_(demo), Invite.used_by.in_(demo))),
         delete(AnchorNote).where(AnchorNote.anchor_id.in_(demo)),
+        delete(Withdrawal).where(Withdrawal.user_id.in_(demo)),
         delete(Notification).where(Notification.user_id.in_(demo)),
         delete(JuniorProfile).where(JuniorProfile.user_id.in_(demo)),
         delete(Pod).where(Pod.id.in_(pods)),

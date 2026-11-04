@@ -3515,6 +3515,114 @@
         }
       }
     },
+    "/v1/wallet": {
+      "get": {
+        "tags": [
+          "wallet"
+        ],
+        "summary": "Get Wallet",
+        "operationId": "get_wallet_v1_wallet_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallet/withdraw": {
+      "post": {
+        "tags": [
+          "wallet"
+        ],
+        "summary": "Withdraw",
+        "operationId": "withdraw_v1_wallet_withdraw_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -6516,6 +6624,139 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WalletBalance": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "earned_minor": {
+            "type": "integer",
+            "title": "Earned Minor"
+          },
+          "held_minor": {
+            "type": "integer",
+            "title": "Held Minor"
+          },
+          "withdrawn_minor": {
+            "type": "integer",
+            "title": "Withdrawn Minor"
+          },
+          "available_minor": {
+            "type": "integer",
+            "title": "Available Minor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "earned_minor",
+          "held_minor",
+          "withdrawn_minor",
+          "available_minor"
+        ],
+        "title": "WalletBalance"
+      },
+      "WalletOut": {
+        "properties": {
+          "balances": {
+            "items": {
+              "$ref": "#/components/schemas/WalletBalance"
+            },
+            "type": "array",
+            "title": "Balances"
+          },
+          "withdrawals": {
+            "items": {
+              "$ref": "#/components/schemas/WithdrawalOut"
+            },
+            "type": "array",
+            "title": "Withdrawals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "balances",
+          "withdrawals"
+        ],
+        "title": "WalletOut"
+      },
+      "WithdrawIn": {
+        "properties": {
+          "amount_minor": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Amount Minor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "USD"
+          },
+          "method": {
+            "type": "string",
+            "pattern": "^(esewa|khalti|bank)$",
+            "title": "Method"
+          },
+          "account": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Account"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount_minor",
+          "method",
+          "account"
+        ],
+        "title": "WithdrawIn"
+      },
+      "WithdrawalOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "title": "Amount Minor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "amount_minor",
+          "currency",
+          "method",
+          "account",
+          "status",
+          "created_at"
+        ],
+        "title": "WithdrawalOut"
       }
     }
   }

@@ -209,6 +209,20 @@ class RoomFile(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utcnow)
 
 
+class Withdrawal(SQLModel, table=True):
+    """Money taken out of the wallet. Demo only: nothing is really sent."""
+
+    __tablename__ = "withdrawals"
+    id: str = Field(default_factory=new_id, primary_key=True)
+    user_id: str = Field(foreign_key="users.id", index=True)
+    amount_minor: int
+    currency: str = "USD"
+    method: str  # esewa | khalti | bank
+    account: str  # shown masked
+    status: str = "sent"
+    created_at: datetime = Field(default_factory=utcnow)
+
+
 class RoomMessage(SQLModel, table=True):
     """A message in the job room, between the member and the Team Leader."""
 

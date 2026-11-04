@@ -45,4 +45,5 @@ export type Template = {
   done_when_examples: Record<string, string[]>;
 };
 export type Room = S['RoomOut'];
+export type Wallet = S['WalletOut'];
 export type RoomTask = S['RoomTaskOut'];

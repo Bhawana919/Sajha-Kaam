@@ -1065,6 +1065,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wallet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Wallet */
+        get: operations["get_wallet_v1_wallet_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wallet/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw */
+        post: operations["withdraw_v1_wallet_withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -2257,6 +2291,60 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** WalletBalance */
+        WalletBalance: {
+            /** Currency */
+            currency: string;
+            /** Earned Minor */
+            earned_minor: number;
+            /** Held Minor */
+            held_minor: number;
+            /** Withdrawn Minor */
+            withdrawn_minor: number;
+            /** Available Minor */
+            available_minor: number;
+        };
+        /** WalletOut */
+        WalletOut: {
+            /** Balances */
+            balances: components["schemas"]["WalletBalance"][];
+            /** Withdrawals */
+            withdrawals: components["schemas"]["WithdrawalOut"][];
+        };
+        /** WithdrawIn */
+        WithdrawIn: {
+            /** Amount Minor */
+            amount_minor: number;
+            /**
+             * Currency
+             * @default USD
+             */
+            currency: string;
+            /** Method */
+            method: string;
+            /** Account */
+            account: string;
+        };
+        /** WithdrawalOut */
+        WithdrawalOut: {
+            /** Id */
+            id: string;
+            /** Amount Minor */
+            amount_minor: number;
+            /** Currency */
+            currency: string;
+            /** Method */
+            method: string;
+            /** Account */
+            account: string;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
     };
     responses: never;
@@ -4367,6 +4455,72 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    get_wallet_v1_wallet_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WalletOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_v1_wallet_withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WithdrawIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WalletOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

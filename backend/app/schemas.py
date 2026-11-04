@@ -497,6 +497,36 @@ class MemberEarning(BaseModel):
     jobs: int
 
 
+class WalletBalance(BaseModel):
+    currency: str
+    earned_minor: int  # released to you (accepted jobs)
+    held_minor: int  # paid by the client, released when they accept
+    withdrawn_minor: int
+    available_minor: int
+
+
+class WithdrawalOut(BaseModel):
+    id: str
+    amount_minor: int
+    currency: str
+    method: str
+    account: str
+    status: str
+    created_at: datetime
+
+
+class WalletOut(BaseModel):
+    balances: list[WalletBalance]
+    withdrawals: list[WithdrawalOut]
+
+
+class WithdrawIn(BaseModel):
+    amount_minor: int = Field(gt=0)
+    currency: str = "USD"
+    method: str = Field(pattern="^(esewa|khalti|bank)$")
+    account: str = Field(min_length=3, max_length=40)
+
+
 class MyMoney(BaseModel):
     currency: str
     paid_out_minor: int
