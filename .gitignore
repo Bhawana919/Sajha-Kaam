@@ -27,3 +27,8 @@ Thumbs.db
 # Native projects (made by `expo prebuild` when building the APK)
 mobile/android/
 mobile/ios/
+
+# Film renders and recordings
+film/out/
+film/public/demo/
+recording/out/

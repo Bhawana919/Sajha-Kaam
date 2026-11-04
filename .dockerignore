@@ -8,3 +8,6 @@ backend/*.db
 mobile/dist
 mobile/.expo
 **/.env
+
+film/
+recording/
