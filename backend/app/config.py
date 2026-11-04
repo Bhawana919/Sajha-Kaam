@@ -1,6 +1,7 @@
 """Settings from environment variables, plus paths to the shared config files."""
 
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlparse
@@ -29,7 +30,28 @@ class Settings:
         self.read_links = _flag("READ_LINKS", "1")  # let the check read public GitHub PRs and Google Docs
         # Video uploads (Cloudinary). Off unless set. Paste the "API environment variable" from the
         # Cloudinary dashboard: cloudinary://<api_key>:<api_secret>@<cloud_name>. The secret stays here.
-        self.cloudinary = _cloudinary(os.environ.get("CLOUDINARY_URL", ""))
+        self.cloudinary = _cloudinary(os.environ.get("CLOUDINARY_URL", "") or _secret_file_url())
+
+
+SECRET_DIRS = (Path("/etc/secrets"),)  # Render "Secret Files" land here (never the repo: the README has examples)
+
+
+def _secret_file_url() -> str:
+    """The Cloudinary link from a host's secret file (Render's Secret Files), whatever the file is called.
+    The file may hold just the link, or a line like CLOUDINARY_URL=cloudinary://... Nothing is logged."""
+    for folder in SECRET_DIRS:
+        try:
+            files = [f for f in folder.iterdir() if f.is_file() and f.stat().st_size < 10_000]
+        except OSError:
+            continue
+        for f in sorted(files, key=lambda f: "cloudinary" not in f.name.lower()):
+            try:
+                found = re.search(r"cloudinary://[^\s\"']+", f.read_text(encoding="utf-8", errors="ignore"))
+            except OSError:
+                continue
+            if found:
+                return found.group(0)
+    return ""
 
 
 def _cloudinary(url: str) -> dict | None:
