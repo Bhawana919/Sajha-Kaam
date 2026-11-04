@@ -1,10 +1,11 @@
 """Turn database rows into API responses."""
 
-from sqlmodel import Session, select
+from sqlmodel import Session, func, select
 
-from app.models import Job, LogEntry, Pod, PodMember, Submission, User
+from app.models import Job, JobApplication, LogEntry, Pod, PodMember, Submission, User
 from app.schemas import (
     Amendment,
+    ApplicationOut,
     FirstCheck,
     JobDetail,
     JobOut,
@@ -17,7 +18,7 @@ from app.schemas import (
     SubmissionOut,
 )
 from app.services import signing
-from app.services.work import anchor_of, split
+from app.services.work import anchor_of, applications_of, my_application, split
 
 
 def person(u: User) -> PersonOut:
@@ -54,12 +55,34 @@ def submission_out(s: Submission) -> SubmissionOut:
                          created_at=s.created_at, decided_at=s.decided_at)
 
 
+def application_out(session: Session, a: JobApplication) -> ApplicationOut:
+    u, pod = session.get(User, a.applicant_id), session.get(Pod, a.pod_id)
+    mentor = u.role == "junior"
+    if mentor:
+        signed = session.exec(select(func.count()).select_from(LogEntry).where(LogEntry.junior_id == u.id)).one()
+        level = session.get(PodMember, (pod.id, u.id))
+    else:
+        signed = session.exec(select(func.count()).select_from(Job).where(
+            Job.pod_id == pod.id, Job.state == "client_accepted")).one()
+        level = None
+    return ApplicationOut(id=a.id, status=a.status, note=a.note, video_link=a.video_link, created_at=a.created_at, applicant=person(u),
+                          role=u.role, team_name=pod.name, level=level.level if level else None, signed_jobs=signed,
+                          profile_slug=u.profile_slug if mentor else None)
+
+
 def job_detail(session: Session, j: Job, approved_only: bool = False, viewer: User | None = None) -> JobDetail:
     subs = session.exec(select(Submission).where(Submission.job_id == j.id)
                         .order_by(Submission.created_at.desc())).all()
     if approved_only:  # the client sees only work the Anchor approved
         subs = [s for s in subs if s.status == "approved"]
-    return JobDetail(job=job_out(session, j, viewer), submissions=[submission_out(s) for s in subs])
+    out = JobDetail(job=job_out(session, j, viewer), submissions=[submission_out(s) for s in subs])
+    if viewer is not None and viewer.id == j.client_id:
+        if j.state == "open":
+            out.applications = [application_out(session, a) for a in applications_of(session, j)]
+    elif viewer is not None:
+        mine = my_application(session, viewer, j)
+        out.my_application = mine.status if mine else None
+    return out
 
 
 def entry_out(e: LogEntry) -> LogEntryOut:

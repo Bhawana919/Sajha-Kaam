@@ -29,6 +29,11 @@ export default function ClientHomeScreen() {
               {h.to_agree.map((j) => <JobCard key={j.id} job={j} showClient={false} />)}
             </Section>
           ) : null}
+          {h.to_choose?.length ? (
+            <Section title={t('client.toChoose')} help={t('client.toChooseHelp')}>
+              {h.to_choose.map((j) => <JobCard key={j.id} job={j} showClient={false} />)}
+            </Section>
+          ) : null}
           {h.ready.length ? (
             <Section title={t('client.ready')} help={t('client.readyHelp')}>
               {h.ready.map((r) => <JobCard key={r.job.id} job={r.job} showClient={false} />)}

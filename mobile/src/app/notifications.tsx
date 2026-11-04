@@ -16,7 +16,7 @@ import { colors, radius, space } from '@/theme';
 const JOB_KINDS = ['job_sent', 'job_open', 'job_taken', 'job_assigned', 'work_submitted', 'work_approved',
   'work_sent_back', 'ready_for_you', 'log_signed', 'client_accepted', 'agreement_ready', 'client_agreed',
   'changes_requested', 'change_proposed', 'change_accepted', 'change_declined', 'job_changed', 'brief_accepted',
-  'brief_declined'];
+  'brief_declined', 'job_application', 'application_chosen', 'application_not_chosen', 'mentor_chosen'];
 
 export default function Notifications() {
   const { t } = useT();

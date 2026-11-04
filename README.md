@@ -16,7 +16,7 @@ Badges, from new to experienced: ★ Starter · ★★ Learner · ★★★ Trus
 
 | Folder | What it is |
 |---|---|
-| `backend` | API: FastAPI + SQLite. 26 automated tests. |
+| `backend` | API: FastAPI + SQLite. 31 automated tests. |
 | `mobile` | App: Expo (phone and web browser), English and Nepali. |
 | `config` | Skills, badges, the job agreement template, fair minimum budgets. |
 | `shared` | The API contract the app's types are generated from. |
@@ -76,6 +76,16 @@ cd C:\dev\sajha-kaam\mobile
 npm run check
 ```
 
+## Host it free (one link for the demo)
+
+The [Dockerfile](Dockerfile) builds the web app and the API into one container, so the app and API share one
+address. On [Render](https://render.com) (free plan, no card): sign in with GitHub → **New** → **Blueprint** →
+pick this repo. [render.yaml](render.yaml) sets everything up. The first build takes about 10 minutes.
+
+- The free plan sleeps after 15 minutes without visitors; the next visit takes about a minute. Open the
+  link a few minutes before presenting.
+- The database is temporary: every restart brings back fresh demo data.
+
 ## Demo people
 
 On the welcome screen, tap a person to sign in. Password for all: `kaam-demo`.
@@ -86,9 +96,10 @@ On the welcome screen, tap a person to sign in. Password for all: `kaam-demo`.
 | Anusha Gurung | Team Leader · video editor, London · 2 open spots, 1 team application waiting |
 | Sita Thapa | Member · has a café menu job to do now |
 | Bikash Tamang | Member · 2 verified jobs, 1 waiting for Rajan's check |
-| Pemba Sherpa, Asha Rai | Members · video; Asha can still ask to join Anusha's team |
+| Pemba Sherpa | Member · ★★★★★ Mentor in Anusha's video team, 2 verified jobs · can apply for open client jobs |
+| Asha Rai | Member · video · has asked to join Anusha's team (the waiting application) |
 | Emma Clarke | Client · Harbour Café, Melbourne (Rajan's client) · 1 agreement waiting for her |
-| Sunil Karki | Client · Himal Threads, Toronto (posted an open video job) |
+| Sunil Karki | Client · Himal Threads, Toronto · posted an open video job that Anusha or Pemba can apply for |
 
 Fresh sample data at any time: `curl.exe -X POST http://localhost:8000/demo/reset`
 
@@ -110,6 +121,10 @@ Fresh sample data at any time: `curl.exe -X POST http://localhost:8000/demo/rese
    **I accept**. Rajan can then propose a new deadline or budget, which Emma must accept.
 7. Show **Anusha's blind team applications** ("Applicant A", no name) and **Rajan's Team** screen
    (badges with the facts behind them, invite a client).
+8. **A job posted to everyone:** **Pemba** (★★★★★ Mentor) opens "30-second Dashain sale reel" on his home
+   screen and taps **Apply**; **Anusha** can apply too. **Sunil** sees both under "Choose who does it",
+   with badges, verified jobs and Pemba's Work Record, and chooses Pemba. Pemba starts straight away,
+   and Anusha still checks his work before Sunil sees it.
 
 ## How the main parts work
 
@@ -121,6 +136,12 @@ taps Agree; a client can also write it and send it to their Team Leader, who agr
 latest version waits for the other side. No member sees a job before both agree. After that, a new
 deadline or budget is an amendment the client must accept. The member gets a short job offer (what to
 deliver, "finished when", deadline, their share, no client details) and taps "I accept" before starting.
+
+**A job posted to everyone.** A client can also post a job without choosing a Team Leader. Team Leaders
+with that skill, and members who are ★★★★★ Mentor in a team with that skill, can apply; nobody else sees
+it. Applying means agreeing to the agreement as written. The client sees who applied (badge, verified jobs,
+a Mentor's Work Record) and chooses one. A chosen Team Leader gives it to their team as usual; a chosen
+Mentor starts straight away, and their own Team Leader still checks the work before the client sees it.
 
 **The agreement template** is a fixed form like a Europass CV, with extra questions per skill, "like
 this / not like this" examples, and a rule check (no AI) for missing parts, vague "finished when"

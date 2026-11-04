@@ -3,8 +3,9 @@
 Story: Rajan (web developer, Sydney) and Anusha (video editor, London) are Anchors. Rajan's team
 already has Bikash (Level 3, two signed jobs) and Sita (Level 2, one job to do now). Harbour Café in
 Melbourne is Rajan's client: Rajan writes its job agreements and Emma agrees to them; one new
-agreement is waiting for Emma. Himal Threads in Toronto has posted an open video job. Pemba has asked
-to join Anusha's team; Asha can still ask. All accounts use the demo password.
+agreement is waiting for Emma. Pemba is a Mentor (Level 5) in Anusha's team with two signed jobs.
+Himal Threads in Toronto has posted an open video job that Anusha or Pemba can apply for. Asha has
+asked to join Anusha's team. All accounts use the demo password.
 """
 
 from sqlmodel import Session, select
@@ -90,6 +91,20 @@ JOB_THREADS_REEL = {
                     "kind": "like"}],
     "deadline_days": 4, "budget_minor": 5000, "revisions": 2,
 }
+JOB_THREADS_TIHAR = {
+    "skill": "video", "title": "15-second Tihar lights teaser",
+    "deliverables": ["One vertical video, 15 seconds"],
+    "done_when": ["Length is between 14 and 16 seconds", "Exported 1080×1920 MP4", "Shop logo shows in the last 2 seconds"],
+    "details": {"length": "15 seconds", "format": "MP4, 9:16 vertical", "source": "https://drive.google.com/drive/folders/himal-threads-tihar"},
+    "deadline_days": 3, "budget_minor": 3000, "revisions": 1,
+}
+JOB_THREADS_UNBOX = {
+    "skill": "video", "title": "Unboxing video for the new dhaka scarves",
+    "deliverables": ["One vertical video, 45 seconds"],
+    "done_when": ["Length is between 40 and 50 seconds", "Burned-in English captions", "Exported 1080×1920 MP4"],
+    "details": {"length": "45 seconds", "format": "MP4, 9:16 vertical", "source": "https://drive.google.com/drive/folders/himal-threads-scarves"},
+    "deadline_days": 4, "budget_minor": 4500, "revisions": 1,
+}
 JOB_CAFE_HOURS = {
     "skill": "web", "title": "Show opening hours and a map on the Contact page",
     "deliverables": ["Opening hours table on the Contact page", "Embedded Google Map"],
@@ -167,8 +182,9 @@ def seed(session: Session) -> None:
         AnchorClient(anchor_id=ANUSHA_ID, client_id=THREADS_ID),
         *[AnchorNote(anchor_id=RAJAN_ID, text=t, source="seed") for t in RAJAN_NOTES],
         *[AnchorNote(anchor_id=ANUSHA_ID, text=t, source="seed") for t in ANUSHA_NOTES],
-        JoinRequest(pod_id=ANUSHA_TEAM, junior_id=PEMBA_ID, sample_link="https://youtu.be/k7Tr3kReel9",
-                    note="I cut 20+ trekking reels on my phone and laptop; I want to learn client work.",
+        PodMember(pod_id=ANUSHA_TEAM, junior_id=PEMBA_ID, level=4),
+        JoinRequest(pod_id=ANUSHA_TEAM, junior_id=ASHA_ID, sample_link="https://drive.google.com/file/d/1cafePromoClip",
+                    note="I make short promos for cafés and shops; I want to learn client work.",
                     test_answer="Open on the brightest shirt with '20% OFF' big in the first second, then three quick "
                                 "cuts of people wearing it, timed to the drum."),
     ])
@@ -186,6 +202,15 @@ def seed(session: Session) -> None:
         work.approve(session, rajan, sub.id)
         work.accept(session, cafe, job, show_client=True)
 
+    # Pemba: two finished video jobs for Himal Threads, then Anusha makes him a Mentor.
+    for spec, work_link in ((JOB_THREADS_TIHAR, "https://drive.google.com/file/d/tiharTeaserFinal"),
+                            (JOB_THREADS_UNBOX, "https://drive.google.com/file/d/scarfUnboxingFinal")):
+        job = _agreed_and_started(session, anusha, threads, pemba, spec)
+        sub = work.submit(session, pemba, job, link=work_link, content=f"Done: {'; '.join(spec['done_when'])}", note="")
+        work.approve(session, anusha, sub.id)
+        work.accept(session, threads, job, show_client=True)
+    work.set_level(session, anusha, PEMBA_ID, 5, "Two client jobs accepted first time; ready to lead.")
+
     # Sita: a job to do now (the live demo).
     _agreed_and_started(session, rajan, cafe, sita, JOB_CAFE_MENU, job_id=SITA_JOB)
 
@@ -196,5 +221,5 @@ def seed(session: Session) -> None:
     # Harbour Café: a new agreement Rajan wrote after a call, waiting for Emma to agree.
     work.anchor_create_job(session, rajan, CAFE_ID, dict(JOB_CAFE_HOURS), job_id=AGREE_JOB)
 
-    # Himal Threads: an open video job any video Anchor can take.
+    # Himal Threads: an open video job. Anusha (Team Leader) and Pemba (Mentor) can apply; Sunil chooses.
     work.create_job(session, threads, dict(JOB_THREADS_REEL), None, job_id=OPEN_JOB)

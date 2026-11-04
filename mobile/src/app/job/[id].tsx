@@ -3,9 +3,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Linking, View } from 'react-native';
 
+import { PUBLIC_BASE } from '@/api/client';
 import {
-  useAccept, useAgree, useAnswerBrief, useAssign, useDecideChange, useJob, useMe, useProposeChange, useRequestChanges,
-  useSubmit, useTake, useTeam, useTemplate,
+  useAccept, useAgree, useAnswerBrief, useApply, useAssign, useChoose, useDecideChange, useJob, useJuniorHome, useMe,
+  useProposeChange, useRequestChanges, useSubmit, useTeam, useTemplate,
 } from '@/api/hooks';
 import type { JobDetail } from '@/api/types';
 import { Checkbox, Field, useErrorText } from '@/components/forms';
@@ -82,10 +83,77 @@ function ProposeChange({ d }: { d: JobDetail }) {
   );
 }
 
+/** A Team Leader or a ★★★★★ Mentor applies for a job a client posted to everyone, or sees how it went. */
+function Apply({ d, leaderName }: { d: JobDetail; leaderName?: string }) {
+  const { t } = useT();
+  const apply = useApply();
+  const errorText = useErrorText();
+  const [note, setNote] = useState('');
+  const [video, setVideo] = useState('');
+  const mentor = leaderName !== undefined;
+  const mine = d.my_application;
+  if (mine) {
+    return <Panel tone={mine === 'not_chosen' ? 'clay' : 'honey'}><Txt>{t(`apply.${mine}`)}</Txt></Panel>;
+  }
+  if (d.job.state !== 'open') return null;
+  return (
+    <Section title={t('apply.title')} help={mentor ? t('apply.helpMentor', { name: leaderName }) : t('apply.helpAnchor')}>
+      {mentor ? (
+        <Field label={t('apply.video')} help={t('apply.videoHelp')} value={video} onChangeText={setVideo}
+          autoCapitalize="none" keyboardType="url" placeholder="https://youtu.be/..." />
+      ) : null}
+      <Field label={t('apply.note')} placeholder={t('apply.noteEx')} value={note} onChangeText={setNote} multiline />
+      <Button label={t('apply.send')} disabled={mentor && !video.trim()} busy={apply.isPending}
+        onPress={() => apply.mutate({ id: d.job.id, note, video_link: video })} />
+      {apply.error ? (
+        <Txt color={colors.brick}>{errorText(apply.error, { video_required: t('apply.videoRequired'),
+          video_link_not_supported: t('apply.videoNotSupported') })}</Txt>
+      ) : null}
+    </Section>
+  );
+}
+
+/** The client's open job: everyone who applied, with the facts behind them. The client chooses one. */
+function Choose({ d }: { d: JobDetail }) {
+  const { t, digits } = useT();
+  const choose = useChoose();
+  const errorText = useErrorText();
+  const waiting = (d.applications ?? []).filter((a) => a.status === 'waiting');
+  if (!waiting.length) return <Panel tone="honey"><Txt>{t('apply.none')}</Txt></Panel>;
+  return (
+    <Section title={t('apply.listTitle', { n: digits(waiting.length) })} help={t('apply.listHelp')}>
+      {waiting.map((a) => (
+        <Panel key={a.id} style={{ gap: space.sm }}>
+          <Txt variant="h3">{a.applicant.display_name}</Txt>
+          <Txt variant="small" color={colors.inkSoft}>
+            {t(a.role === 'anchor' ? 'apply.leader' : 'apply.mentor', { team: a.team_name })}
+            {a.applicant.headline ? ` · ${a.applicant.headline}` : ''}
+          </Txt>
+          {a.level ? <LevelTag level={a.level} /> : null}
+          <Txt variant="small">{t(a.role === 'anchor' ? 'apply.signedLeader' : 'apply.signedMentor', { count: a.signed_jobs })}</Txt>
+          {a.note ? <Txt>“{a.note}”</Txt> : null}
+          {a.video_link ? (
+            <Button kind="secondary" icon="eye" label={t('apply.watch')} onPress={() => Linking.openURL(a.video_link)} />
+          ) : null}
+          {a.profile_slug ? (
+            <Button kind="quiet" icon="eye" label={t('apply.workRecord')}
+              onPress={() => Linking.openURL(`${PUBLIC_BASE}/p/${a.profile_slug}`)} />
+          ) : null}
+          <Button label={t('apply.choose', { name: a.applicant.display_name.split(' ')[0] })} busy={choose.isPending}
+            onPress={() => choose.mutate({ id: d.job.id, application_id: a.id })} />
+        </Panel>
+      ))}
+      {waiting.some((a) => a.role === 'junior') ? (
+        <Txt variant="small" color={colors.inkSoft}>{t('apply.mentorChecked')}</Txt>
+      ) : null}
+      {choose.error ? <Txt color={colors.brick}>{errorText(choose.error, { no_longer_mentor: t('apply.noLongerMentor') })}</Txt> : null}
+    </Section>
+  );
+}
+
 function AnchorActions({ d }: { d: JobDetail }) {
   const { t } = useT();
   const team = useTeam().data;
-  const take = useTake();
   const agree = useAgree();
   const assign = useAssign();
   const errorText = useErrorText();
@@ -93,13 +161,8 @@ function AnchorActions({ d }: { d: JobDetail }) {
   const [junior, setJunior] = useState<string | null>(d.job.junior?.id ?? null);
   const j = d.job;
   const edit = <Button kind="secondary" icon="post" label={t('agree.edit')} onPress={() => router.push(`/write?id=${j.id}`)} />;
-  if (j.state === 'open') {
-    return (
-      <Section title={t('agree.takeTitle')} help={t('agree.takeHelp')}>
-        <Button label={t('job.take')} busy={take.isPending} onPress={() => take.mutate(j.id)} />
-      </Section>
-    );
-  }
+  // Open, or applied and someone else was chosen: nothing else here is this Leader's to do.
+  if (j.state === 'open' || d.my_application === 'not_chosen') return <Apply d={d} />;
   if (j.state === 'with_anchor') {
     return (
       <Section title={t('agree.fromClient', { client: clientName(j) })} help={t('agree.fromClientHelp')}>
@@ -184,6 +247,7 @@ function Brief({ d }: { d: JobDetail }) {
 
 function JuniorActions({ d }: { d: JobDetail }) {
   const { t } = useT();
+  const home = useJuniorHome().data;
   const submit = useSubmit();
   const errorText = useErrorText();
   const [link, setLink] = useState('');
@@ -191,6 +255,11 @@ function JuniorActions({ d }: { d: JobDetail }) {
   const [note, setNote] = useState('');
   const j = d.job;
   const last = d.submissions[0];
+  if (j.state === 'open' || d.my_application === 'not_chosen') {
+    // The Mentor's own Leader checks the work: the team where they are a Mentor in this skill.
+    const team = home?.teams.find((x) => x.skill === j.skill && home.levels[x.id] === 5);
+    return <Apply d={d} leaderName={team?.anchor.display_name ?? ''} />;
+  }
   if (j.state === 'assigned') return <Brief d={d} />;
   if (j.state === 'submitted' && last) {
     return (
@@ -275,6 +344,7 @@ function ClientActions({ d }: { d: JobDetail }) {
   const j = d.job;
   const approved = d.submissions[0];
   if (j.state === 'with_client') return <ClientAgree d={d} />;
+  if (j.state === 'open') return <Choose d={d} />;
   if (j.state === 'client_accepted') return <Panel tone="pine"><Txt color={colors.white}>{t('job.acceptedDone')}</Txt></Panel>;
   if (j.state !== 'anchor_approved') {
     return (

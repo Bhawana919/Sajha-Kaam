@@ -8,26 +8,39 @@ def test_junior_asks_to_join_and_anchor_decides_blind(client):
     asha, anusha = auth(client, ASHA_ID), auth(client, ANUSHA_ID)
     teams = client.get("/v1/teams/open", headers=asha).json()
     assert [t["team"]["name"] for t in teams] == ["Anusha's Video Team"]
+    assert teams[0]["my_request"] == "waiting"  # Asha asked in the demo data
     team_id = teams[0]["team"]["id"]
-
-    join = {"sample_link": "https://drive.google.com/file/d/1cafePromoClip", "note": "Short promos for cafés.",
-            "test_answer": "Open on the offer, then three quick cuts."}
-    assert client.post(f"/v1/teams/{team_id}/join", json=join, headers=asha).status_code == 201
+    join = {"sample_link": "https://drive.google.com/file/d/1cafePromoClip", "note": "Again."}
     assert client.post(f"/v1/teams/{team_id}/join", json=join, headers=asha).status_code == 409
 
     reqs = client.get("/v1/anchor/requests", headers=anusha).json()
-    assert [r["label"] for r in reqs] == ["A", "B"]  # Pemba asked first, then Asha
-    assert reqs[0]["languages"] == ["Nepali", "English"]  # "Sherpa" hidden: it reveals background
+    assert [r["label"] for r in reqs] == ["A"]
     text = str(reqs).lower()
-    for leak in ("asha", "rai", "pemba", "sherpa", "sunsari", "solukhumbu", ASHA_ID, PEMBA_ID, "@demo"):
+    for leak in ("asha", "rai", "sunsari", ASHA_ID, "@demo"):
         assert leak not in text, leak
 
-    asha_req = reqs[1]["id"]
-    assert client.post(f"/v1/anchor/requests/{asha_req}/decide", json={"accept": True},
+    assert client.post(f"/v1/anchor/requests/{reqs[0]['id']}/decide", json={"accept": True},
                        headers=anusha).json()["status"] == "accepted"
     team = client.get("/v1/anchor/team", headers=anusha).json()
-    assert team["team"]["seats_open"] == 1 and [m["person"]["display_name"] for m in team["members"]] == ["Asha Rai"]
+    assert team["team"]["seats_open"] == 1
+    assert [m["person"]["display_name"] for m in team["members"]] == ["Pemba Sherpa", "Asha Rai"]
     assert "join_accepted" in [n["kind"] for n in client.get("/v1/notifications", headers=asha).json()]
+
+
+def test_blind_review_hides_background_languages(client):
+    """Languages beyond the working ones (e.g. Sherpa) reveal background, so the Anchor never sees them."""
+    rajan, pemba = auth(client, RAJAN_ID), auth(client, PEMBA_ID)
+    profile = client.get("/v1/me/profile", headers=pemba).json()
+    client.put("/v1/me/profile", json={**profile, "skills": ["video", "web"]}, headers=pemba)
+    web_team = next(t["team"]["id"] for t in client.get("/v1/teams/open", headers=pemba).json()
+                    if t["team"]["skill"] == "web")
+    assert client.post(f"/v1/teams/{web_team}/join", json={"sample_link": "https://youtu.be/k7Tr3kReel9"},
+                       headers=pemba).status_code == 201
+    reqs = client.get("/v1/anchor/requests", headers=rajan).json()
+    assert reqs[0]["languages"] == ["Nepali", "English"]
+    text = str(reqs).lower()
+    for leak in ("pemba", "sherpa", "solukhumbu", PEMBA_ID, "@demo"):
+        assert leak not in text, leak
 
 
 def test_join_needs_the_skill_and_a_sample(client):

@@ -2,9 +2,13 @@
 
 Job:  (draft | with_client | with_anchor | open) -> agreed -> assigned -> working -> submitted
       -> (sent_back -> submitted)* -> anchor_approved -> client_accepted
+      An open job (posted to everyone) gets applications from Anchors and Mentors with the skill; the
+      client chooses one. A chosen Mentor goes straight to working; their Anchor still approves.
 Rules: nothing reaches a junior before the client and the Anchor both agree; the first check never decides; only the Anchor approves, sends back, accepts team members
 and changes levels; only the client accepts work. A logbook entry needs both yes's.
 """
+
+from urllib.parse import urlparse
 
 from fastapi import HTTPException
 from sqlmodel import Session, select
@@ -15,6 +19,7 @@ from app.models import (
     AnchorNote,
     Invite,
     Job,
+    JobApplication,
     JoinRequest,
     JuniorProfile,
     LevelChange,
@@ -71,12 +76,34 @@ def anchor_of(session: Session, job: Job) -> User | None:
 def can_see(session: Session, user: User, job: Job) -> bool:
     if user.id in (job.client_id, job.junior_id):
         return True
+    if job.state == "open":
+        return apply_team(session, user, job.skill) is not None
+    if my_application(session, user, job) is not None:  # applied, so they can see who it went to
+        return True
     if user.role == "anchor":
-        if job.state == "open":
-            return job.skill == pod_of_anchor(session, user.id).skill
         a = anchor_of(session, job)
         return a is not None and a.id == user.id
     return False
+
+
+def apply_team(session: Session, user: User, skill: str) -> Pod | None:
+    """The team an open job would go into if this person applied for it, or None if they may not apply:
+    a Team Leader whose team has the skill, or a member who is a Mentor in a team with the skill."""
+    if user.role == "anchor":
+        pod = session.exec(select(Pod).where(Pod.anchor_id == user.id)).first()
+        return pod if pod and pod.skill == skill else None
+    if user.role == "junior":
+        for m in memberships(session, user.id):
+            pod = session.get(Pod, m.pod_id)
+            if m.level == notify.MENTOR and pod and pod.skill == skill:
+                return pod
+    return None
+
+
+def open_jobs_for(session: Session, user: User) -> list[Job]:
+    """Open client jobs this person may apply for."""
+    jobs = session.exec(select(Job).where(Job.state == "open").order_by(Job.created_at)).all()
+    return [j for j in jobs if apply_team(session, user, j.skill) is not None]
 
 
 def latest_submission(session: Session, job_id: str) -> Submission | None:
@@ -264,7 +291,7 @@ def _save(session: Session, job: Job) -> Job:
 def create_job(session: Session, client: User, data: dict, send_to_anchor: str | None,
                job_id: str | None = None) -> Job:
     """A client writes the agreement. Sent to their own Anchor, it waits for that Anchor to agree;
-    posted to everyone, the first Anchor who takes it agrees by taking it."""
+    posted to everyone, Anchors and Mentors with the skill apply and the client chooses one."""
     job = Job(id=job_id or new_id(), client_id=client.id, **_agreement_fields(data))
     if send_to_anchor:
         if session.get(AnchorClient, (send_to_anchor, client.id)) is None:
@@ -275,7 +302,8 @@ def create_job(session: Session, client: User, data: dict, send_to_anchor: str |
         job.pod_id, job.state = pod.id, "with_anchor"
         notify.send(session, [send_to_anchor], "job_sent", job.id)
     else:
-        notify.send(session, notify.anchors_with_skill(session, job.skill), "job_open", job.id)
+        notify.send(session, notify.anchors_with_skill(session, job.skill)
+                    + notify.mentors_with_skill(session, job.skill), "job_open", job.id)
     return _save(session, job)
 
 
@@ -330,17 +358,81 @@ def request_changes(session: Session, client: User, job: Job, note: str) -> Job:
     return _save(session, job)
 
 
-def take_job(session: Session, anchor: User, job: Job) -> Job:
-    """Taking an open job the client posted is the Anchor's agreement to it."""
-    pod = pod_of_anchor(session, anchor.id)
+VIDEO_HOSTS = {"youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be", "drive.google.com",
+               "vimeo.com", "www.vimeo.com", "loom.com", "www.loom.com"}
+
+
+def video_link_ok(link: str) -> bool:
+    """Only video sites the client can open in a browser; nothing is fetched by Sajha Kaam."""
+    parts = urlparse(link)
+    return parts.scheme == "https" and (parts.hostname or "").lower() in VIDEO_HOSTS
+
+
+def apply_for_job(session: Session, user: User, job: Job, note: str, video_link: str = "") -> JobApplication:
+    """Applying for an open job is agreeing to the client's agreement as written. The client chooses.
+    A Mentor adds a short video (up to 2 minutes) so the client can see who they are choosing."""
     if job.state != "open":
         raise HTTPException(409, "job_not_open")
-    if job.skill != pod.skill:
-        raise HTTPException(422, "anchor_skill_mismatch")
-    job.pod_id, job.state, job.agreed_at = pod.id, "agreed", utcnow()
-    if session.get(AnchorClient, (anchor.id, job.client_id)) is None:
-        session.add(AnchorClient(anchor_id=anchor.id, client_id=job.client_id))
-    notify.send(session, [job.client_id], "job_taken", job.id)
+    pod = apply_team(session, user, job.skill)
+    if pod is None:
+        raise HTTPException(403, "cannot_apply")
+    if session.exec(select(JobApplication).where(JobApplication.job_id == job.id,
+                                                 JobApplication.applicant_id == user.id)).first():
+        raise HTTPException(409, "already_applied")
+    video_link = video_link.strip()
+    if user.role == "junior" and not video_link:
+        raise HTTPException(422, "video_required")
+    if video_link and not video_link_ok(video_link):
+        raise HTTPException(422, "video_link_not_supported")
+    app = JobApplication(job_id=job.id, applicant_id=user.id, pod_id=pod.id, note=note.strip(), video_link=video_link)
+    session.add(app)
+    notify.send(session, [job.client_id], "job_application", job.id)
+    session.commit()
+    session.refresh(app)
+    return app
+
+
+def applications_of(session: Session, job: Job) -> list[JobApplication]:
+    return list(session.exec(select(JobApplication).where(JobApplication.job_id == job.id)
+                             .order_by(JobApplication.created_at)).all())
+
+
+def my_application(session: Session, user: User, job: Job) -> JobApplication | None:
+    return session.exec(select(JobApplication).where(JobApplication.job_id == job.id,
+                                                     JobApplication.applicant_id == user.id)).first()
+
+
+def choose_applicant(session: Session, client: User, job: Job, application_id: str) -> Job:
+    """The client chooses who does an open job. A Team Leader gives it to their team as usual; a
+    Mentor does it themselves, and their own Team Leader still checks the work before the client."""
+    if job.client_id != client.id:
+        raise HTTPException(403, "not_your_job")
+    if job.state != "open":
+        raise HTTPException(409, "job_not_open")
+    app = session.get(JobApplication, application_id)
+    if app is None or app.job_id != job.id or app.status != "waiting":
+        raise HTTPException(404, "application_not_found")
+    pod = session.get(Pod, app.pod_id)
+    applicant = session.get(User, app.applicant_id)
+    member = session.get(PodMember, (pod.id, applicant.id)) if applicant.role == "junior" else None
+    if applicant.role == "junior" and (member is None or member.level != notify.MENTOR):
+        raise HTTPException(409, "no_longer_mentor")  # the badge changed after applying
+    now = utcnow()
+    job.pod_id, job.state, job.agreed_at = pod.id, "agreed", now
+    if member is not None:
+        # Applying was the Mentor's "I accept": they start straight away at their level.
+        job.junior_id, job.supervision_level, job.junior_accepted_at = applicant.id, member.level, now
+        job.state = "working"
+        notify.send(session, [pod.anchor_id], "mentor_chosen", job.id)
+    if session.get(AnchorClient, (pod.anchor_id, client.id)) is None:
+        session.add(AnchorClient(anchor_id=pod.anchor_id, client_id=client.id))
+    for other in applications_of(session, job):
+        if other.status != "waiting":
+            continue
+        other.status, other.decided_at = ("chosen" if other.id == app.id else "not_chosen"), now
+        session.add(other)
+        notify.send(session, [other.applicant_id],
+                    "application_chosen" if other.id == app.id else "application_not_chosen", job.id)
     return _save(session, job)
 
 

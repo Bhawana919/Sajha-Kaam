@@ -297,9 +297,38 @@ class SubmissionOut(BaseModel):
     decided_at: datetime | None
 
 
+class ApplyIn(BaseModel):
+    note: str = Field(default="", max_length=600)
+    video_link: str = Field(default="", max_length=500)  # required for Mentors
+
+
+class ChooseIn(BaseModel):
+    application_id: str
+
+
+ApplicationStatus = Literal["waiting", "chosen", "not_chosen"]
+
+
+class ApplicationOut(BaseModel):
+    """What the client sees about someone who applied for their open job."""
+    id: str
+    status: ApplicationStatus
+    note: str
+    video_link: str
+    created_at: datetime
+    applicant: PersonOut
+    role: Literal["anchor", "junior"]
+    team_name: str
+    level: int | None  # Mentors only: their badge in that team
+    signed_jobs: int  # verified jobs: the Mentor's own, or the Team Leader's team's
+    profile_slug: str | None  # Mentors only: their public Work Record
+
+
 class JobDetail(BaseModel):
     job: JobOut
     submissions: list[SubmissionOut]  # newest first
+    my_application: ApplicationStatus | None = None  # for an Anchor or Mentor who applied
+    applications: list[ApplicationOut] = Field(default_factory=list)  # the client's open job only
 
 
 class AssignIn(BaseModel):
@@ -331,7 +360,7 @@ class DeskOut(BaseModel):
     waiting_review: list[JobDetail]
     agreements: list[JobOut]  # not agreed yet: drafts, waiting for the client, sent by a client
     to_assign: list[JobOut]
-    open_jobs: list[JobOut]  # posted by clients for this skill, not yet taken
+    open_jobs: list[JobOut]  # posted by clients for this skill, client hasn't chosen yet
     join_requests: int
     with_clients: int
 
@@ -344,11 +373,13 @@ class JuniorHome(BaseModel):
     open_teams: int
     log_entries: int
     profile_slug: str
+    open_jobs: list[JobOut] = Field(default_factory=list)  # Mentors only: client jobs they may apply for
 
 
 class ClientHome(BaseModel):
     anchors: list[PersonOut]
     to_agree: list[JobOut]  # agreements or changes waiting for the client's answer
+    to_choose: list[JobOut] = Field(default_factory=list)  # open jobs with people waiting to be chosen
     ready: list[JobDetail]
     in_progress: list[JobOut]
     done: list[JobOut]

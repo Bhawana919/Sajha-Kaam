@@ -1,5 +1,5 @@
 // Post a job: the client fills the agreement template. Sent to their own Anchor, it waits for the
-// Anchor to agree; posted to all Anchors with the skill, the Anchor who takes it agrees.
+// Anchor to agree; posted to everyone, Anchors and Mentors with the skill apply and the client chooses.
 import { useClientHome } from '@/api/hooks';
 import { JobForm } from '@/components/JobForm';
 

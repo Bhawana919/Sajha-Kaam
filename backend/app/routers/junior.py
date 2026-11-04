@@ -74,7 +74,8 @@ def home(user: User = Depends(junior_only), session: Session = Depends(get_sessi
     return JuniorHome(profile_complete=_complete(session.get(JuniorProfile, user.id)),
                       teams=[pod_out(session, t) for t in teams], levels=levels_by_team(session, user.id),
                       jobs=[job_out(session, j, user) for j in jobs], open_teams=len(work.open_teams_for(session, user)),
-                      log_entries=entries, profile_slug=user.profile_slug)
+                      log_entries=entries, profile_slug=user.profile_slug,
+                      open_jobs=[job_out(session, j, user) for j in work.open_jobs_for(session, user)])
 
 
 @router.post("/jobs/{job_id}/brief", response_model=JobOut)

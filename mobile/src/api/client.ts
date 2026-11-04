@@ -6,7 +6,10 @@ import { ApiError } from './errors';
 
 export { ApiError };
 
-const API_URL = (process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+// "same-origin": the hosted web app, where Firebase Hosting forwards /v1 to the API on the same address.
+const configured = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
+const sameOrigin = configured === 'same-origin' && typeof window !== 'undefined' && !!window.location;
+const API_URL = (sameOrigin ? window.location.origin : configured).replace(/\/$/, '');
 export const PUBLIC_BASE = API_URL;
 const TIMEOUT_MS = 15000;
 

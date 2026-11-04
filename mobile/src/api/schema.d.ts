@@ -324,23 +324,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/jobs/{job_id}/take": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Take */
-        post: operations["take_v1_jobs__job_id__take_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/jobs/{job_id}/assign": {
         parameters: {
             query?: never;
@@ -597,6 +580,43 @@ export interface paths {
          * @description The side that didn't write the latest version agrees. Only then can juniors see the job.
          */
         post: operations["agree_v1_jobs__job_id__agree_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Apply
+         * @description A Team Leader, or a Mentor (★★★★★) with the skill, applies for an open job. The client chooses.
+         */
+        post: operations["apply_v1_jobs__job_id__apply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/choose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Choose */
+        post: operations["choose_v1_jobs__job_id__choose_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -890,6 +910,55 @@ export interface components {
             /** Accept */
             accept: boolean;
         };
+        /**
+         * ApplicationOut
+         * @description What the client sees about someone who applied for their open job.
+         */
+        ApplicationOut: {
+            /** Id */
+            id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "waiting" | "chosen" | "not_chosen";
+            /** Note */
+            note: string;
+            /** Video Link */
+            video_link: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            applicant: components["schemas"]["PersonOut"];
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "anchor" | "junior";
+            /** Team Name */
+            team_name: string;
+            /** Level */
+            level: number | null;
+            /** Signed Jobs */
+            signed_jobs: number;
+            /** Profile Slug */
+            profile_slug: string | null;
+        };
+        /** ApplyIn */
+        ApplyIn: {
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /**
+             * Video Link
+             * @default
+             */
+            video_link: string;
+        };
         /** AssignIn */
         AssignIn: {
             /** Junior Id */
@@ -937,12 +1006,19 @@ export interface components {
             /** Problems */
             problems: components["schemas"]["Problem"][];
         };
+        /** ChooseIn */
+        ChooseIn: {
+            /** Application Id */
+            application_id: string;
+        };
         /** ClientHome */
         ClientHome: {
             /** Anchors */
             anchors: components["schemas"]["PersonOut"][];
             /** To Agree */
             to_agree: components["schemas"]["JobOut"][];
+            /** To Choose */
+            to_choose?: components["schemas"]["JobOut"][];
             /** Ready */
             ready: components["schemas"]["JobDetail"][];
             /** In Progress */
@@ -1036,6 +1112,10 @@ export interface components {
             job: components["schemas"]["JobOut"];
             /** Submissions */
             submissions: components["schemas"]["SubmissionOut"][];
+            /** My Application */
+            my_application?: ("waiting" | "chosen" | "not_chosen") | null;
+            /** Applications */
+            applications?: components["schemas"]["ApplicationOut"][];
         };
         /** JobIn */
         JobIn: {
@@ -1171,6 +1251,8 @@ export interface components {
             log_entries: number;
             /** Profile Slug */
             profile_slug: string;
+            /** Open Jobs */
+            open_jobs?: components["schemas"]["JobOut"][];
         };
         /** LevelIn */
         LevelIn: {
@@ -2271,39 +2353,6 @@ export interface operations {
             };
         };
     };
-    take_v1_jobs__job_id__take_post: {
-        parameters: {
-            query?: never;
-            header?: {
-                authorization?: string | null;
-            };
-            path: {
-                job_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JobOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     assign_v1_jobs__job_id__assign_post: {
         parameters: {
             query?: never;
@@ -2828,6 +2877,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    apply_v1_jobs__job_id__apply_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    choose_v1_jobs__job_id__choose_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChooseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDetail"];
                 };
             };
             /** @description Validation Error */

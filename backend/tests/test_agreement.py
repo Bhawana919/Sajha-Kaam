@@ -29,14 +29,14 @@ def test_incomplete_agreement_cannot_be_posted(client):
     assert r.status_code == 422 and r.json()["detail"]["code"] == "agreement_incomplete"
 
 
-def test_open_job_reaches_anchors_with_that_skill_and_one_takes_it(client):
+def test_open_job_reaches_anchors_with_that_skill(client):
+    """Applying and choosing are covered in test_open_jobs.py."""
     anusha, rajan, threads = auth(client, ANUSHA_ID), auth(client, RAJAN_ID), auth(client, THREADS_ID)
     assert OPEN_JOB in [j["id"] for j in client.get("/v1/anchor/desk", headers=anusha).json()["open_jobs"]]
     assert OPEN_JOB not in [j["id"] for j in client.get("/v1/anchor/desk", headers=rajan).json()["open_jobs"]]
-    assert client.post(f"/v1/jobs/{OPEN_JOB}/take", headers=rajan).status_code == 422  # wrong skill
-    taken = client.post(f"/v1/jobs/{OPEN_JOB}/take", headers=anusha).json()
-    assert taken["state"] == "agreed" and taken["anchor"]["display_name"] == "Anusha Gurung"
-    assert "job_taken" in [n["kind"] for n in client.get("/v1/notifications", headers=threads).json()]
+    assert client.post(f"/v1/jobs/{OPEN_JOB}/apply", json={}, headers=rajan).status_code == 403  # wrong skill
+    assert client.post(f"/v1/jobs/{OPEN_JOB}/apply", json={}, headers=anusha).status_code == 201
+    assert "job_application" in [n["kind"] for n in client.get("/v1/notifications", headers=threads).json()]
 
 
 def test_send_to_anchor_only_works_for_your_own_anchor(client):

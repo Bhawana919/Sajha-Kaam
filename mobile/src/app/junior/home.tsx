@@ -37,6 +37,11 @@ export default function JuniorHome() {
               <LevelTag level={h.levels[team.id]} />
             </Panel>
           ))}
+          {h.open_jobs?.length ? (
+            <Section title={t('junior.openJobs')} help={t('junior.openJobsHelp')}>
+              {h.open_jobs.map((j) => <JobCard key={j.id} job={j} />)}
+            </Section>
+          ) : null}
           <Section title={t('junior.myJobs')}>
             {h.jobs.length ? h.jobs.map((j) => <JobCard key={j.id} job={j} />)
               : <Txt color={colors.inkSoft}>{t('junior.noJobs')}</Txt>}

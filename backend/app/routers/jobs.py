@@ -10,8 +10,10 @@ from app.models import Job, Notification, User
 from app.schemas import (
     AcceptIn,
     AnswerIn,
+    ApplyIn,
     ChangesIn,
     CheckOut,
+    ChooseIn,
     ClientHome,
     JobDetail,
     JobIn,
@@ -63,6 +65,22 @@ def agree(job_id: str, user: User = Depends(require_role("client", "anchor")),
     return job_out(session, work.agree(session, user, work.get_job(session, job_id)))
 
 
+@router.post("/jobs/{job_id}/apply", response_model=JobDetail, status_code=201)
+def apply(job_id: str, body: ApplyIn, user: User = Depends(require_role("anchor", "junior")),
+          session: Session = Depends(get_session)) -> JobDetail:
+    """A Team Leader, or a Mentor (★★★★★) with the skill, applies for an open job. The client chooses."""
+    job = work.get_job(session, job_id)
+    work.apply_for_job(session, user, job, body.note, body.video_link)
+    return job_detail(session, job, viewer=user)
+
+
+@router.post("/jobs/{job_id}/choose", response_model=JobDetail)
+def choose(job_id: str, body: ChooseIn, user: User = Depends(require_role("client")),
+           session: Session = Depends(get_session)) -> JobDetail:
+    job = work.choose_applicant(session, user, work.get_job(session, job_id), body.application_id)
+    return job_detail(session, job, approved_only=True, viewer=user)
+
+
 @router.post("/jobs/{job_id}/request-changes", response_model=JobOut)
 def request_changes(job_id: str, body: ChangesIn, user: User = Depends(require_role("client")),
                     session: Session = Depends(get_session)) -> JobOut:
@@ -80,11 +98,14 @@ def decide_change(job_id: str, body: AnswerIn, user: User = Depends(require_role
 def client_home(user: User = Depends(require_role("client")), session: Session = Depends(get_session)) -> ClientHome:
     jobs = session.exec(select(Job).where(Job.client_id == user.id).order_by(Job.created_at.desc())).all()
     to_agree = [j for j in jobs if j.state == "with_client" or j.pending_change]
+    to_choose = [j for j in jobs if j.state == "open"
+                 and any(a.status == "waiting" for a in work.applications_of(session, j))]
     return ClientHome(anchors=[person(a) for a in work.my_anchors(session, user.id)],
                       to_agree=[job_out(session, j) for j in to_agree],
+                      to_choose=[job_out(session, j) for j in to_choose],
                       ready=[job_detail(session, j, approved_only=True) for j in jobs
                              if j.state == "anchor_approved" and j not in to_agree],
-                      in_progress=[job_out(session, j) for j in jobs if j not in to_agree
+                      in_progress=[job_out(session, j) for j in jobs if j not in to_agree and j not in to_choose
                                    and j.state not in ("anchor_approved", "client_accepted")],
                       done=[job_out(session, j) for j in jobs if j.state == "client_accepted"])
 

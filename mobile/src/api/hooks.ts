@@ -110,7 +110,10 @@ export const useProposeChange = () =>
     const { id, ...body } = v;
     return api(`/v1/jobs/${id}/change`, { method: 'POST', body });
   });
-export const useTake = () => useAction((id: string) => api(`/v1/jobs/${id}/take`, { method: 'POST' }));
+/** A Team Leader, or a ★★★★★ Mentor, applies for a job a client posted to everyone. The client chooses. */
+export const useApply = () =>
+  useAction((v: { id: string; note: string; video_link: string }) =>
+    api<JobDetail>(`/v1/jobs/${v.id}/apply`, { method: 'POST', body: { note: v.note, video_link: v.video_link } }));
 export const useAssign = () =>
   useAction((v: { id: string; junior_id: string }) => api(`/v1/jobs/${v.id}/assign`, { method: 'POST', body: { junior_id: v.junior_id } }));
 export const useApprove = () => useAction((submissionId: string) => api(`/v1/submissions/${submissionId}/approve`, { method: 'POST' }));
@@ -197,6 +200,9 @@ export const useCheckAgreement = () =>
 export const usePostJob = () => useAction((j: JobIn) => api<{ id: string }>('/v1/jobs', { method: 'POST', body: j }));
 /** Agree to an agreement: the client to one their Anchor wrote, or the Anchor to one their client sent. */
 export const useAgree = () => useAction((id: string) => api(`/v1/jobs/${id}/agree`, { method: 'POST' }));
+export const useChoose = () =>
+  useAction((v: { id: string; application_id: string }) =>
+    api<JobDetail>(`/v1/jobs/${v.id}/choose`, { method: 'POST', body: { application_id: v.application_id } }));
 export const useRequestChanges = () =>
   useAction((v: { id: string; note: string }) => api(`/v1/jobs/${v.id}/request-changes`, { method: 'POST', body: { note: v.note } }));
 export const useDecideChange = () =>

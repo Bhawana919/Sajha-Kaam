@@ -1073,64 +1073,6 @@
         }
       }
     },
-    "/v1/jobs/{job_id}/take": {
-      "post": {
-        "tags": [
-          "anchor"
-        ],
-        "summary": "Take",
-        "operationId": "take_v1_jobs__job_id__take_post",
-        "parameters": [
-          {
-            "name": "job_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job Id"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobOut"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/jobs/{job_id}/assign": {
       "post": {
         "tags": [
@@ -2028,6 +1970,143 @@
         }
       }
     },
+    "/v1/jobs/{job_id}/apply": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Apply",
+        "description": "A Team Leader, or a Mentor (★★★★★) with the skill, applies for an open job. The client chooses.",
+        "operationId": "apply_v1_jobs__job_id__apply_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/choose": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Choose",
+        "operationId": "choose_v1_jobs__job_id__choose_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChooseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/jobs/{job_id}/request-changes": {
       "post": {
         "tags": [
@@ -2726,6 +2805,111 @@
         ],
         "title": "AnswerIn"
       },
+      "ApplicationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "waiting",
+              "chosen",
+              "not_chosen"
+            ],
+            "title": "Status"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "video_link": {
+            "type": "string",
+            "title": "Video Link"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/PersonOut"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "anchor",
+              "junior"
+            ],
+            "title": "Role"
+          },
+          "team_name": {
+            "type": "string",
+            "title": "Team Name"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "signed_jobs": {
+            "type": "integer",
+            "title": "Signed Jobs"
+          },
+          "profile_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Slug"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "note",
+          "video_link",
+          "created_at",
+          "applicant",
+          "role",
+          "team_name",
+          "level",
+          "signed_jobs",
+          "profile_slug"
+        ],
+        "title": "ApplicationOut",
+        "description": "What the client sees about someone who applied for their open job."
+      },
+      "ApplyIn": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 600,
+            "title": "Note",
+            "default": ""
+          },
+          "video_link": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Video Link",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "ApplyIn"
+      },
       "AssignIn": {
         "properties": {
           "junior_id": {
@@ -2844,6 +3028,19 @@
         ],
         "title": "CheckOut"
       },
+      "ChooseIn": {
+        "properties": {
+          "application_id": {
+            "type": "string",
+            "title": "Application Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "application_id"
+        ],
+        "title": "ChooseIn"
+      },
       "ClientHome": {
         "properties": {
           "anchors": {
@@ -2859,6 +3056,13 @@
             },
             "type": "array",
             "title": "To Agree"
+          },
+          "to_choose": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "To Choose"
           },
           "ready": {
             "items": {
@@ -3137,6 +3341,29 @@
             },
             "type": "array",
             "title": "Submissions"
+          },
+          "my_application": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "waiting",
+                  "chosen",
+                  "not_chosen"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "My Application"
+          },
+          "applications": {
+            "items": {
+              "$ref": "#/components/schemas/ApplicationOut"
+            },
+            "type": "array",
+            "title": "Applications"
           }
         },
         "type": "object",
@@ -3495,6 +3722,13 @@
           "profile_slug": {
             "type": "string",
             "title": "Profile Slug"
+          },
+          "open_jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Open Jobs"
           }
         },
         "type": "object",

@@ -19,6 +19,7 @@ export type JobIn = S['JobIn'];
 export type AnchorJobIn = S['AnchorJobIn'];
 export type Job = S['JobOut'];
 export type JobDetail = S['JobDetail'];
+export type Application = S['ApplicationOut'];
 export type JobState = Job['state'];
 export type Submission = S['SubmissionOut'];
 export type FirstCheck = S['FirstCheck'];

@@ -40,8 +40,7 @@ anchor_only = require_role("anchor")
 def desk(user: User = Depends(anchor_only), session: Session = Depends(get_session)) -> DeskOut:
     pod = work.pod_of_anchor(session, user.id)
     mine = session.exec(select(Job).where(Job.pod_id == pod.id).order_by(Job.created_at)).all()
-    open_jobs = session.exec(select(Job).where(Job.state == "open", Job.skill == pod.skill)
-                             .order_by(Job.created_at)).all()
+    open_jobs = work.open_jobs_for(session, user)
     requests = session.exec(select(func.count()).select_from(JoinRequest).where(
         JoinRequest.pod_id == pod.id, JoinRequest.status == "waiting")).one()
     clients = session.exec(select(func.count()).select_from(AnchorClient).where(AnchorClient.anchor_id == user.id)).one()
@@ -71,11 +70,6 @@ def propose_change(job_id: str, body: AmendIn, user: User = Depends(anchor_only)
                    session: Session = Depends(get_session)) -> JobOut:
     """Propose a new deadline or budget after agreement. The client must accept it."""
     return job_out(session, work.propose_change(session, user, work.get_job(session, job_id), **body.model_dump()))
-
-
-@router.post("/jobs/{job_id}/take", response_model=JobOut)
-def take(job_id: str, user: User = Depends(anchor_only), session: Session = Depends(get_session)) -> JobOut:
-    return job_out(session, work.take_job(session, user, work.get_job(session, job_id)))
 
 
 @router.post("/jobs/{job_id}/assign", response_model=JobOut)

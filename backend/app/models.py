@@ -151,7 +151,8 @@ class Job(SQLModel, table=True):
     allow_ai: bool = False  # client's consent for an external AI check on this job
     # Before agreement (whoever wrote the latest version waits for the other side):
     #   Anchor wrote it:  with_client -(client asks for changes)-> draft -(Anchor edits)-> with_client
-    #   Client sent it to their Anchor: with_anchor;  client posted it to all Anchors: open
+    #   Client sent it to their Anchor: with_anchor
+    #   Client posted it to everyone: open (Anchors and Mentors with the skill apply; the client chooses)
     # After: agreed -> assigned (offered to a junior) -> working (junior accepted the brief)
     #        -> submitted -> (sent_back -> submitted)* -> anchor_approved -> client_accepted
     state: str = Field(default="open", index=True)
@@ -162,6 +163,22 @@ class Job(SQLModel, table=True):
     supervision_level: int | None = None  # the junior's level when assigned, recorded in the logbook
     junior_accepted_at: datetime | None = None  # the junior tapped "I accept" on the brief
     created_at: datetime = Field(default_factory=utcnow)
+
+
+class JobApplication(SQLModel, table=True):
+    """Someone going for a job a client posted to everyone: a Team Leader with that skill, or a member
+    who is a Mentor (level 5) in a team with that skill. The client chooses one."""
+
+    __tablename__ = "job_applications"
+    id: str = Field(default_factory=new_id, primary_key=True)
+    job_id: str = Field(foreign_key="jobs.id", index=True)
+    applicant_id: str = Field(foreign_key="users.id", index=True)
+    pod_id: str = Field(foreign_key="pods.id")  # the team the job goes into if chosen
+    note: str = ""
+    video_link: str = ""  # a short video (up to 2 minutes) on YouTube, Google Drive, Vimeo or Loom; Mentors must add one
+    status: str = Field(default="waiting", index=True)  # waiting | chosen | not_chosen
+    created_at: datetime = Field(default_factory=utcnow)
+    decided_at: datetime | None = None
 
 
 class Submission(SQLModel, table=True):
