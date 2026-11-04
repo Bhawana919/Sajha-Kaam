@@ -45,25 +45,41 @@ export const touchMin = 48;
 /** Phone-width column, centred on tablets and desktop browsers. */
 export const contentMaxWidth = 560;
 
-// Two faces from one foundry (Ek Type, Mumbai), both drawn for Devanagari *and* Latin, so a mixed
-// नेपाली/English screen reads as one voice:
-//   Anek Devanagari: semi-condensed display face for titles and money.
-//   Mukta: humanist UI/body face, used by major Indian news sites for their Devanagari editions.
+// Two scripts, four faces. Each line of text picks its face by script (Txt.tsx):
+//   English: Bricolage Grotesque for headings and money (a crafted grotesque with real character,
+//            set tight), Figtree for everything people read and tap (warm, open, very legible).
+//   नेपाली:  Anek Devanagari for headings, Mukta for body: faces drawn for Devanagari (Ek Type,
+//            Mumbai), so Nepali never falls back to a system font.
 export const fonts = {
-  display: { semibold: 'AnekDevanagari_600SemiBold', bold: 'AnekDevanagari_700Bold' },
-  body: { regular: 'Mukta_400Regular', medium: 'Mukta_500Medium', semibold: 'Mukta_600SemiBold' },
+  display: { semibold: 'BricolageGrotesque_600SemiBold', bold: 'BricolageGrotesque_700Bold', heavy: 'BricolageGrotesque_800ExtraBold' },
+  body: { regular: 'Figtree_400Regular', medium: 'Figtree_500Medium', semibold: 'Figtree_600SemiBold', bold: 'Figtree_700Bold' },
+  deva: {
+    display: { semibold: 'AnekDevanagari_600SemiBold', bold: 'AnekDevanagari_700Bold', heavy: 'AnekDevanagari_700Bold' },
+    body: { regular: 'Mukta_400Regular', medium: 'Mukta_500Medium', semibold: 'Mukta_600SemiBold', bold: 'Mukta_600SemiBold' },
+  },
 };
 
-type Spec = { fontSize: number; family: string; lh: number; track?: number };
+type Role = 'display' | 'body';
+type Weight = 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
+type Spec = { fontSize: number; role: Role; weight: Weight; lh: number; track?: number };
+
+/** The type scale: few sizes, clear steps. Headings are tight and heavy; body is open. */
 export const typeScale: Record<string, Spec> = {
-  display: { fontSize: 34, family: fonts.display.bold, lh: 1.1, track: -0.5 },
-  h1: { fontSize: 28, family: fonts.display.bold, lh: 1.15, track: -0.3 },
-  h2: { fontSize: 21, family: fonts.display.semibold, lh: 1.2 },
-  money: { fontSize: 24, family: fonts.display.bold, lh: 1.1 },
-  h3: { fontSize: 17, family: fonts.body.semibold, lh: 1.35 },
-  body: { fontSize: 16, family: fonts.body.regular, lh: 1.45 },
-  small: { fontSize: 14, family: fonts.body.regular, lh: 1.4 },
-  label: { fontSize: 13, family: fonts.body.medium, lh: 1.35 },
+  display: { fontSize: 36, role: 'display', weight: 'heavy', lh: 1.04, track: -1.1 },
+  h1: { fontSize: 30, role: 'display', weight: 'bold', lh: 1.08, track: -0.8 },
+  h2: { fontSize: 22, role: 'display', weight: 'bold', lh: 1.18, track: -0.4 },
+  money: { fontSize: 26, role: 'display', weight: 'bold', lh: 1.05, track: -0.6 },
+  h3: { fontSize: 17, role: 'body', weight: 'semibold', lh: 1.32, track: -0.1 },
+  body: { fontSize: 16, role: 'body', weight: 'regular', lh: 1.5 },
+  small: { fontSize: 14, role: 'body', weight: 'regular', lh: 1.45 },
+  label: { fontSize: 13, role: 'body', weight: 'semibold', lh: 1.3, track: 0.2 },
 };
+
+/** The face for a style, in English or in Nepali. */
+export function faceFor(spec: Spec, devanagari: boolean): string {
+  const set = devanagari ? fonts.deva : fonts;
+  const faces = set[spec.role] as Record<string, string>;
+  return faces[spec.weight] ?? faces.regular ?? faces.semibold;
+}
 
 export type TypeVariant = 'display' | 'h1' | 'h2' | 'money' | 'h3' | 'body' | 'small' | 'label';

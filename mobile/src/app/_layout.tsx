@@ -1,4 +1,8 @@
 import { AnekDevanagari_600SemiBold, AnekDevanagari_700Bold } from '@expo-google-fonts/anek-devanagari';
+import {
+  BricolageGrotesque_600SemiBold, BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold,
+} from '@expo-google-fonts/bricolage-grotesque';
+import { Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold, Figtree_700Bold } from '@expo-google-fonts/figtree';
 import { Mukta_400Regular, Mukta_500Medium, Mukta_600SemiBold } from '@expo-google-fonts/mukta';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
@@ -29,6 +33,8 @@ function usePrefsHydrated() {
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     AnekDevanagari_600SemiBold, AnekDevanagari_700Bold, Mukta_400Regular, Mukta_500Medium, Mukta_600SemiBold,
+    BricolageGrotesque_600SemiBold, BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold,
+    Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold, Figtree_700Bold,
   });
   const hydrated = usePrefsHydrated();
   const locale = usePrefs((s) => s.locale);
