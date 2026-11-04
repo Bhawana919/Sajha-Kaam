@@ -419,6 +419,18 @@ class RoomFileOut(BaseModel):
     created_at: datetime
 
 
+class RoomMessageOut(BaseModel):
+    id: str
+    author: str  # the person's name
+    mine: bool
+    text: str
+    created_at: datetime
+
+
+class MessageIn(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)
+
+
 class RoomOut(BaseModel):
     """The job's shared room. The client sees tasks and the deadline; files stay between member and Leader."""
     role: Literal["member", "leader", "client"]
@@ -426,6 +438,7 @@ class RoomOut(BaseModel):
     due_at: datetime | None
     tasks: list[RoomTaskOut]
     files: list[RoomFileOut]
+    messages: list[RoomMessageOut] = Field(default_factory=list)  # member and Leader only
 
 
 class TaskIn(BaseModel):

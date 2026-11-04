@@ -746,6 +746,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/jobs/{job_id}/room/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Message */
+        post: operations["add_message_v1_jobs__job_id__room_messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/jobs/{job_id}/room": {
         parameters: {
             query?: never;
@@ -1709,6 +1726,11 @@ export interface components {
             progress?: components["schemas"]["Progress"] | null;
             last_change?: components["schemas"]["BadgeChange"] | null;
         };
+        /** MessageIn */
+        MessageIn: {
+            /** Text */
+            text: string;
+        };
         /**
          * MoneySplit
          * @description The member's share follows their badge for this job; before a member is chosen it isn't known yet.
@@ -2004,6 +2026,22 @@ export interface components {
              */
             created_at: string;
         };
+        /** RoomMessageOut */
+        RoomMessageOut: {
+            /** Id */
+            id: string;
+            /** Author */
+            author: string;
+            /** Mine */
+            mine: boolean;
+            /** Text */
+            text: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /**
          * RoomOut
          * @description The job's shared room. The client sees tasks and the deadline; files stay between member and Leader.
@@ -2022,6 +2060,8 @@ export interface components {
             tasks: components["schemas"]["RoomTaskOut"][];
             /** Files */
             files: components["schemas"]["RoomFileOut"][];
+            /** Messages */
+            messages?: components["schemas"]["RoomMessageOut"][];
         };
         /** RoomTaskOut */
         RoomTaskOut: {
@@ -3689,6 +3729,43 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_message_v1_jobs__job_id__room_messages_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomOut"];
                 };
             };
             /** @description Validation Error */

@@ -35,6 +35,7 @@ export function Room({ job }: { job: Job }) {
   const [progress, setProgress] = useState<number | null>(null);
   const [upErr, setUpErr] = useState('');
   const [adding, setAdding] = useState<'task' | 'file' | null>(null);
+  const [draft, setDraft] = useState('');
   const r = q.data;
   if (q.isLoading) return <StateView state="loading" />;
   if (!r) return null;
@@ -114,6 +115,29 @@ export function Room({ job }: { job: Job }) {
         ) : null}
       </Section>
 
+      {r.role !== 'client' ? (
+        <Section title={t('room.messages')} help={t('room.messagesHelp')}>
+          {r.messages?.length ? r.messages.map((m) => (
+            <View key={m.id} style={[styles.bubble, m.mine ? styles.mine : styles.theirs]}>
+              {!m.mine ? <Txt variant="label" color={colors.brick}>{m.author}</Txt> : null}
+              <Txt color={m.mine ? colors.white : colors.ink}>{m.text}</Txt>
+              <Txt variant="small" color={m.mine ? colors.brickSoft : colors.inkSoft}>
+                {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Txt>
+            </View>
+          )) : <Txt color={colors.inkSoft}>{t('room.noMessages')}</Txt>}
+          {r.can_edit ? (
+            <View style={{ flexDirection: 'row', gap: space.sm, alignItems: 'flex-end' }}>
+              <View style={{ flex: 1 }}>
+                <Field label={t('room.message')} value={draft} onChangeText={setDraft} placeholder={t('room.messageEx')} multiline />
+              </View>
+              <Button label={t('room.send')} disabled={!draft.trim()} busy={act.send.isPending}
+                onPress={() => act.send.mutate(draft, { onSuccess: () => setDraft('') })} />
+            </View>
+          ) : null}
+        </Section>
+      ) : null}
+
       {r.role === 'client' ? <HelpLine text={t('room.clientNote')} /> : (
         <Section title={t('room.files')} help={t('room.filesHelp')}>
           {r.files.length ? r.files.map((f) => (
@@ -164,4 +188,7 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   file: { flexDirection: 'row', alignItems: 'center', gap: space.md, backgroundColor: colors.white, borderRadius: radius.md,
     padding: space.md },
+  bubble: { maxWidth: '82%', borderRadius: radius.lg, paddingHorizontal: space.md, paddingVertical: space.sm, gap: 2 },
+  mine: { alignSelf: 'flex-end', backgroundColor: colors.brick, borderBottomRightRadius: 6 },
+  theirs: { alignSelf: 'flex-start', backgroundColor: colors.white, borderBottomLeftRadius: 6 },
 });

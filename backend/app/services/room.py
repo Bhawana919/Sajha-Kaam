@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app.models import Job, RoomFile, RoomTask, User, utcnow
+from app.models import Job, RoomFile, RoomMessage, RoomTask, User, utcnow
 from app.services import notify
 from app.services.work import anchor_of
 
@@ -58,9 +58,26 @@ def view(session: Session, user: User, job: Job) -> dict:
     ts = tasks(session, job)
     files = [] if role == "client" else list(session.exec(select(RoomFile).where(RoomFile.job_id == job.id)
                                                            .order_by(RoomFile.created_at.desc())).all())
-    names = {u.id: u.display_name for u in (session.get(User, i) for i in {f.added_by for f in files}) if u}
+    msgs = [] if role == "client" else list(session.exec(select(RoomMessage).where(RoomMessage.job_id == job.id)
+                                                          .order_by(RoomMessage.created_at)).all())
+    ids = {f.added_by for f in files} | {m.author_id for m in msgs}
+    names = {u.id: u.display_name for u in (session.get(User, i) for i in ids) if u}
     return {"role": role, "can_edit": role != "client" and job.state != "client_accepted", "tasks": ts,
-            "files": [(f, names.get(f.added_by, "")) for f in files]}
+            "files": [(f, names.get(f.added_by, "")) for f in files],
+            "messages": [(m, names.get(m.author_id, ""), m.author_id == user.id) for m in msgs]}
+
+
+def add_message(session: Session, user: User, job: Job, text: str) -> RoomMessage:
+    """The member and the Leader talk here; the client sees the work once the Leader approves it."""
+    role = _need(session, user, job, edit=True)
+    msg = RoomMessage(job_id=job.id, author_id=user.id, text=text.strip())
+    session.add(msg)
+    other = anchor_of(session, job).id if role == "member" else job.junior_id
+    if other:
+        notify.send(session, [other], "room_message", job.id)
+    session.commit()
+    session.refresh(msg)
+    return msg
 
 
 def add_task(session: Session, user: User, job: Job, title: str, due_date: str) -> RoomTask:

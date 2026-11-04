@@ -209,6 +209,17 @@ class RoomFile(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utcnow)
 
 
+class RoomMessage(SQLModel, table=True):
+    """A message in the job room, between the member and the Team Leader."""
+
+    __tablename__ = "room_messages"
+    id: str = Field(default_factory=new_id, primary_key=True)
+    job_id: str = Field(foreign_key="jobs.id", index=True)
+    author_id: str = Field(foreign_key="users.id")
+    text: str
+    created_at: datetime = Field(default_factory=utcnow)
+
+
 class JobApplication(SQLModel, table=True):
     """Someone going for a job a client posted to everyone: a Team Leader with that skill, or a member
     who is a Mentor (level 5) in a team with that skill. The client chooses one."""

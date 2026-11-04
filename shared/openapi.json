@@ -2452,6 +2452,74 @@
         }
       }
     },
+    "/v1/jobs/{job_id}/room/messages": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Add Message",
+        "operationId": "add_message_v1_jobs__job_id__room_messages_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/jobs/{job_id}/room": {
       "get": {
         "tags": [
@@ -5120,6 +5188,21 @@
         ],
         "title": "MemberOut"
       },
+      "MessageIn": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "MessageIn"
+      },
       "MoneySplit": {
         "properties": {
           "junior": {
@@ -5844,6 +5927,40 @@
         ],
         "title": "RoomFileOut"
       },
+      "RoomMessageOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "author": {
+            "type": "string",
+            "title": "Author"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "author",
+          "mine",
+          "text",
+          "created_at"
+        ],
+        "title": "RoomMessageOut"
+      },
       "RoomOut": {
         "properties": {
           "role": {
@@ -5884,6 +6001,13 @@
             },
             "type": "array",
             "title": "Files"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/RoomMessageOut"
+            },
+            "type": "array",
+            "title": "Messages"
           }
         },
         "type": "object",

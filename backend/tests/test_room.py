@@ -60,3 +60,14 @@ def test_room_is_read_only_once_the_client_accepts(client):
     client.post(f"/v1/jobs/{SITA_JOB}/accept", json={}, headers=momo)
     assert room(client, SITA_ID).json()["can_edit"] is False
     assert client.post(f"/v1/jobs/{SITA_JOB}/room/tasks", json={"title": "One more"}, headers=sita).status_code == 409
+
+
+def test_member_and_leader_talk_in_the_room_and_the_client_does_not_see_it(client):
+    sita, rajan = auth(client, SITA_ID), auth(client, RAJAN_ID)
+    seeded = room(client, SITA_ID).json()["messages"]
+    assert [m["author"] for m in seeded] == ["Rajan Shrestha", "Sita Thapa"] and seeded[1]["mine"] is True
+    out = client.post(f"/v1/jobs/{SITA_JOB}/room/messages", json={"text": "Draft is in Files."}, headers=sita).json()
+    assert out["messages"][-1]["text"] == "Draft is in Files." and out["messages"][-1]["mine"] is True
+    assert "room_message" in [n["kind"] for n in client.get("/v1/notifications", headers=rajan).json()]
+    assert room(client, MOMO_ID).json()["messages"] == []
+    assert client.post(f"/v1/jobs/{SITA_JOB}/room/messages", json={"text": "Hi"}, headers=auth(client, MOMO_ID)).status_code == 403

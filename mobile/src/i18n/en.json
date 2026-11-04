@@ -540,7 +540,8 @@
     "payment_released": "Payment released: your share is in. See how much.",
     "job_opening": "A new project matches your skills. See your share.",
     "job_join_request": "Someone asked to join your project.",
-    "worker_approved": "You are in! Your Leader approved you for a project."
+    "worker_approved": "You are in! Your Leader approved you for a project.",
+    "room_message": "New message in a job room."
   },
   "apply": {
     "title": "Apply for this job",
@@ -666,7 +667,13 @@
     "addLink": "Add link",
     "httpsOnly": "Use a link that starts with https://",
     "clientNote": "You can follow the tasks and the deadline here. Drafts stay with the team; you'll see the work when the Leader approves it.",
-    "addFile": "Add a file"
+    "addFile": "Add a file",
+    "messages": "Messages",
+    "messagesHelp": "Talk about the work here. Only the member and the Leader see these.",
+    "noMessages": "No messages yet.",
+    "message": "Message",
+    "messageEx": "Draft is in Files, please check.",
+    "send": "Send"
   },
   "invite": {
     "newClient": "A new client (send a link)",

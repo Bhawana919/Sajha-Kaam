@@ -20,9 +20,11 @@ from app.schemas import (
     JobIn,
     JobOut,
     LogEntryOut,
+    MessageIn,
     NotificationOut,
     Problem,
     RoomFileOut,
+    RoomMessageOut,
     RoomOut,
     RoomTaskOut,
     TaskIn,
@@ -132,7 +134,16 @@ def _room_out(session: Session, user: User, job) -> RoomOut:
                    tasks=[RoomTaskOut(id=t.id, title=t.title, due_date=t.due_date, done=t.done, done_at=t.done_at)
                           for t in v["tasks"]],
                    files=[RoomFileOut(id=f.id, label=f.label, link=f.link, added_by=name, created_at=f.created_at)
-                          for f, name in v["files"]])
+                          for f, name in v["files"]],
+                   messages=[RoomMessageOut(id=m.id, author=name, mine=mine, text=m.text, created_at=m.created_at)
+                             for m, name, mine in v["messages"]])
+
+
+@router.post("/jobs/{job_id}/room/messages", response_model=RoomOut, status_code=201)
+def add_message(job_id: str, body: MessageIn, user: User = Depends(any_user), session: Session = Depends(get_session)) -> RoomOut:
+    job = work.get_job(session, job_id)
+    room.add_message(session, user, job, body.text)
+    return _room_out(session, user, job)
 
 
 @router.get("/jobs/{job_id}/room", response_model=RoomOut)

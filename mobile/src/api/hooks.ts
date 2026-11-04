@@ -228,6 +228,8 @@ export function useRoomActions(jobId: string) {
     removeTask: useMutation({ mutationFn: (id: string) => api<Room>(`${base}/tasks/${id}`, { method: 'DELETE' }), onSuccess: done }),
     addFile: useMutation({ mutationFn: (b: { label: string; link: string }) => api<Room>(`${base}/files`, { method: 'POST', body: b }),
       onSuccess: done }),
+    send: useMutation({ mutationFn: (text: string) => api<Room>(`${base}/messages`, { method: 'POST', body: { text } }),
+      onSuccess: done }),
   };
 }
 

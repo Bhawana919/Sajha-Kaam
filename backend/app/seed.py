@@ -35,6 +35,7 @@ from app.models import (
     Pod,
     PodMember,
     RoomFile,
+    RoomMessage,
     RoomTask,
     Submission,
     User,
@@ -276,6 +277,7 @@ def reset_demo(session: Session) -> None:
         delete(LogEntry).where(LogEntry.job_id.in_(jobs)),
         delete(RoomTask).where(RoomTask.job_id.in_(jobs)),
         delete(RoomFile).where(RoomFile.job_id.in_(jobs)),
+        delete(RoomMessage).where(RoomMessage.job_id.in_(jobs)),
         delete(Job).where(Job.id.in_(jobs)),
         delete(JoinRequest).where(or_(JoinRequest.pod_id.in_(pods), JoinRequest.junior_id.in_(demo))),
         delete(PodMember).where(or_(PodMember.pod_id.in_(pods), PodMember.junior_id.in_(demo))),
@@ -380,6 +382,8 @@ def seed(session: Session) -> None:
     room.add_task(session, rajan, captions, "Add one Nepali line to each caption", str(date.today() + timedelta(days=2)))
     room.add_file(session, rajan, captions, "Photos of the new branch (from Sunita)",
                   "https://drive.google.com/drive/folders/momo-house-parramatta-photos")
+    room.add_message(session, rajan, captions, "Sunita loves the jhol momo photo. Start the week with that one.")
+    room.add_message(session, sita, captions, "Got it! I'll send the five captions tomorrow morning.")
 
     # 3. Bikash built the website from scratch; Nima approved it; it waits for Sunita to accept.
     site = _agreed_and_started(session, nima, momo, bikash, JOB_MOMO_WEBSITE, job_id=REVIEW_JOB)

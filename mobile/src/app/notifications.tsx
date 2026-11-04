@@ -16,7 +16,7 @@ import { colors, radius, space } from '@/theme';
 const JOB_KINDS = ['job_sent', 'job_open', 'job_taken', 'job_assigned', 'work_submitted', 'work_approved',
   'work_sent_back', 'ready_for_you', 'log_signed', 'client_accepted', 'agreement_ready', 'client_agreed',
   'changes_requested', 'change_proposed', 'change_accepted', 'change_declined', 'job_changed', 'brief_accepted',
-  'brief_declined', 'job_application', 'application_chosen', 'application_not_chosen', 'mentor_chosen', 'payment_held', 'room_file', 'payment_released', 'job_opening', 'job_join_request', 'worker_approved'];
+  'brief_declined', 'job_application', 'application_chosen', 'application_not_chosen', 'mentor_chosen', 'payment_held', 'room_file', 'payment_released', 'job_opening', 'job_join_request', 'worker_approved', 'room_message'];
 
 export default function Notifications() {
   const { t } = useT();
@@ -29,7 +29,7 @@ export default function Notifications() {
   }, [q.data, mutate]);
 
   const open = (n: Notification) => {
-    if (n.kind === 'room_file') router.push(`/job/${n.ref}?tab=room`);
+    if (n.kind === 'room_file' || n.kind === 'room_message') router.push(`/job/${n.ref}?tab=room`);
     else if (JOB_KINDS.includes(n.kind)) router.push(`/job/${n.ref}`);
     else if (n.kind === 'join_request') router.push('/requests');
     else if (n.kind === 'seats_open') router.push('/junior/teams');
