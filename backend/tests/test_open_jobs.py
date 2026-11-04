@@ -73,6 +73,8 @@ def test_mentor_work_still_needs_the_team_leader(client):
     assert OPEN_JOB in [w["job"]["id"] for w in desk["waiting_review"]]
     assert client.post(f"/v1/submissions/{sub['id']}/approve", headers=pemba).status_code == 403
     client.post(f"/v1/submissions/{sub['id']}/approve", headers=anusha)
+    assert client.post(f"/v1/jobs/{OPEN_JOB}/accept", json={}, headers=threads).json()["detail"] == "not_paid"
+    assert client.post(f"/v1/jobs/{OPEN_JOB}/pay", headers=threads).json()["payment"] == "held"
     entry = client.post(f"/v1/jobs/{OPEN_JOB}/accept", json={}, headers=threads).json()
     s = entry["credential"]["credentialSubject"]
     assert s["supervision"]["level"] == 5 and s["approvedBy"]["name"] == "Anusha Gurung" and entry["valid"]

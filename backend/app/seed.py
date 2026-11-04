@@ -8,6 +8,8 @@ Himal Threads in Toronto has posted an open video job that Anusha or Pemba can a
 asked to join Anusha's team. All accounts use the demo password.
 """
 
+from datetime import timedelta
+
 from sqlmodel import Session, select
 
 from app.auth import hash_password
@@ -131,9 +133,10 @@ def _user(uid: str, role: str, name: str, headline: str, country: str, pw: str) 
 
 def _agreed_and_started(session: Session, anchor: User, client: User, junior: User, spec: dict,
                         job_id: str | None = None):
-    """Through the real steps: the Anchor writes it, the client agrees, the junior accepts the brief."""
+    """Through the real steps: the Anchor writes it, the client agrees and pays (demo), the junior accepts."""
     job = work.anchor_create_job(session, anchor, client.id, dict(spec), job_id=job_id)
     work.agree(session, client, job)
+    work.pay(session, client, job)
     work.assign(session, anchor, job, junior.id)
     return work.answer_brief(session, junior, job, accept=True)
 
@@ -217,6 +220,9 @@ def seed(session: Session) -> None:
     # Bikash: work waiting on Rajan's desk.
     spam = _agreed_and_started(session, rajan, cafe, bikash, JOB_CAFE_SPAM, job_id=REVIEW_JOB)
     work.submit(session, bikash, spam, link="", content=SPAM_FIX, note="Tested with my own email.")
+    spam.agreed_at = spam.agreed_at - timedelta(days=1)  # agreed yesterday, so it's due tomorrow
+    session.add(spam)
+    session.commit()
 
     # Harbour Café: a new agreement Rajan wrote after a call, waiting for Emma to agree.
     work.anchor_create_job(session, rajan, CAFE_ID, dict(JOB_CAFE_HOURS), job_id=AGREE_JOB)

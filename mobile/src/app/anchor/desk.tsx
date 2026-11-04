@@ -1,14 +1,63 @@
 // The Anchor desk: only what needs the Anchor. Work to check first, then agreements not agreed yet,
 // jobs to give out, new client jobs for this skill and people asking to join.
 import { router } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
 
 import { useDesk, useMe, useSignOut } from '@/api/hooks';
 import { Bell, JobCard } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
-import { Button, NextAction, Section, StateView } from '@/components/ui';
+import type { Desk as DeskData } from '@/api/types';
+import { Button, NextAction, Panel, Section, StateView } from '@/components/ui';
 import { useT } from '@/i18n';
-import { colors } from '@/theme';
+import { money } from '@/lib/format';
+import { colors, space } from '@/theme';
+
+/** The team's demo money: paid out, held, the Leader's 10% and each member's 75%. */
+function Earnings({ d }: { d: DeskData }) {
+  const { t } = useT();
+  const money_ = d.money ?? [];
+  return (
+    <Section title={t('desk.money')} help={t('desk.moneyHelp')}>
+      {money_.length ? money_.map((m) => (
+        <Panel key={m.currency} tone="pine" style={{ gap: space.sm }}>
+          <Txt variant="label" color={colors.pineSoft}>{t('desk.paidOut')}</Txt>
+          <Txt variant="money" color={colors.white}>{money(m.paid_out_minor, m.currency)}</Txt>
+          <Row light label={t('desk.yourShare')} value={money(m.anchor_minor, m.currency)} />
+          <Row light label={t('desk.held')} value={money(m.held_minor, m.currency)} />
+        </Panel>
+      )) : <Txt color={colors.inkSoft}>{t('desk.noMoney')}</Txt>}
+      {d.member_earnings?.length ? (
+        <Panel style={{ gap: space.sm }}>
+          <Txt variant="label" color={colors.inkSoft}>{t('desk.byMember')}</Txt>
+          {d.member_earnings.map((m) => (
+            <View key={`${m.person.id}-${m.currency}`} style={styles.member}>
+              <View style={{ flex: 1 }}>
+                <Txt variant="h3">{m.person.display_name}</Txt>
+                <Txt variant="small" color={colors.inkSoft}>{t('desk.memberJobs', { count: m.jobs })}</Txt>
+              </View>
+              <Txt variant="money" style={{ fontSize: 20 }}>{money(m.amount_minor, m.currency)}</Txt>
+            </View>
+          ))}
+        </Panel>
+      ) : null}
+    </Section>
+  );
+}
+
+/** A label / value line on the dark pine block. */
+function Row({ label, value, light }: { label: string; value: string; light?: boolean }) {
+  return (
+    <View style={styles.member}>
+      <Txt variant="small" color={light ? colors.pineSoft : colors.inkSoft} style={{ flex: 1 }}>{label}</Txt>
+      <Txt variant="h3" color={light ? colors.white : colors.ink}>{value}</Txt>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  member: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+});
 
 export default function Desk() {
   const { t, digits } = useT();
@@ -37,6 +86,10 @@ export default function Desk() {
             {d.agreements.length ? d.agreements.map((j) => <JobCard key={j.id} job={j} />)
               : <Txt color={colors.inkSoft}>{t('desk.noAgreements')}</Txt>}
           </Section>
+          <Section title={t('desk.deadlines')} help={t('desk.deadlinesHelp')}>
+            {d.deadlines?.length ? d.deadlines.map((j) => <JobCard key={j.id} job={j} />)
+              : <Txt color={colors.inkSoft}>{t('desk.nothingToCheck')}</Txt>}
+          </Section>
           {d.to_assign.length ? (
             <Section title={t('desk.toAssign')} help={t('desk.toAssignHelp')}>
               {d.to_assign.map((j) => <JobCard key={j.id} job={j} />)}
@@ -46,6 +99,7 @@ export default function Desk() {
             {d.open_jobs.length ? d.open_jobs.map((j) => <JobCard key={j.id} job={j} />)
               : <Txt color={colors.inkSoft}>{t('desk.noOpenJobs')}</Txt>}
           </Section>
+          <Earnings d={d} />
         </>
       ) : null}
       <Button kind="quiet" label={t('common.signOut')} onPress={async () => { await signOut(); router.replace('/'); }} />

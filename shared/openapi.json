@@ -2293,6 +2293,65 @@
         }
       }
     },
+    "/v1/jobs/{job_id}/pay": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Pay",
+        "description": "Demo payment (no real money): held until the client accepts the work, then paid out as the split.",
+        "operationId": "pay_v1_jobs__job_id__pay_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/jobs/{job_id}/accept": {
       "post": {
         "tags": [
@@ -3149,6 +3208,27 @@
           "with_clients": {
             "type": "integer",
             "title": "With Clients"
+          },
+          "deadlines": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Deadlines"
+          },
+          "money": {
+            "items": {
+              "$ref": "#/components/schemas/TeamMoney"
+            },
+            "type": "array",
+            "title": "Money"
+          },
+          "member_earnings": {
+            "items": {
+              "$ref": "#/components/schemas/MemberEarning"
+            },
+            "type": "array",
+            "title": "Member Earnings"
           }
         },
         "type": "object",
@@ -3601,6 +3681,51 @@
             "format": "date-time",
             "title": "Created At"
           },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          },
+          "payment": {
+            "type": "string",
+            "enum": [
+              "unpaid",
+              "held",
+              "paid_out"
+            ],
+            "title": "Payment"
+          },
+          "paid_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid At"
+          },
+          "paid_out_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid Out At"
+          },
           "client": {
             "$ref": "#/components/schemas/PersonOut"
           },
@@ -3650,6 +3775,10 @@
           "supervision_level",
           "junior_accepted_at",
           "created_at",
+          "due_at",
+          "payment",
+          "paid_at",
+          "paid_out_at",
           "client",
           "anchor",
           "junior",
@@ -3729,6 +3858,13 @@
             },
             "type": "array",
             "title": "Open Jobs"
+          },
+          "earnings": {
+            "items": {
+              "$ref": "#/components/schemas/MyMoney"
+            },
+            "type": "array",
+            "title": "Earnings"
           }
         },
         "type": "object",
@@ -3908,6 +4044,33 @@
         ],
         "title": "MeOut"
       },
+      "MemberEarning": {
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/PersonOut"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "title": "Amount Minor"
+          },
+          "jobs": {
+            "type": "integer",
+            "title": "Jobs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person",
+          "currency",
+          "amount_minor",
+          "jobs"
+        ],
+        "title": "MemberEarning"
+      },
       "MemberOut": {
         "properties": {
           "person": {
@@ -3956,6 +4119,29 @@
           "platform"
         ],
         "title": "MoneySplit"
+      },
+      "MyMoney": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "paid_out_minor": {
+            "type": "integer",
+            "title": "Paid Out Minor"
+          },
+          "held_minor": {
+            "type": "integer",
+            "title": "Held Minor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "paid_out_minor",
+          "held_minor"
+        ],
+        "title": "MyMoney"
       },
       "NoteIn": {
         "properties": {
@@ -4674,6 +4860,40 @@
         },
         "type": "object",
         "title": "SubmitIn"
+      },
+      "TeamMoney": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "paid_out_minor": {
+            "type": "integer",
+            "title": "Paid Out Minor"
+          },
+          "held_minor": {
+            "type": "integer",
+            "title": "Held Minor"
+          },
+          "anchor_minor": {
+            "type": "integer",
+            "title": "Anchor Minor"
+          },
+          "jobs_paid": {
+            "type": "integer",
+            "title": "Jobs Paid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "paid_out_minor",
+          "held_minor",
+          "anchor_minor",
+          "jobs_paid"
+        ],
+        "title": "TeamMoney",
+        "description": "Demo money for the team in one currency. Nothing real is paid."
       },
       "TeamOut": {
         "properties": {

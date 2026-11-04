@@ -677,6 +677,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/jobs/{job_id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pay
+         * @description Demo payment (no real money): held until the client accepts the work, then paid out as the split.
+         */
+        post: operations["pay_v1_jobs__job_id__pay_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/jobs/{job_id}/accept": {
         parameters: {
             query?: never;
@@ -1046,6 +1066,12 @@ export interface components {
             join_requests: number;
             /** With Clients */
             with_clients: number;
+            /** Deadlines */
+            deadlines?: components["schemas"]["JobOut"][];
+            /** Money */
+            money?: components["schemas"]["TeamMoney"][];
+            /** Member Earnings */
+            member_earnings?: components["schemas"]["MemberEarning"][];
         };
         /** Evidence */
         Evidence: {
@@ -1213,6 +1239,17 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** Due At */
+            due_at: string | null;
+            /**
+             * Payment
+             * @enum {string}
+             */
+            payment: "unpaid" | "held" | "paid_out";
+            /** Paid At */
+            paid_at: string | null;
+            /** Paid Out At */
+            paid_out_at: string | null;
             client: components["schemas"]["PersonOut"];
             anchor: components["schemas"]["PersonOut"] | null;
             junior: components["schemas"]["PersonOut"] | null;
@@ -1253,6 +1290,8 @@ export interface components {
             profile_slug: string;
             /** Open Jobs */
             open_jobs?: components["schemas"]["JobOut"][];
+            /** Earnings */
+            earnings?: components["schemas"]["MyMoney"][];
         };
         /** LevelIn */
         LevelIn: {
@@ -1321,6 +1360,16 @@ export interface components {
             /** Ai Helper */
             ai_helper: boolean;
         };
+        /** MemberEarning */
+        MemberEarning: {
+            person: components["schemas"]["PersonOut"];
+            /** Currency */
+            currency: string;
+            /** Amount Minor */
+            amount_minor: number;
+            /** Jobs */
+            jobs: number;
+        };
         /** MemberOut */
         MemberOut: {
             person: components["schemas"]["PersonOut"];
@@ -1338,6 +1387,15 @@ export interface components {
             anchor: number;
             /** Platform */
             platform: number;
+        };
+        /** MyMoney */
+        MyMoney: {
+            /** Currency */
+            currency: string;
+            /** Paid Out Minor */
+            paid_out_minor: number;
+            /** Held Minor */
+            held_minor: number;
         };
         /** NoteIn */
         NoteIn: {
@@ -1647,6 +1705,22 @@ export interface components {
              * @default
              */
             note: string;
+        };
+        /**
+         * TeamMoney
+         * @description Demo money for the team in one currency. Nothing real is paid.
+         */
+        TeamMoney: {
+            /** Currency */
+            currency: string;
+            /** Paid Out Minor */
+            paid_out_minor: number;
+            /** Held Minor */
+            held_minor: number;
+            /** Anchor Minor */
+            anchor_minor: number;
+            /** Jobs Paid */
+            jobs_paid: number;
         };
         /** TeamOut */
         TeamOut: {
@@ -3056,6 +3130,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ClientHome"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pay_v1_jobs__job_id__pay_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
                 };
             };
             /** @description Validation Error */

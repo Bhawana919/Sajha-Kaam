@@ -20,6 +20,7 @@ from app.schemas import (
     JobIn,
     JobOut,
     LevelIn,
+    MemberEarning,
     MemberOut,
     NoteIn,
     NoteOut,
@@ -27,6 +28,7 @@ from app.schemas import (
     SeatsIn,
     SendBackIn,
     SubmissionOut,
+    TeamMoney,
     TeamOut,
 )
 from app.services import work
@@ -44,11 +46,16 @@ def desk(user: User = Depends(anchor_only), session: Session = Depends(get_sessi
     requests = session.exec(select(func.count()).select_from(JoinRequest).where(
         JoinRequest.pod_id == pod.id, JoinRequest.status == "waiting")).one()
     clients = session.exec(select(func.count()).select_from(AnchorClient).where(AnchorClient.anchor_id == user.id)).one()
+    active = sorted((j for j in mine if j.state in work.ACTIVE), key=work.due_at)
+    totals, members = work.team_money(session, pod)
     return DeskOut(team=pod_out(session, pod),
                    waiting_review=[job_detail(session, j) for j in mine if j.state == "submitted"],
                    agreements=[job_out(session, j) for j in mine if j.state in ("draft", "with_anchor", "with_client")],
                    to_assign=[job_out(session, j) for j in mine if j.state == "agreed"],
-                   open_jobs=[job_out(session, j) for j in open_jobs], join_requests=requests, with_clients=clients)
+                   open_jobs=[job_out(session, j) for j in open_jobs], join_requests=requests, with_clients=clients,
+                   deadlines=[job_out(session, j) for j in active], money=[TeamMoney(**t) for t in totals],
+                   member_earnings=[MemberEarning(person=person(session.get(User, m["junior_id"])), currency=m["currency"],
+                                                  amount_minor=m["amount_minor"], jobs=m["jobs"]) for m in members])
 
 
 @router.post("/anchor/jobs", response_model=JobOut, status_code=201)

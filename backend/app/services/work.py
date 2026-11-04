@@ -8,6 +8,7 @@ Rules: nothing reaches a junior before the client and the Anchor both agree; the
 and changes levels; only the client accepts work. A logbook entry needs both yes's.
 """
 
+from datetime import timedelta
 from urllib.parse import urlparse
 
 from fastapi import HTTPException
@@ -15,6 +16,7 @@ from sqlmodel import Session, select
 
 from app.config import load_yaml
 from app.models import (
+    UTC,
     AnchorClient,
     AnchorNote,
     Invite,
@@ -446,6 +448,8 @@ def propose_change(session: Session, anchor: User, job: Job, *, deadline_days: i
         raise HTTPException(409, "cannot_change_now")
     if deadline_days == job.deadline_days and budget_minor == job.budget_minor:
         raise HTTPException(422, "nothing_changed")
+    if budget_minor != job.budget_minor and job.payment != "unpaid":
+        raise HTTPException(409, "already_paid")  # the client paid this budget; only the deadline can change
     if not 1 <= deadline_days <= 90:
         raise HTTPException(422, "deadline_out_of_range")
     if budget_minor < max(agreement.template()["minimum_budget_minor"].get(job.skill, 0), 1):
@@ -572,11 +576,68 @@ def _iso(dt) -> str:
     return dt.replace(tzinfo=None).isoformat(timespec="seconds") + "Z"
 
 
+ACTIVE = ("agreed", "assigned", "working", "submitted", "sent_back")
+
+
+def due_at(job: Job):
+    """When the work is due: the agreed date plus the deadline in days (amendments included)."""
+    if job.agreed_at is None:
+        return None
+    agreed = job.agreed_at if job.agreed_at.tzinfo else job.agreed_at.replace(tzinfo=UTC)  # SQLite drops the zone
+    return agreed + timedelta(days=job.deadline_days)
+
+
+def pay(session: Session, client: User, job: Job) -> Job:
+    """Demo payment: the client pays the agreed budget; it is held until they accept the work."""
+    if job.client_id != client.id:
+        raise HTTPException(403, "not_your_job")
+    if job.agreed_at is None or job.state == "client_accepted":
+        raise HTTPException(409, "cannot_pay_now")
+    if job.payment != "unpaid":
+        raise HTTPException(409, "already_paid")
+    job.payment, job.paid_at = "held", utcnow()
+    a = anchor_of(session, job)
+    notify.send(session, [a.id] + ([job.junior_id] if job.junior_id else []), "payment_held", job.id)
+    return _save(session, job)
+
+
+def team_money(session: Session, pod: Pod) -> tuple[list[dict], list[dict]]:
+    """The team's demo money per currency (paid out, held, the Leader's share), and each member's earnings."""
+    totals: dict[str, dict] = {}
+    members: dict[tuple[str, str], dict] = {}
+    for job in session.exec(select(Job).where(Job.pod_id == pod.id, Job.payment != "unpaid")).all():
+        t = totals.setdefault(job.currency, {"currency": job.currency, "paid_out_minor": 0, "held_minor": 0,
+                                             "anchor_minor": 0, "jobs_paid": 0})
+        if job.payment == "held":
+            t["held_minor"] += job.budget_minor
+            continue
+        s = split(job.budget_minor)
+        t["paid_out_minor"] += job.budget_minor
+        t["anchor_minor"] += s["anchor"]
+        t["jobs_paid"] += 1
+        m = members.setdefault((job.junior_id, job.currency), {"junior_id": job.junior_id, "currency": job.currency,
+                                                                "amount_minor": 0, "jobs": 0})
+        m["amount_minor"] += s["junior"]
+        m["jobs"] += 1
+    return list(totals.values()), sorted(members.values(), key=lambda m: -m["amount_minor"])
+
+
+def junior_money(session: Session, junior_id: str) -> list[dict]:
+    """A member's own demo earnings per currency: paid out to them, and their share still held."""
+    out: dict[str, dict] = {}
+    for job in session.exec(select(Job).where(Job.junior_id == junior_id, Job.payment != "unpaid")).all():
+        row = out.setdefault(job.currency, {"currency": job.currency, "paid_out_minor": 0, "held_minor": 0})
+        row["paid_out_minor" if job.payment == "paid_out" else "held_minor"] += split(job.budget_minor)["junior"]
+    return list(out.values())
+
+
 def accept(session: Session, client: User, job: Job, show_client: bool) -> LogEntry:
     if job.client_id != client.id:
         raise HTTPException(403, "not_your_job")
     if job.state != "anchor_approved":
         raise HTTPException(409, "not_ready_for_client")
+    if job.payment != "held":
+        raise HTTPException(409, "not_paid")  # pay first; accepting releases the money
     sub = session.exec(select(Submission).where(Submission.job_id == job.id, Submission.status == "approved")).first()
     junior, anchor = session.get(User, job.junior_id), anchor_of(session, job)
     entry = LogEntry(job_id=job.id, junior_id=junior.id, signature_b64="", key_id="")
@@ -605,6 +666,7 @@ def accept(session: Session, client: User, job: Job, show_client: bool) -> LogEn
     }
     entry.signature_b64, entry.key_id = signing.sign(entry.credential)
     job.state = "client_accepted"
+    job.payment, job.paid_out_at = "paid_out", now
     notify.send(session, [junior.id], "log_signed", job.id)
     notify.send(session, [anchor.id], "client_accepted", job.id)
     session.add_all([entry, job])

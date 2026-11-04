@@ -18,7 +18,7 @@ from app.schemas import (
     SubmissionOut,
 )
 from app.services import signing
-from app.services.work import anchor_of, applications_of, my_application, split
+from app.services.work import anchor_of, applications_of, due_at, my_application, split
 
 
 def person(u: User) -> PersonOut:
@@ -44,7 +44,8 @@ def job_out(session: Session, j: Job, viewer: User | None = None) -> JobOut:
         state=j.state, change_note=j.change_note, agreed_at=j.agreed_at,
         pending_change=PendingChange(**j.pending_change) if j.pending_change else None,
         amendments=[Amendment(**a) for a in j.amendments], supervision_level=j.supervision_level,
-        junior_accepted_at=j.junior_accepted_at, created_at=j.created_at, client=client, anchor=person(anchor) if anchor else None,
+        junior_accepted_at=j.junior_accepted_at, created_at=j.created_at, due_at=due_at(j), payment=j.payment,
+        paid_at=j.paid_at, paid_out_at=j.paid_out_at, client=client, anchor=person(anchor) if anchor else None,
         junior=person(junior) if junior else None, split=MoneySplit(**split(j.budget_minor)),
     )
 

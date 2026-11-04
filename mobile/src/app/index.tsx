@@ -3,6 +3,7 @@ import { Redirect, router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { useMe, useSampleLogin, useSamples } from '@/api/hooks';
+import { DhakaBand } from '@/components/brand/Dhaka';
 import { useErrorText } from '@/components/forms';
 import { Icon } from '@/components/Icon';
 import { PressScale } from '@/components/motion';
@@ -30,8 +31,13 @@ export default function Welcome() {
   return (
     <Screen>
       <View style={styles.brand}>
-        <Txt variant="display" color={colors.white}>{t('common.appName')}</Txt>
-        <Txt variant="h3" color={colors.honeyLight}>{t('welcome.tagline')}</Txt>
+        <View style={styles.brandText}>
+          {/* The name is always in both scripts: Devanagari first, as it is said at home. */}
+          <Txt variant="display" color={colors.white} style={{ fontSize: 40 }}>साझा काम</Txt>
+          <Txt variant="label" color={colors.brickSoft} style={{ letterSpacing: 2 }}>SAJHA KAAM</Txt>
+          <Txt variant="h3" color={colors.white} style={{ marginTop: space.sm }}>{t('welcome.tagline')}</Txt>
+        </View>
+        <DhakaBand height={18} />
       </View>
       <View style={{ gap: space.md }}>
         {(['how1', 'how2', 'how3'] as const).map((k, i) => (
@@ -70,8 +76,9 @@ export default function Welcome() {
 }
 
 const styles = StyleSheet.create({
-  brand: { backgroundColor: colors.pine, borderRadius: radius.lg, padding: space.xl, gap: space.sm },
+  brand: { backgroundColor: colors.brick, borderRadius: radius.lg, overflow: 'hidden' },
+  brandText: { padding: space.xl, gap: 2 },
   how: { flexDirection: 'row', gap: space.md, alignItems: 'flex-start' },
-  num: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
+  num: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.pine, alignItems: 'center', justifyContent: 'center' },
   sample: { backgroundColor: colors.white, borderRadius: radius.md, padding: space.md, flexDirection: 'row', alignItems: 'center' },
 });

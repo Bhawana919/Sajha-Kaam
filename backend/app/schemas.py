@@ -259,6 +259,10 @@ class JobOut(BaseModel):
     supervision_level: int | None
     junior_accepted_at: datetime | None
     created_at: datetime
+    due_at: datetime | None  # agreed date + deadline days; None before agreement
+    payment: Literal["unpaid", "held", "paid_out"]  # demo payment, no real money
+    paid_at: datetime | None
+    paid_out_at: datetime | None
     client: PersonOut  # for juniors: only the client's country
     anchor: PersonOut | None
     junior: PersonOut | None
@@ -355,6 +359,28 @@ class AcceptIn(BaseModel):
 
 # ---------- desks ----------
 
+class TeamMoney(BaseModel):
+    """Demo money for the team in one currency. Nothing real is paid."""
+    currency: str
+    paid_out_minor: int  # budgets of accepted jobs
+    held_minor: int  # paid by clients, waiting for them to accept the work
+    anchor_minor: int  # the Leader's 10% of what was paid out
+    jobs_paid: int
+
+
+class MemberEarning(BaseModel):
+    person: PersonOut
+    currency: str
+    amount_minor: int  # the member's 75% of their accepted jobs
+    jobs: int
+
+
+class MyMoney(BaseModel):
+    currency: str
+    paid_out_minor: int
+    held_minor: int  # the member's share of jobs paid but not accepted yet
+
+
 class DeskOut(BaseModel):
     team: PodOut
     waiting_review: list[JobDetail]
@@ -363,6 +389,9 @@ class DeskOut(BaseModel):
     open_jobs: list[JobOut]  # posted by clients for this skill, client hasn't chosen yet
     join_requests: int
     with_clients: int
+    deadlines: list[JobOut] = Field(default_factory=list)  # active jobs, soonest due first
+    money: list[TeamMoney] = Field(default_factory=list)
+    member_earnings: list[MemberEarning] = Field(default_factory=list)
 
 
 class JuniorHome(BaseModel):
@@ -374,6 +403,7 @@ class JuniorHome(BaseModel):
     log_entries: int
     profile_slug: str
     open_jobs: list[JobOut] = Field(default_factory=list)  # Mentors only: client jobs they may apply for
+    earnings: list[MyMoney] = Field(default_factory=list)
 
 
 class ClientHome(BaseModel):

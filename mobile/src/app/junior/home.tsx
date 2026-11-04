@@ -7,6 +7,7 @@ import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { Button, NextAction, Panel, Section, StateView } from '@/components/ui';
 import { useT } from '@/i18n';
+import { money } from '@/lib/format';
 import { colors } from '@/theme';
 
 export default function JuniorHome() {
@@ -35,6 +36,15 @@ export default function JuniorHome() {
               <Txt variant="small" color={colors.inkSoft}>{t('junior.anchor', { name: team.anchor.display_name, where: team.anchor.headline })}</Txt>
               <Txt variant="small">{skill(team.skill)}</Txt>
               <LevelTag level={h.levels[team.id]} />
+            </Panel>
+          ))}
+          {h.earnings?.map((m) => (
+            <Panel key={m.currency} tone="pine" style={{ gap: 2 }}>
+              <Txt variant="label" color={colors.pineSoft}>{t('junior.earned')}</Txt>
+              <Txt variant="money" color={colors.white}>{money(m.paid_out_minor, m.currency)}</Txt>
+              {m.held_minor ? (
+                <Txt variant="small" color={colors.pineSoft}>{t('junior.earnedHeld', { amount: money(m.held_minor, m.currency) })}</Txt>
+              ) : null}
             </Panel>
           ))}
           {h.open_jobs?.length ? (

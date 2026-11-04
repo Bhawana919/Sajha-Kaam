@@ -1,4 +1,4 @@
-// The job agreement form: a fixed template, like a Europass CV. No AI writes it. A rule check flags
+// The job agreement form: a fixed template, like a Europass CV. A rule check flags
 // missing parts, "done when" items too vague to check, and budgets below the fair minimum.
 // Used by clients (post a job) and by Anchors (write one for a client, or edit a draft).
 import { router } from 'expo-router';
@@ -8,7 +8,7 @@ import { View } from 'react-native';
 import { errorDetail } from '@/api/client';
 import { useCheckAgreement, useEditJob, usePostJob, useTemplate, useWriteJob } from '@/api/hooks';
 import type { Job, JobIn, Person, Problem } from '@/api/types';
-import { Checkbox, Field, useErrorText } from '@/components/forms';
+import { Field, useErrorText } from '@/components/forms';
 import { Bell, ListEditor, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
@@ -47,7 +47,6 @@ export function JobForm(props: Props) {
   const [days, setDays] = useState(String(editing?.deadline_days ?? 3));
   const [budget, setBudget] = useState(editing ? String(editing.budget_minor / 100) : '');
   const [revisions, setRevisions] = useState(editing?.revisions ?? 1);
-  const [allowAi, setAllowAi] = useState(editing?.allow_ai ?? false);
   const [sendTo, setSendTo] = useState<string | null>(null);
   const [clientId, setClientId] = useState<string | null>(anchorSide ? props.clientId ?? null : null);
 
@@ -56,8 +55,8 @@ export function JobForm(props: Props) {
   const job: JobIn = useMemo(() => ({
     skill, title, deliverables, done_when: doneWhen, references: refs, details,
     deadline_days: Number(days) || 0, budget_minor: Math.round((Number(budget) || 0) * 100), currency: 'USD',
-    revisions, allow_ai: allowAi, send_to_anchor: anchorSide ? null : sendTo,
-  }), [skill, title, deliverables, doneWhen, refs, details, days, budget, revisions, allowAi, sendTo, anchorSide]);
+    revisions, allow_ai: false, send_to_anchor: anchorSide ? null : sendTo,
+  }), [skill, title, deliverables, doneWhen, refs, details, days, budget, revisions, sendTo, anchorSide]);
 
   const fieldLabel = (f: string) => {
     if (f.startsWith('details.')) return fields.find((x) => x.key === f.slice(8))?.label ?? f;
@@ -180,11 +179,6 @@ export function JobForm(props: Props) {
           <Txt variant="small" color={colors.inkSoft}>{t(sendTo ? 'post.sendToHelp' : 'post.anyAnchorHelp')}</Txt>
         </Section>
       ) : null}
-
-      <Panel>
-        <Checkbox label={anchorSide ? t('write.allowAi') : t('post.allowAi')} checked={allowAi} onChange={setAllowAi} />
-        <Txt variant="small" color={colors.inkSoft}>{t('post.allowAiHelp')}</Txt>
-      </Panel>
 
       {saving.error && !serverProblems ? (
         <Txt color={colors.brick}>{errorText(saving.error, { not_your_anchor: t('post.notYourAnchor'),

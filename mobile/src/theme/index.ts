@@ -1,40 +1,40 @@
-// Sajha Kaam design tokens, v2 ("deep" palette). Flat colour, no gradients, no glass, no glow.
-//
-// Depth comes from a few *solid, saturated* blocks (brick, pine, ink) on a warm stone background,
-// not from tinted washes. Rules:
-//   brick  primary action + the brand block. One brick button per screen.
-//   pine   the worker's own record (Kaam Path, Passport). Deep, calm, "earned".
-//   ink    text, the dark role tile, selected states.
-//   honey  small accents only: path cells, the active-tab bar, the Pahilo Kaam mark.
-//   green  "confirmed / done". Never decorative.
-// White cards sit on stone (#F1ECE3) so they separate without borders or shadows.
+// Sajha Kaam design tokens, v3: colours from things made in Nepal. Flat colour, no gradients, no
+// glass, no glow.
+//   crimson   Dhaka cloth and lali gurans (stored as `brick`): primary action + the brand block.
+//             One crimson button per screen.
+//   pine      hill forest: the worker's own record (Work Record, earnings). Deep, calm, "earned".
+//   marigold  sayapatri, the Tihar garland flower (stored as `honey`): small accents only.
+//   paper     lokta paper: the warm cream background. Cards are a warmer white on it.
+//   ink       a warm near-black (not blue-grey) for text and dark blocks.
+//   green     "confirmed / done". Never decorative.
+// Every text pairing meets WCAG AA (most 6:1 or more); inkFaint is for icons and inactive tabs only.
 export const colors = {
-  paper: '#F1ECE3', // app background (stone)
-  paperDeep: '#E7E0D3',
-  white: '#FFFFFF',
-  ink: '#161C18',
-  inkSoft: '#5D615B',
-  inkFaint: '#8C8F88',
-  line: '#E2DACD',
-  lineStrong: '#CFC5B4', // input borders
-  brick: '#B03D1E',
-  brickDeep: '#852A12',
-  brickSoft: '#F7D9CB', // text/marks on brick only
+  paper: '#F7F0E4', // lokta paper
+  paperDeep: '#EDE2D1',
+  white: '#FFFCF7',
+  ink: '#25161A',
+  inkSoft: '#655457',
+  inkFaint: '#8F8183',
+  line: '#EBDFCD',
+  lineStrong: '#D5C3AC', // input borders
+  brick: '#A8132B', // Dhaka crimson
+  brickDeep: '#760B1E',
+  brickSoft: '#F8DCDF', // text/marks on crimson only
   pine: '#1C3A2E',
   pineDeep: '#132A21',
   pineSoft: '#B9D0C2', // text on pine only
-  honey: '#F2A516',
-  honeyLight: '#F7BE45',
-  honeyDeep: '#9A6104', // honey-coloured text on light surfaces (AA)
-  green: '#2C7A4B',
-  blush: '#E98A5F', // inside the mascot only
-  // Kept for older call sites; mapped onto the v2 palette.
-  sage: '#2C7A4B',
-  sageSoft: '#DDEBE1',
-  clay: '#FFFFFF',
-  honeyWash: '#FBE6B8',
-  warnSoft: '#FBE6B8',
-  warnInk: '#6E4503',
+  honey: '#E99A0C', // marigold
+  honeyLight: '#F6BE3B',
+  honeyDeep: '#8A5300', // marigold text on light surfaces (AA)
+  green: '#2B7349',
+  blush: '#F29CA3', // inside the mascot only
+  // Kept for older call sites; mapped onto the palette.
+  sage: '#2B7349',
+  sageSoft: '#DCEADF',
+  clay: '#FFFCF7',
+  honeyWash: '#FBE7BD',
+  warnSoft: '#FBE7BD',
+  warnInk: '#6B4203',
 };
 
 // 4-pt base. Tight inside a group (4-8), clear between groups (24-32).

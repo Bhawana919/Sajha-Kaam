@@ -64,10 +64,10 @@ def logbook_page(slug: str, session: Session = Depends(get_session)) -> str:
     body = "".join(cards) or "<p>No verified jobs yet.</p>"
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{escape(lb.display_name)} · Sajha Kaam Work Record</title>
-<style>body{{font-family:system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px;background:#F1ECE3;color:#1F1A16}}
-article{{background:#fff;border-radius:16px;padding:20px;margin:16px 0}}h1{{margin:0}}h2{{margin:0 0 6px;font-size:20px}}
-.meta{{color:#6B6158;font-size:14px}}.ok{{color:#2E7D4F;font-weight:600}}.bad{{color:#B03D1E;font-weight:600}}
-footer{{color:#6B6158;font-size:13px;margin-top:24px}}a{{color:#1F5B4B}}</style></head><body>
+<style>body{{font-family:system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px;background:#F7F0E4;color:#25161A}}
+article{{background:#FFFCF7;border-top:6px solid #A8132B;border-radius:16px;padding:20px;margin:16px 0}}h1{{margin:0}}h2{{margin:0 0 6px;font-size:20px}}
+.meta{{color:#655457;font-size:14px}}.ok{{color:#2B7349;font-weight:600}}.bad{{color:#A8132B;font-weight:600}}
+footer{{color:#655457;font-size:13px;margin-top:24px}}a{{color:#1C3A2E}}</style></head><body>
 <p class="meta">Sajha Kaam · साझा काम — Work Record</p><h1>{escape(lb.display_name)}</h1>
 <p class="meta">{levels}</p>{body}
 <footer>Each job was approved by a Team Leader and accepted by the client, then digitally signed (Ed25519).

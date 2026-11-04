@@ -1,12 +1,12 @@
 // The team: members with their level and the facts behind it, open seats, clients and invites,
-// and the Anchor's choice about the AI helper.
+// and client invites.
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Share, View } from 'react-native';
 
-import { useAiHelper, useInvite, useMe, useSeats, useTeam } from '@/api/hooks';
+import { useInvite, useSeats, useTeam } from '@/api/hooks';
 import type { Team } from '@/api/types';
-import { Checkbox, Field, useErrorText } from '@/components/forms';
+import { Field, useErrorText } from '@/components/forms';
 import { Bell, LevelTag, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
@@ -38,9 +38,7 @@ function SeatsForm({ team }: { team: Team }) {
 export default function TeamScreen() {
   const { t, digits } = useT();
   const q = useTeam();
-  const me = useMe().data;
   const invite = useInvite();
-  const ai = useAiHelper();
   const skill = useSkillName();
   const errorText = useErrorText();
   const team = q.data?.team;
@@ -82,10 +80,6 @@ export default function TeamScreen() {
             {invite.error ? <Txt color={colors.brick}>{errorText(invite.error)}</Txt> : null}
           </Section>
 
-          <Section title={t('team.aiTitle')} help={t('team.aiHelp')}>
-            <Checkbox label={t('team.aiToggle')} checked={!!me?.ai_helper} onChange={(v) => ai.mutate(v)} />
-            <Txt variant="small" color={colors.inkSoft}>{t('team.aiPrivacy')}</Txt>
-          </Section>
         </>
       ) : null}
     </Screen>

@@ -6,7 +6,7 @@ import { Linking, View } from 'react-native';
 import { PUBLIC_BASE } from '@/api/client';
 import {
   useAccept, useAgree, useAnswerBrief, useApply, useAssign, useChoose, useDecideChange, useJob, useJuniorHome, useMe,
-  useProposeChange, useRequestChanges, useSubmit, useTeam, useTemplate,
+  usePay, useProposeChange, useRequestChanges, useSubmit, useTeam, useTemplate,
 } from '@/api/hooks';
 import type { JobDetail } from '@/api/types';
 import { Checkbox, Field, useErrorText } from '@/components/forms';
@@ -41,7 +41,7 @@ function Agreement({ d }: { d: JobDetail }) {
       <Row label={t('post.f_deadline_days')} value={t('job.days', { count: j.deadline_days })} />
       <Row label={t('post.f_revisions')} value={digits(j.revisions)} />
       <SplitRows job={j} />
-      <Tag tone={j.allow_ai ? 'honey' : 'clay'} label={t(j.allow_ai ? 'job.aiAllowed' : 'job.aiNotAllowed')} />
+      <PaymentLine job={j} />
       {j.agreed_at ? (
         <Txt variant="small" color={colors.green}>{t('agree.agreedOn', { date: new Date(j.agreed_at).toLocaleDateString() })}</Txt>
       ) : <Txt variant="small" color={colors.warnInk}>{t('agree.notYet')}</Txt>}
@@ -78,7 +78,7 @@ function ProposeChange({ d }: { d: JobDetail }) {
         onPress={() => propose.mutate({ id: j.id, deadline_days: Number(days) || 0,
           budget_minor: Math.round((Number(budget) || 0) * 100), note }, { onSuccess: () => setOpen(false) })} />
       {propose.error ? <Txt color={colors.brick}>{errorText(propose.error, { nothing_changed: t('agree.nothingChanged'),
-        below_minimum: t('agree.belowMinimum') })}</Txt> : null}
+        below_minimum: t('agree.belowMinimum'), already_paid: t('pay.alreadyPaid') })}</Txt> : null}
     </Section>
   );
 }
@@ -336,6 +336,32 @@ function ClientChange({ d }: { d: JobDetail }) {
   );
 }
 
+/** Where the (demo) money is: not paid, held until the client accepts, or paid out to the team. */
+function PaymentLine({ job }: { job: JobDetail['job'] }) {
+  const { t } = useT();
+  if (!job.agreed_at) return null;
+  const label = job.payment === 'held' ? t('pay.held', { amount: money(job.budget_minor, job.currency) })
+    : job.payment === 'paid_out' ? t('pay.paidOut') : t('pay.unpaid');
+  return <Row label={t('pay.status')} value={label} />;
+}
+
+/** The client pays once the agreement is agreed. Demo: nothing real is charged. */
+function PayPanel({ d }: { d: JobDetail }) {
+  const { t } = useT();
+  const pay = usePay();
+  const errorText = useErrorText();
+  const j = d.job;
+  if (!j.agreed_at || j.payment !== 'unpaid') return null;
+  return (
+    <Section title={t('pay.title')} help={t('pay.help')}>
+      <SplitRows job={j} />
+      <Button icon="lock" label={t('pay.button', { amount: money(j.budget_minor, j.currency) })} busy={pay.isPending}
+        onPress={() => pay.mutate(j.id)} />
+      {pay.error ? <Txt color={colors.brick}>{errorText(pay.error)}</Txt> : null}
+    </Section>
+  );
+}
+
 function ClientActions({ d }: { d: JobDetail }) {
   const { t } = useT();
   const accept = useAccept();
@@ -350,6 +376,7 @@ function ClientActions({ d }: { d: JobDetail }) {
     return (
       <>
         <ClientChange d={d} />
+        <PayPanel d={d} />
         <Txt color={colors.inkSoft}>{t(`job.clientWait_${j.state}`, { name: j.anchor?.display_name ?? '' })}</Txt>
       </>
     );
@@ -357,13 +384,16 @@ function ClientActions({ d }: { d: JobDetail }) {
   return (
     <>
       <ClientChange d={d} />
+      <PayPanel d={d} />
       <Section title={t('job.readyTitle')} help={t('job.readyHelp', { name: j.anchor?.display_name ?? '' })}>
         {approved?.link ? <Button kind="secondary" icon="eye" label={t('job.openWork')} onPress={() => Linking.openURL(approved.link)} /> : null}
         {approved?.content ? <Panel><Txt variant="small" selectable>{approved.content}</Txt></Panel> : null}
         {approved?.note ? <Txt>“{approved.note}”</Txt> : null}
         <Checkbox label={t('job.showName')} checked={show} onChange={setShow} />
         <Txt variant="small" color={colors.inkSoft}>{t('job.showNameHelp')}</Txt>
-        <Button label={t('job.accept')} busy={accept.isPending} onPress={() => accept.mutate({ id: j.id, show_client: show })} />
+        {j.payment === 'unpaid' ? <Txt variant="small" color={colors.warnInk}>{t('pay.payFirst')}</Txt> : null}
+        <Button label={t('job.accept')} disabled={j.payment === 'unpaid'} busy={accept.isPending}
+          onPress={() => accept.mutate({ id: j.id, show_client: show })} />
         {accept.error ? <Txt color={colors.brick}>{errorText(accept.error)}</Txt> : null}
       </Section>
     </>

@@ -105,8 +105,6 @@
   },
   "check": {
     "title": "Quick check",
-    "byAi": "AI helper",
-    "offline": "No AI used",
     "summary": "{{done}} of {{total}} points look done.",
     "anchorSays": "Your Leader's note: “{{note}}”",
     "anchorDecides": "This check only helps. Your Leader decides.",
@@ -122,9 +120,7 @@
     "toJunior": "To the member (75%)",
     "toAnchor": "To the Leader (10%)",
     "toPlatform": "To Sajha Kaam (15%)",
-    "splitNote": "The client pays directly. Sajha Kaam never holds the money. Demo: no real payment.",
-    "aiAllowed": "Client allowed an AI check",
-    "aiNotAllowed": "No AI on this job",
+    "splitNote": "Demo payment: the client pays after agreeing, it's held until they accept the work, then shared like this. No real money moves.",
     "assignTitle": "Give it to a team member",
     "assignHelp": "Their badge is recorded with the job.",
     "assign": "Assign",
@@ -178,7 +174,18 @@
     "agreements": "Agreements",
     "agreementsHelp": "Jobs not agreed yet. Your team sees them only after the client agrees.",
     "write": "Write a job",
-    "noAgreements": "None waiting. Write one after a call with a client."
+    "noAgreements": "None waiting. Write one after a call with a client.",
+    "deadlines": "Deadlines",
+    "deadlinesHelp": "Every job in progress, soonest first.",
+    "money": "Earnings (demo)",
+    "moneyHelp": "From jobs clients accepted. Demo: no real money.",
+    "paidOut": "Paid out to the team",
+    "held": "Held until clients accept",
+    "yourShare": "Your 10%",
+    "byMember": "Each member's 75%",
+    "memberJobs_one": "{{count}} job",
+    "memberJobs_other": "{{count}} jobs",
+    "noMoney": "Nothing paid out yet."
   },
   "team": {
     "members": "Team members",
@@ -197,11 +204,7 @@
     "invite": "Invite a client",
     "inviteCode": "Invite code",
     "inviteHow": "The client opens Sajha Kaam, taps Create account, chooses Client and enters this code.",
-    "inviteMessage": "Join my team {{team}} on Sajha Kaam to post your jobs. Sign up as a client with invite code {{code}}.",
-    "aiTitle": "AI helper (optional)",
-    "aiHelp": "Off by default. The quick check without AI is free and runs on our server only.",
-    "aiToggle": "Use an AI helper for quick checks when the client allows it",
-    "aiPrivacy": "Only the work, the “finished when” list and your notes are sent. Never names, emails or the client's business."
+    "inviteMessage": "Join my team {{team}} on Sajha Kaam to post your jobs. Sign up as a client with invite code {{code}}."
   },
   "notes": {
     "title": "My notes",
@@ -238,7 +241,9 @@
     "myJobs": "My jobs",
     "noJobs": "No jobs yet. Your Leader will assign one.",
     "openJobs": "Client jobs for Mentors",
-    "openJobsHelp": "As a ★★★★★ Mentor you can apply for jobs clients post. Your Leader still checks the work."
+    "openJobsHelp": "As a ★★★★★ Mentor you can apply for jobs clients post. Your Leader still checks the work.",
+    "earned": "You've earned (demo)",
+    "earnedHeld": "{{amount}} more when clients accept your work"
   },
   "teams": {
     "title": "Find a team",
@@ -307,7 +312,7 @@
   },
   "post": {
     "title": "Post a job",
-    "help": "Fill the template. A quick check (no AI) tells you what's missing before you post.",
+    "help": "Fill the template. A quick check tells you what's missing before you post.",
     "post": "Check and post",
     "s_what": "What you need",
     "f_title": "Job title",
@@ -335,8 +340,6 @@
     "anyAnchor": "Any Leader or Mentor with this skill",
     "sendToHelp": "Goes straight to your Leader's team.",
     "anyAnchorHelp": "Leaders and Mentors with this skill can apply; you choose one.",
-    "allowAi": "Allow an AI helper to check the work for this job",
-    "allowAiHelp": "Off by default. If on, only the work and your “finished when” list are sent to an AI service: never your name or business.",
     "fixFirst": "Fix these first",
     "allGood": "Looks complete.",
     "f_skill": "Skill",
@@ -366,7 +369,6 @@
     "clientAsked": "Your client asked for this change:",
     "forClient": "For which client",
     "noClients": "No clients yet. Invite one from the Team tab first.",
-    "allowAi": "The client allows an AI helper to check the work",
     "alreadyAgreed": "This is already agreed. Propose a change from the job page instead."
   },
   "agree": {
@@ -454,7 +456,8 @@
     "job_application": "Someone applied for your job. Choose who does it.",
     "application_chosen": "A client chose you for a job!",
     "application_not_chosen": "A client chose someone else for a job.",
-    "mentor_chosen": "A client chose your Mentor for a job. You'll check the work."
+    "mentor_chosen": "A client chose your Mentor for a job. You'll check the work.",
+    "payment_held": "A client paid for a job. It's held until they accept the work."
   },
   "apply": {
     "title": "Apply for this job",
@@ -484,5 +487,23 @@
     "videoRequired": "Add your video link first.",
     "videoNotSupported": "Use a https link from YouTube, Google Drive, Vimeo or Loom.",
     "watch": "Watch their video"
+  },
+  "pay": {
+    "title": "Pay for this job",
+    "help": "Held until you accept the work, then paid to the team like this.",
+    "button": "Pay {{amount}} (demo)",
+    "status": "Payment",
+    "unpaid": "Not paid yet",
+    "held": "Paid {{amount}} · held until the client accepts the work",
+    "paidOut": "Paid out to the team",
+    "payFirst": "Pay first: accepting the work releases the payment to the team.",
+    "alreadyPaid": "The client has paid this budget, so only the deadline can change."
+  },
+  "due": {
+    "today": "Due today",
+    "in_one": "Due in {{count}} day",
+    "in_other": "Due in {{count}} days",
+    "late_one": "{{count}} day late",
+    "late_other": "{{count}} days late"
   }
 }

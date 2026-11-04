@@ -26,7 +26,7 @@
       "favicon": "./assets/favicon.png",
       "name": "Sajha Kaam · साझा काम",
       "themeColor": "#1C3A2E",
-      "backgroundColor": "#F1ECE3"
+      "backgroundColor": "#F7F0E4"
     },
     "plugins": [
       "expo-router",
@@ -46,6 +46,6 @@
     "experiments": {
       "typedRoutes": false
     },
-    "backgroundColor": "#F1ECE3"
+    "backgroundColor": "#F7F0E4"
   }
 }

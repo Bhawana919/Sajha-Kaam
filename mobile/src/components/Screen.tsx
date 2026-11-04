@@ -10,6 +10,7 @@ import { useOffline } from '@/lib/offline';
 import { usePrefs } from '@/state/prefs';
 import { colors, contentMaxWidth, radius, space, touchMin } from '@/theme';
 
+import { DhakaBand } from './brand/Dhaka';
 import { Icon } from './Icon';
 import { Txt } from './Txt';
 
@@ -108,6 +109,7 @@ export function Screen({ title, back, scroll = true, children, edges = ['top'], 
   );
   return (
     <SafeAreaView style={styles.root} edges={header ? edges : []}>
+      <DhakaBand height={10} />
       {header ? <TopBar back={back} right={right} /> : null}
       <OfflineBanner />
       {scroll ? (

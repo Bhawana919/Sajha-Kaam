@@ -162,6 +162,11 @@ class Job(SQLModel, table=True):
     amendments: list[dict] = _json()  # accepted amendments: [{field, old, new, note, at}]
     supervision_level: int | None = None  # the junior's level when assigned, recorded in the logbook
     junior_accepted_at: datetime | None = None  # the junior tapped "I accept" on the brief
+    # Demo payment (no real money): the client pays after agreeing, it is held until the client
+    # accepts the work, then paid out as the split.  unpaid -> held -> paid_out
+    payment: str = Field(default="unpaid", index=True)
+    paid_at: datetime | None = None
+    paid_out_at: datetime | None = None
     created_at: datetime = Field(default_factory=utcnow)
 
 

@@ -50,14 +50,6 @@ export function useSignOut() {
   };
 }
 
-export function useAiHelper() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (ai_helper: boolean) => api<Me>('/v1/me/settings', { method: 'PUT', body: { ai_helper } }),
-    onSuccess: (me) => qc.setQueryData(['me'], me),
-  });
-}
-
 // ---------- shared ----------
 export function useTemplate() {
   return useQuery({ queryKey: ['template'], queryFn: () => api<Template>('/v1/agreement/template', { auth: false }),
@@ -200,6 +192,8 @@ export const useCheckAgreement = () =>
 export const usePostJob = () => useAction((j: JobIn) => api<{ id: string }>('/v1/jobs', { method: 'POST', body: j }));
 /** Agree to an agreement: the client to one their Anchor wrote, or the Anchor to one their client sent. */
 export const useAgree = () => useAction((id: string) => api(`/v1/jobs/${id}/agree`, { method: 'POST' }));
+/** Demo payment (no real money): held until the client accepts the work. */
+export const usePay = () => useAction((id: string) => api(`/v1/jobs/${id}/pay`, { method: 'POST' }));
 export const useChoose = () =>
   useAction((v: { id: string; application_id: string }) =>
     api<JobDetail>(`/v1/jobs/${v.id}/choose`, { method: 'POST', body: { application_id: v.application_id } }));

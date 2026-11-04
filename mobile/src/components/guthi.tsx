@@ -60,11 +60,27 @@ export function useClientName() {
   return (job: Job) => job.client.headline || job.client.display_name || t('logbook.clientIn', { country: job.client.country });
 }
 
+const IN_PROGRESS: JobState[] = ['agreed', 'assigned', 'working', 'submitted', 'sent_back'];
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** "Due in 2 days" / "Due today" / "1 day late" for a job in progress, with a tone; null otherwise. */
+export function useDue() {
+  const { t } = useT();
+  return (job: Job): { label: string; tone: 'brick' | 'honey' | 'clay' } | null => {
+    if (!job.due_at || !IN_PROGRESS.includes(job.state)) return null;
+    const days = Math.ceil((new Date(job.due_at).getTime() - Date.now()) / DAY_MS);
+    if (days < 0) return { label: t('due.late', { count: -days }), tone: 'brick' };
+    if (days === 0) return { label: t('due.today'), tone: 'brick' };
+    return { label: t('due.in', { count: days }), tone: days <= 2 ? 'honey' : 'clay' };
+  };
+}
+
 /** One job in a list: title, who it's for, state and money. Tapping opens the job. */
 export function JobCard({ job, showClient = true, href }: { job: Job; showClient?: boolean; href?: string }) {
   const { t } = useT();
   const skill = useSkillName();
   const clientName = useClientName();
+  const due = useDue()(job);
   return (
     <PressScale accessibilityRole="button" accessibilityLabel={job.title} onPress={() => router.push((href ?? `/job/${job.id}`) as never)}
       style={styles.card}>
@@ -75,10 +91,11 @@ export function JobCard({ job, showClient = true, href }: { job: Job; showClient
       <View style={styles.tags}>
         <StateTag state={job.state} />
         <Tag label={skill(job.skill)} />
+        {due ? <Tag tone={due.tone} icon="clock" label={due.label} /> : null}
       </View>
       {showClient ? <Txt variant="small" color={colors.inkSoft}>{clientName(job)}</Txt> : null}
       <View style={styles.cardFoot}>
-        <Txt variant="small" color={colors.inkSoft}>{t('job.days', { count: job.deadline_days })}</Txt>
+        <Txt variant="small" color={colors.inkSoft}>{due ? '' : t('job.days', { count: job.deadline_days })}</Txt>
         <Txt variant="label">{money(job.budget_minor, job.currency)}</Txt>
       </View>
       {job.junior ? <Txt variant="small" color={colors.inkSoft}>{t('job.doneBy', { name: job.junior.display_name })}</Txt> : null}
@@ -110,7 +127,6 @@ export function CheckView({ check }: { check: FirstCheck }) {
     <Panel style={{ gap: space.md }}>
       <View style={styles.cardHead}>
         <Txt variant="h3" style={{ flex: 1 }}>{t('check.title')}</Txt>
-        <Tag tone={check.source === 'ai' ? 'honey' : 'clay'} label={t(check.source === 'ai' ? 'check.byAi' : 'check.offline')} />
       </View>
       <Txt>{t('check.summary', { done: digits(check.done_count), total: digits(check.total) })}</Txt>
       {check.link_note ? <Txt variant="small" color={colors.warnInk}>{t(`check.link_${check.link_note}`)}</Txt> : null}

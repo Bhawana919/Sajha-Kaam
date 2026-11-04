@@ -110,6 +110,12 @@ def client_home(user: User = Depends(require_role("client")), session: Session =
                       done=[job_out(session, j) for j in jobs if j.state == "client_accepted"])
 
 
+@router.post("/jobs/{job_id}/pay", response_model=JobOut)
+def pay(job_id: str, user: User = Depends(require_role("client")), session: Session = Depends(get_session)) -> JobOut:
+    """Demo payment (no real money): held until the client accepts the work, then paid out as the split."""
+    return job_out(session, work.pay(session, user, work.get_job(session, job_id)))
+
+
 @router.post("/jobs/{job_id}/accept", response_model=LogEntryOut)
 def accept(job_id: str, body: AcceptIn, user: User = Depends(require_role("client")),
            session: Session = Depends(get_session)) -> LogEntryOut:

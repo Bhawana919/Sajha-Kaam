@@ -108,7 +108,7 @@ Fresh sample data at any time: `curl.exe -X POST http://localhost:8000/demo/rese
 1. **Sita** opens "Make the café menu page work on phones" and pastes weak work:
    `<button>Order</button> <table class='menu'>prices</table>`.
    The quick check flags all four "finished when" points and **quotes Rajan's own past notes**
-   for each. No AI is involved.
+   for each.
 2. **Rajan** opens his Today screen, checks the work and asks for changes with a note.
    The note is also added to his notes for future checks.
 3. **Sita** fixes it and sends again; the check now shows 4 of 4.
@@ -144,7 +144,7 @@ a Mentor's Work Record) and chooses one. A chosen Team Leader gives it to their 
 Mentor starts straight away, and their own Team Leader still checks the work before the client sees it.
 
 **The agreement template** is a fixed form like a Europass CV, with extra questions per skill, "like
-this / not like this" examples, and a rule check (no AI) for missing parts, vague "finished when"
+this / not like this" examples, and a rule check for missing parts, vague "finished when"
 items and budgets below the fair minimum.
 
 **Members join a team**, not a single job. Opening spots notifies everyone with the skill. The
@@ -153,12 +153,13 @@ Team Leader reviews requests blind: no name, district, about-me text or mother t
 **Badges** (★ Starter, ★★ Learner, ★★★ Trusted, ★★★★ Pro, ★★★★★ Mentor) change only when the Team Leader decides,
 using facts the app shows.
 
-**The quick check** is offline by default: it compares the work with the "finished when" list and
-quotes the Leader's closest past note. An external AI runs only if the Team Leader turns it on **and**
-the client allows it for that job; even then no names, emails or business details are sent.
+**The quick check** is plain rules: it compares the work with the "finished when" list and quotes the
+Leader's closest past note. Only the Leader decides.
 
-**Money** is shown as a split (75% member, 10% Team Leader, 15% platform) but never handled: the client
-pays directly. Demo payments are not real.
+**Money (demo, no real payments).** After agreeing, the client taps Pay: the budget shows as held until
+they accept the work, then as paid out in the split (75% member, 10% Team Leader, 15% platform). Once
+paid, only the deadline can change, not the budget. The Team Leader's Today screen shows deadlines for
+every job in progress and the team's earnings; each member sees what they have earned.
 
 ## Troubleshooting
 
