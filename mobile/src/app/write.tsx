@@ -23,5 +23,5 @@ export default function Write() {
       </Screen>
     );
   }
-  return <JobForm who="anchor" skill={tm.team.skill} clients={tm.clients} editing={job.data?.job} clientId={client} />;
+  return <JobForm who="anchor" skill={tm.team.skill} skills={tm.team.skills} clients={tm.clients} editing={job.data?.job} clientId={client} />;
 }

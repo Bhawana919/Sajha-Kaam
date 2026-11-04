@@ -19,9 +19,9 @@ export default function Review() {
   const signOut = useSignOut();
   const [reasons, setReasons] = useState<Record<string, string>>({});
   return (
-    <Screen title={t('review.title')}>
-      <HelpLine text={t('review.help')} />
-      <Section title={t('review.waiting', { n: digits(queue.length) })}>
+    <Screen title={t('vet.title')}>
+      <HelpLine text={t('vet.help')} />
+      <Section title={t('vet.waiting', { n: digits(queue.length) })}>
         {queue.length ? queue.map((a) => (
           <Panel key={a.id} style={{ gap: space.sm }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
@@ -29,19 +29,19 @@ export default function Review() {
               {a.top_level ? <LevelTag level={a.top_level} /> : null}
             </View>
             <Txt variant="small" color={colors.inkSoft}>
-              {a.team_name} · {t('review.jobs', { count: a.signed_jobs })}{a.person.headline ? ` · ${a.person.headline}` : ''}
+              {a.team_name} · {t('vet.jobs', { count: a.signed_jobs })}{a.person.headline ? ` · ${a.person.headline}` : ''}
             </Txt>
             {a.about ? <Txt>{a.about}</Txt> : null}
             {a.proof.map((p) => (
               <Txt key={p} color={colors.brick} onPress={() => Linking.openURL(p)}>{p}</Txt>
             ))}
-            <Button label={t('review.approve')} busy={decide.isPending} onPress={() => decide.mutate({ id: a.id, approve: true })} />
-            <Field label={t('review.reason')} value={reasons[a.id] ?? ''} placeholder={t('review.reasonEx')}
+            <Button label={t('vet.approve')} busy={decide.isPending} onPress={() => decide.mutate({ id: a.id, approve: true })} />
+            <Field label={t('vet.reason')} value={reasons[a.id] ?? ''} placeholder={t('vet.reasonEx')}
               onChangeText={(v) => setReasons({ ...reasons, [a.id]: v })} />
-            <Button kind="secondary" label={t('review.decline')} disabled={(reasons[a.id] ?? '').trim().length < 5}
+            <Button kind="secondary" label={t('vet.decline')} disabled={(reasons[a.id] ?? '').trim().length < 5}
               onPress={() => decide.mutate({ id: a.id, approve: false, reason: reasons[a.id] })} />
           </Panel>
-        )) : <Panel tone="honey"><Txt>{t('review.none')}</Txt></Panel>}
+        )) : <Panel tone="honey"><Txt>{t('vet.none')}</Txt></Panel>}
       </Section>
       <Button kind="quiet" label={t('common.signOut')} onPress={async () => { await signOut(); router.replace('/'); }} />
     </Screen>

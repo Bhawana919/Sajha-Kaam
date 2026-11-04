@@ -100,6 +100,7 @@ class PodOut(BaseModel):
     id: str
     name: str
     skill: str
+    skills: list[str] = Field(default_factory=list)  # every skill the team takes work in
     about: str
     seats_open: int
     test_task: str

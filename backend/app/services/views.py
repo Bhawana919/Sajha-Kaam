@@ -29,7 +29,7 @@ def person(u: User) -> PersonOut:
 
 
 def pod_out(session: Session, p: Pod) -> PodOut:
-    return PodOut(id=p.id, name=p.name, skill=p.skill, about=p.about, seats_open=p.seats_open,
+    return PodOut(id=p.id, name=p.name, skill=p.skill, skills=work.team_skills(p), about=p.about, seats_open=p.seats_open,
                   test_task=p.test_task, anchor=person(session.get(User, p.anchor_id)))
 
 

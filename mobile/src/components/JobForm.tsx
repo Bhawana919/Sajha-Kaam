@@ -22,7 +22,7 @@ type Ref = { link: string; note: string; kind: 'like' | 'not_like' };
 
 type Props =
   | { who: 'client'; anchors: Person[] }
-  | { who: 'anchor'; skill: string; clients: Person[]; editing?: Job; clientId?: string };
+  | { who: 'anchor'; skill: string; skills?: string[]; clients: Person[]; editing?: Job; clientId?: string };
 
 const NEW_CLIENT = '__new';
 
@@ -39,7 +39,8 @@ export function JobForm(props: Props) {
   const anchorSide = props.who === 'anchor';
   const editing = anchorSide ? props.editing : undefined;
 
-  const [skill, setSkill] = useState(anchorSide ? props.skill : 'video');
+  const [skill, setSkill] = useState(anchorSide ? (props.editing?.skill ?? props.skill) : 'video');
+  const choices = anchorSide ? (props.skills?.length ? props.skills : [props.skill]) : (tpl?.skills ?? []).map((s) => s.id);
   const [title, setTitle] = useState(editing?.title ?? '');
   const [deliverables, setDeliverables] = useState<string[]>(editing?.deliverables ?? []);
   const [doneWhen, setDoneWhen] = useState<string[]>(editing?.done_when ?? []);
@@ -128,13 +129,13 @@ export function JobForm(props: Props) {
       ) : null}
 
       <Section title={t('post.s_what')}>
-        {anchorSide ? null : (
+        {choices.length > 1 ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
-            {(tpl?.skills ?? []).map((s) => (
-              <Chip key={s.id} label={skillName(s.id)} on={skill === s.id} onToggle={() => { setSkill(s.id); setDetails({}); }} />
+            {choices.map((id) => (
+              <Chip key={id} label={skillName(id)} on={skill === id} onToggle={() => { setSkill(id); setDetails({}); }} />
             ))}
           </View>
-        )}
+        ) : null}
         <Field label={t('post.f_title')} placeholder={t('post.titleEx')} value={title} onChangeText={setTitle} />
         <ListEditor label={t('post.f_deliverables')} help={t('post.deliverablesHelp')} items={deliverables}
           onChange={setDeliverables} placeholder={t(`post.deliverablesEx_${skill}`)} />

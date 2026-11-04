@@ -489,22 +489,14 @@
     "decline": "Not this time"
   },
   "review": {
-    "title": "New Team Leaders",
+    "title": "Check the work",
     "by": "From {{name}}",
     "nothing": "Nothing waiting here.",
     "work": "The work",
-    "approve": "Approve as Team Leader",
+    "approve": "Approve and send to client",
     "sendBackNote": "What to change",
     "sendBackHelp": "The member sees this. It's also added to your notes for future checks.",
-    "sendBack": "Ask for changes",
-    "help": "Check the proof. Approve, or say what is missing; they see your reason.",
-    "waiting": "Waiting ({{n}})",
-    "jobs_one": "{{count}} verified job",
-    "jobs_other": "{{count}} verified jobs",
-    "reason": "Or decline, with a reason",
-    "reasonEx": "Two more finished jobs first, please.",
-    "decline": "Decline",
-    "none": "Nobody is waiting."
+    "sendBack": "Ask for changes"
   },
   "notif": {
     "title": "Notifications",
@@ -765,5 +757,17 @@
     "verifiedLine": "Bring clients with an invite link, and apply for jobs clients post.",
     "goDesk": "Open my desk",
     "verifiedTag": "Verified Leader"
+  },
+  "vet": {
+    "title": "New Team Leaders",
+    "help": "Check the proof. Approve, or say what is missing; they see your reason.",
+    "waiting": "Waiting ({{n}})",
+    "jobs_one": "{{count}} verified job",
+    "jobs_other": "{{count}} verified jobs",
+    "approve": "Approve as Team Leader",
+    "reason": "Or decline, with a reason",
+    "reasonEx": "Two more finished jobs first, please.",
+    "decline": "Decline",
+    "none": "Nobody is waiting."
   }
 }

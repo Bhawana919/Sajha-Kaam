@@ -55,6 +55,12 @@ def sample_site() -> HTMLResponse:
     return HTMLResponse((Path(__file__).resolve().parents[1] / "samples" / "momo_house.html").read_text(encoding="utf-8"))
 
 
+@router.get("/samples/harbour-cafe", response_class=HTMLResponse, include_in_schema=False)
+def sample_cafe() -> HTMLResponse:
+    """The landing page Sita builds for Harbour Café in the demo film (?v=2 after the change request)."""
+    return HTMLResponse((Path(__file__).resolve().parents[1] / "samples" / "harbour_cafe.html").read_text(encoding="utf-8"))
+
+
 @router.get("/p/{slug}", response_class=HTMLResponse)
 def logbook_page(slug: str, session: Session = Depends(get_session)) -> str:
     lb, skills = _logbook(session, slug), agreement.skills()

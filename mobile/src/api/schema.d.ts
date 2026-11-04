@@ -2043,6 +2043,8 @@ export interface components {
             name: string;
             /** Skill */
             skill: string;
+            /** Skills */
+            skills?: string[];
             /** About */
             about: string;
             /** Seats Open */

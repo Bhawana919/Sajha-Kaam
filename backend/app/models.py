@@ -75,7 +75,8 @@ class Pod(SQLModel, table=True):
     id: str = Field(default_factory=new_id, primary_key=True)
     anchor_id: str = Field(foreign_key="users.id", index=True, unique=True)
     name: str
-    skill: str = Field(index=True)
+    skill: str = Field(index=True)  # the team's main skill
+    extra_skills: list = _json(list)  # other skills the Leader takes work in (a studio: web and video too)
     about: str = ""
     seats_open: int = 0
     test_task: str = ""  # optional small task every applicant answers, so comparing is fair

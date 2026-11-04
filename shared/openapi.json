@@ -6086,6 +6086,13 @@
             "type": "string",
             "title": "Skill"
           },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
           "about": {
             "type": "string",
             "title": "About"

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbour Café · Melbourne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --cream:#FBF5EA; --bean:#3B2418; --foam:#F1E3CC; --sea:#2F5D62; --honey:#D9902A; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--cream); color:var(--bean); font-family:Figtree, system-ui, sans-serif; }
+  header { display:flex; justify-content:space-between; align-items:center; padding:18px 22px; }
+  .logo { font-family:Fraunces, serif; font-weight:700; font-size:20px; letter-spacing:.3px; }
+  .logo small { display:block; font-family:Figtree; font-weight:400; font-size:11px; letter-spacing:2px; color:var(--sea); }
+  nav a { color:var(--bean); text-decoration:none; font-size:14px; margin-left:16px; }
+  .hero { margin:6px 16px 0; border-radius:22px; overflow:hidden; position:relative; min-height:340px;
+          background:linear-gradient(160deg, #2F5D62 0%, #23474b 100%); color:var(--cream); padding:28px 24px; }
+  .hero h1 { font-family:Fraunces, serif; font-size:38px; line-height:1.05; max-width:12ch; }
+  .hero p { margin-top:12px; max-width:30ch; opacity:.9; line-height:1.45; }
+  .cta { display:inline-block; margin-top:20px; background:var(--honey); color:var(--bean); font-weight:600;
+         padding:12px 18px; border-radius:999px; text-decoration:none; }
+  .art { position:absolute; right:-30px; bottom:-30px; width:220px; height:220px; }
+  .waves { position:absolute; left:0; right:0; bottom:0; height:60px; opacity:.25; }
+  section { padding:28px 22px 0; }
+  h2 { font-family:Fraunces, serif; font-size:24px; margin-bottom:12px; }
+  .menu { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .item { background:#fff; border-radius:16px; padding:14px; }
+  .item b { display:block; font-size:15px; } .item span { color:var(--sea); font-size:13px; }
+  .hours { background:var(--foam); border-radius:16px; padding:16px; line-height:1.7; font-size:14px; }
+  footer { padding:28px 22px 40px; font-size:13px; color:#7a6658; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Harbour Café<small>DOCKLANDS · MELBOURNE</small></div>
+  <nav><a href="#menu">Menu</a><a href="#visit">Visit</a></nav>
+</header>
+
+<div class="hero">
+  <h1>Good coffee by the water.</h1>
+  <p>Single-origin espresso, fresh pastries every morning, and a table with a view of the harbour.</p>
+  <a class="cta" href="#visit">Find us</a>
+  <svg class="waves" viewBox="0 0 400 60" preserveAspectRatio="none"><path d="M0 30 Q50 10 100 30 T200 30 T300 30 T400 30 V60 H0Z" fill="#F1E3CC"/></svg>
+  <svg class="art" id="art" viewBox="0 0 220 220" aria-hidden="true"></svg>
+</div>
+
+<section id="menu">
+  <h2>This week</h2>
+  <div class="menu">
+    <div class="item"><b>Flat white</b><span>$5.20</span></div>
+    <div class="item"><b>Masala chai latte</b><span>$5.80</span></div>
+    <div class="item"><b>Almond croissant</b><span>$6.50</span></div>
+    <div class="item"><b>Smashed avo toast</b><span>$16</span></div>
+  </div>
+</section>
+
+<section id="visit">
+  <h2>Visit</h2>
+  <div class="hours">Mon–Fri 6:30–3:00<br>Sat–Sun 7:30–2:00<br>12 Harbour Esplanade, Docklands VIC</div>
+</section>
+
+<footer>© Harbour Café · Made with Sajha Kaam</footer>
+
+<script>
+  // v1: a coffee cup. v2 (after the Team Leader's change request): latte art in the hero.
+  const v2 = new URLSearchParams(location.search).get('v') === '2';
+  const art = document.getElementById('art');
+  art.innerHTML = v2
+    ? '<circle cx="110" cy="110" r="100" fill="#F1E3CC"/><circle cx="110" cy="110" r="84" fill="#8A5A3B"/>' +
+      '<path d="M110 50 C70 80 70 120 110 170 C150 120 150 80 110 50Z" fill="#FBF5EA"/>' +
+      '<path d="M110 70 C88 92 88 118 110 150 C132 118 132 92 110 70Z" fill="#8A5A3B"/>' +
+      '<path d="M110 88 C98 102 98 116 110 134 C122 116 122 102 110 88Z" fill="#FBF5EA"/>'
+    : '<rect x="40" y="80" width="120" height="100" rx="18" fill="#F1E3CC"/>' +
+      '<path d="M160 105 h18 a18 18 0 0 1 0 36 h-18" fill="none" stroke="#F1E3CC" stroke-width="10"/>' +
+      '<path d="M70 60 q10 -14 0 -28 M100 60 q10 -14 0 -28 M130 60 q10 -14 0 -28" stroke="#F1E3CC" stroke-width="5" fill="none" stroke-linecap="round"/>';
+</script>
+</body>
+</html>

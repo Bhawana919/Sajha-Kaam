@@ -305,7 +305,7 @@ def seed(session: Session) -> None:
     if session.get(User, RAJAN_ID):
         return
     pw = hash_password(load_yaml("guthi.yaml")["demo_password"])
-    rajan = _user(RAJAN_ID, "anchor", "Rajan Shrestha", "Digital marketer · Sydney", "Australia", pw)
+    rajan = _user(RAJAN_ID, "anchor", "Rajan Shrestha", "Digital marketer · Melbourne", "Australia", pw)
     anusha = _user(ANUSHA_ID, "anchor", "Anusha Gurung", "Video editor · London", "United Kingdom", pw)
     nima = _user(NIMA_ID, "anchor", "Nima Lama", "Web developer · Toronto", "Canada", pw)
     sita = _user(SITA_ID, "junior", "Sita Thapa", "", "Nepal", pw)
@@ -323,6 +323,7 @@ def seed(session: Session) -> None:
 
     session.add_all([
         Pod(id=RAJAN_TEAM, anchor_id=RAJAN_ID, name="Rajan's Social Media Team", skill="writing", seats_open=1,
+            extra_skills=["web", "video"],
             about="Captions, posts and website words for Nepali-run businesses in Australia.",
             test_task="Write one Instagram caption (under 150 characters) for a momo restaurant's opening day."),
         Pod(id=ANUSHA_TEAM, anchor_id=ANUSHA_ID, name="Anusha's Video Team", skill="video", seats_open=2,

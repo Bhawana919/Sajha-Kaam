@@ -111,6 +111,11 @@ def openings_for(session: Session, junior: User) -> list[Job]:
     return [j for j in jobs if j.skill in skills and my_application(session, junior, j) is None]
 
 
+def team_skills(pod: Pod) -> list[str]:
+    """Every skill a team takes work in: its main skill first."""
+    return [pod.skill, *[s for s in (pod.extra_skills or []) if s != pod.skill]]
+
+
 def level_for(session: Session, junior_id: str, pod_id: str, skill: str) -> int:
     """The badge a member works at in this team: theirs if they are in it, else what their record earned."""
     m = session.get(PodMember, (pod_id, junior_id))
@@ -161,7 +166,7 @@ def approve_worker(session: Session, anchor: User, job: Job, application_id: str
         if team_size(session, pod.id) >= _cap()["team_members"]:
             raise HTTPException(409, "team_full")
         member = PodMember(pod_id=pod.id, junior_id=app.applicant_id,
-                           level=earned_level(skill_record(session, app.applicant_id, pod.skill)))
+                           level=earned_level(skill_record(session, app.applicant_id, job.skill)))
         session.add(member)
         session.flush()
     _check_member_room(session, member.junior_id, member.level, job)
@@ -184,6 +189,7 @@ def apply_team(session: Session, user: User, skill: str) -> Pod | None:
         if not user.leader_verified:
             return None  # only verified Leaders apply for jobs clients post
         pod = session.exec(select(Pod).where(Pod.anchor_id == user.id)).first()
+        # Jobs clients post: only in the team's main (verified) skill. Extra skills are for clients the Leader brings.
         return pod if pod and pod.skill == skill else None
     if user.role == "junior":
         for m in memberships(session, user.id):
@@ -417,7 +423,7 @@ def promote_by_record(session: Session, junior_id: str, skill: str) -> None:
     target = earned_level(record)
     for m in memberships(session, junior_id):
         pod = session.get(Pod, m.pod_id)
-        if pod is None or pod.skill != skill:
+        if pod is None or skill not in team_skills(pod):
             continue
         if m.hold_at_jobs is not None:
             if len(record) <= m.hold_at_jobs:
@@ -509,7 +515,7 @@ def create_invite(session: Session, anchor: User, job_spec: dict | None = None) 
     pod = pod_of_anchor(session, anchor.id)
     spec = {}
     if job_spec:
-        if job_spec.get("skill") != pod.skill:
+        if job_spec.get("skill") not in team_skills(pod):
             raise HTTPException(422, "anchor_skill_mismatch")
         _agreement_fields(job_spec)  # the same template rules, checked now rather than when the client joins
         spec = {k: v for k, v in job_spec.items() if k not in ("client_id", "send_to_anchor")}
@@ -601,7 +607,7 @@ def anchor_create_job(session: Session, anchor: User, client_id: str, data: dict
     pod = pod_of_anchor(session, anchor.id)
     if session.get(AnchorClient, (anchor.id, client_id)) is None:
         raise HTTPException(403, "not_your_client")
-    if data.get("skill") != pod.skill:
+    if data.get("skill") not in team_skills(pod):
         raise HTTPException(422, "anchor_skill_mismatch")
     job = Job(id=job_id or new_id(), client_id=client_id, pod_id=pod.id, state="with_client",
               **_agreement_fields(data))
@@ -616,7 +622,7 @@ def edit_job(session: Session, anchor: User, job: Job, data: dict) -> Job:
         raise HTTPException(403, "not_your_job")
     if job.state not in ("draft", "with_client", "with_anchor"):
         raise HTTPException(409, "already_agreed")
-    if data.get("skill") != pod.skill:
+    if data.get("skill") not in team_skills(pod):
         raise HTTPException(422, "anchor_skill_mismatch")
     for k, v in _agreement_fields(data).items():
         setattr(job, k, v)

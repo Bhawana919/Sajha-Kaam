@@ -1,0 +1,27 @@
+{
+  "name": "sajha-kaam-film",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hand-drawn storyboard animatic for Sajha Kaam",
+  "scripts": {
+    "studio": "remotion studio",
+    "paper": "remotion still PaperGrain public/paper-grain.png",
+    "render:intro": "remotion render Intro out/intro.mp4",
+    "render:outro": "remotion render Outro out/outro.mp4",
+    "render:film": "remotion render SajhaKaamFilm out/sajha-kaam.mp4",
+    "render:all": "npm run render:intro && npm run render:outro && npm run render:film"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.540",
+    "@remotion/google-fonts": "4.0.540",
+    "@remotion/transitions": "4.0.540",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.540",
+    "roughjs": "4.6.6"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
