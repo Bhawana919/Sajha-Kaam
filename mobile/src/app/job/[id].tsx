@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Linking, View } from 'react-native';
 
-import { PUBLIC_BASE } from '@/api/client';
+import { PUBLIC_BASE, workUrl } from '@/api/client';
 import {
   useAccept, useAgree, useAnswerBrief, useApply, useAssign, useChoose, useDecideChange, useJob, useJuniorHome, useMe,
   usePay, useProposeChange, useRequestChanges, useSubmit, useTeam, useTemplate, useUploads,
@@ -395,7 +395,7 @@ function ClientActions({ d }: { d: JobDetail }) {
       <ClientChange d={d} />
       <PayPanel d={d} />
       <Section title={t('job.readyTitle')} help={t('job.readyHelp', { name: j.anchor?.display_name ?? '' })}>
-        {approved?.link ? <Button kind="secondary" icon="eye" label={t('job.openWork')} onPress={() => Linking.openURL(approved.link)} /> : null}
+        {approved?.link ? <Button kind="secondary" icon="eye" label={t('job.openWork')} onPress={() => Linking.openURL(workUrl(approved.link))} /> : null}
         {approved?.content ? <Panel><Txt variant="small" selectable>{approved.content}</Txt></Panel> : null}
         {approved?.note ? <Txt>“{approved.note}”</Txt> : null}
         <Checkbox label={t('job.showName')} checked={show} onChange={setShow} />

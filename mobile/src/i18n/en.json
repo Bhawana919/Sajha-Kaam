@@ -81,7 +81,7 @@
     "draft": "Client asked for changes",
     "with_client": "Waiting for client to agree",
     "with_anchor": "Waiting for Leader to agree",
-    "open": "Waiting for a Leader",
+    "open": "Open for applications",
     "agreed": "Agreed · choose who",
     "assigned": "Offered to a member",
     "working": "In progress",

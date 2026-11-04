@@ -5,6 +5,7 @@ price, or client name unless the client chose to show it.
 """
 
 from html import escape
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
@@ -39,6 +40,12 @@ def keys() -> dict:
 @router.get("/v1/public/logbook/{slug}", response_model=LogbookOut)
 def logbook_json(slug: str, session: Session = Depends(get_session)) -> LogbookOut:
     return _logbook(session, slug)
+
+
+@router.get("/samples/momo-house", response_class=HTMLResponse, include_in_schema=False)
+def sample_site() -> HTMLResponse:
+    """The demo website Bikash "built" for Himalayan Momo House, so the client can open real work."""
+    return HTMLResponse((Path(__file__).resolve().parents[1] / "samples" / "momo_house.html").read_text(encoding="utf-8"))
 
 
 @router.get("/p/{slug}", response_class=HTMLResponse)

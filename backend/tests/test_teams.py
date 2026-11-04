@@ -1,6 +1,6 @@
 """Joining a team (blind review), seats, levels and client invites."""
 
-from app.seed import ANUSHA_ID, ASHA_ID, BIKASH_ID, PEMBA_ID, RAJAN_ID, SITA_ID
+from app.seed import ANUSHA_ID, ASHA_ID, BIKASH_ID, NIMA_ID, PEMBA_ID, RAJAN_ID, SITA_ID
 from tests.conftest import GOOD_JOB, auth
 
 
@@ -29,14 +29,14 @@ def test_junior_asks_to_join_and_anchor_decides_blind(client):
 
 def test_blind_review_hides_background_languages(client):
     """Languages beyond the working ones (e.g. Sherpa) reveal background, so the Anchor never sees them."""
-    rajan, pemba = auth(client, RAJAN_ID), auth(client, PEMBA_ID)
+    nima, pemba = auth(client, NIMA_ID), auth(client, PEMBA_ID)
     profile = client.get("/v1/me/profile", headers=pemba).json()
     client.put("/v1/me/profile", json={**profile, "skills": ["video", "web"]}, headers=pemba)
     web_team = next(t["team"]["id"] for t in client.get("/v1/teams/open", headers=pemba).json()
                     if t["team"]["skill"] == "web")
     assert client.post(f"/v1/teams/{web_team}/join", json={"sample_link": "https://youtu.be/k7Tr3kReel9"},
                        headers=pemba).status_code == 201
-    reqs = client.get("/v1/anchor/requests", headers=rajan).json()
+    reqs = client.get("/v1/anchor/requests", headers=nima).json()
     assert reqs[0]["languages"] == ["Nepali", "English"]
     text = str(reqs).lower()
     for leak in ("pemba", "sherpa", "solukhumbu", PEMBA_ID, "@demo"):
@@ -52,17 +52,17 @@ def test_join_needs_the_skill_and_a_sample(client):
 
 
 def test_opening_seats_notifies_everyone_with_the_skill(client):
-    rajan = auth(client, RAJAN_ID)
-    client.put("/v1/anchor/seats", json={"seats_open": 0}, headers=rajan)
-    client.put("/v1/anchor/seats", json={"seats_open": 2, "test_task": "Explain lazy loading."}, headers=rajan)
-    # Bikash and Sita are already in the team; nobody else lists web, so nobody else is told.
+    nima = auth(client, NIMA_ID)
+    client.put("/v1/anchor/seats", json={"seats_open": 0}, headers=nima)
+    client.put("/v1/anchor/seats", json={"seats_open": 2, "test_task": "Explain lazy loading."}, headers=nima)
+    # Bikash is already in Nima's web team; nobody else lists web, so nobody else is told.
     for uid in (SITA_ID, BIKASH_ID, ASHA_ID, PEMBA_ID):
         assert "seats_open" not in [n["kind"] for n in client.get("/v1/notifications", headers=auth(client, uid)).json()]
     asha = auth(client, ASHA_ID)
     profile = client.get("/v1/me/profile", headers=asha).json()
     client.put("/v1/me/profile", json={**profile, "skills": ["video", "web"]}, headers=asha)
-    client.put("/v1/anchor/seats", json={"seats_open": 0}, headers=rajan)
-    client.put("/v1/anchor/seats", json={"seats_open": 1}, headers=rajan)
+    client.put("/v1/anchor/seats", json={"seats_open": 0}, headers=nima)
+    client.put("/v1/anchor/seats", json={"seats_open": 1}, headers=nima)
     assert "seats_open" in [n["kind"] for n in client.get("/v1/notifications", headers=asha).json()]
 
 
@@ -74,8 +74,8 @@ def test_invited_client_signs_up_and_sends_a_job(client):
     tokens = client.post("/v1/auth/register", json=signup).json()
     lena = {"Authorization": f"Bearer {tokens['access_token']}"}
     assert [a["display_name"] for a in client.get("/v1/client/home", headers=lena).json()["anchors"]] == ["Rajan Shrestha"]
-    web_job = {**GOOD_JOB, "skill": "web", "details": {"stack": "Wix", "devices": "Mobile"}, "send_to_anchor": RAJAN_ID}
-    assert client.post("/v1/jobs", json=web_job, headers=lena).json()["state"] == "with_anchor"
+    words_job = {**GOOD_JOB, "send_to_anchor": RAJAN_ID}  # a writing job, Rajan's team's skill
+    assert client.post("/v1/jobs", json=words_job, headers=lena).json()["state"] == "with_anchor"
     assert client.post("/v1/auth/register", json={**signup, "email": "x@y.example"}).status_code == 404  # code used
 
 

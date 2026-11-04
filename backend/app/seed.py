@@ -1,12 +1,17 @@
-"""Demo data, created through the real workflow so every signature and state is genuine.
+"""Demo data, created through the real workflow so every signature, payment and badge is genuine.
 
-Story: Rajan (web developer, Sydney) and Anusha (video editor, London) are Anchors. Rajan's team
-already has Bikash (Level 3, two signed jobs) and Sita (Level 2, one job to do now). Harbour Café in
-Melbourne is Rajan's client: Rajan writes its job agreements and Emma agrees to them; one new
-agreement is waiting for Emma. Every badge below was earned by the automatic rules while the history
-was replayed: Sita 2 jobs (Learner), Bikash 5 first-time jobs (Trusted), Pemba 20 first-time, on-time
-video jobs over five months (Mentor). Himal Threads in Toronto has posted an open video job that Anusha
-or Pemba can apply for. Asha has asked to join Anusha's team. All accounts use the demo password.
+Story: Himalayan Momo House, a Nepali family restaurant in Sydney, is opening a second branch in
+Parramatta on 21 November. The owner, Sunita Basnet, needs three things, each done by a team in Nepal
+led by a Nepali professional abroad:
+  1. Opening-week Instagram captions: Rajan's social media team (Sydney), done by Sita (★★ Learner).
+     This is the live demo: her first draft misses two points and the quick check quotes Rajan's advice.
+  2. A 30-second opening reel, posted to everyone: Anusha (video, London) and Pemba (★★★★★ Mentor) apply.
+  3. A one-page website from scratch: Nima's web team (Toronto), built by Bikash (★★★ Trusted), approved
+     by Nima and waiting for Sunita to accept. The site itself is served at /samples/momo-house.
+Every badge was earned by the automatic rules while the history below was replayed through the real
+steps (earlier clients: Harbour Café in Melbourne and Himal Threads in Toronto): Sita 2 jobs, Bikash 5
+first-time jobs, Pemba 20 first-time, on-time videos over five months. Asha has asked to join Anusha's
+team. All accounts use the demo password.
 """
 
 from datetime import timedelta
@@ -18,26 +23,25 @@ from app.config import load_yaml
 from app.models import AnchorClient, AnchorNote, JoinRequest, JuniorProfile, Pod, PodMember, User
 from app.services import work
 
-RAJAN_ID, ANUSHA_ID = "u-anchor-rajan", "u-anchor-anusha"
+RAJAN_ID, ANUSHA_ID, NIMA_ID = "u-anchor-rajan", "u-anchor-anusha", "u-anchor-nima"
 SITA_ID, BIKASH_ID, PEMBA_ID, ASHA_ID = "u-junior-sita", "u-junior-bikash", "u-junior-pemba", "u-junior-asha"
-CAFE_ID, THREADS_ID = "u-client-cafe", "u-client-threads"
-RAJAN_TEAM, ANUSHA_TEAM = "team-rajan-web", "team-anusha-video"
-SITA_JOB, REVIEW_JOB, OPEN_JOB = "job-cafe-menu", "job-cafe-spam", "job-threads-reel"
-AGREE_JOB = "job-cafe-hours"
+MOMO_ID, CAFE_ID, THREADS_ID = "u-client-momo", "u-client-cafe", "u-client-threads"
+RAJAN_TEAM, ANUSHA_TEAM, NIMA_TEAM = "team-rajan-social", "team-anusha-video", "team-nima-web"
+SITA_JOB, REVIEW_JOB, OPEN_JOB = "job-momo-captions", "job-momo-website", "job-momo-reel"
+AGREE_JOB = "job-momo-event"
+SITE_URL_PATH = "/samples/momo-house"
 
 RAJAN_NOTES = [
-    "Buttons need to be at least 44px tall so they're easy to tap on a phone.",
-    "Test the page at 375px wide before you send it. The menu table overflows on small screens.",
-    "Images should be compressed WebP under 200KB each; the page must load fast on mobile data.",
-    "Use the café's green #1F5B4B for buttons, not the default blue.",
-    "Every form field needs a visible label, not just placeholder text.",
-    "Add alt text to every image; describe the dish, not 'image1'.",
-    "Don't leave console.log lines in the final code.",
-    "Prices must line up on the right so customers can compare them quickly.",
-    "Commit messages should say what changed, like 'Make menu table scroll on mobile'.",
-    "Check the contact form actually sends: test with your own email before submitting.",
-    "Keep CSS in the stylesheet, not inline style attributes.",
-    "Opening hours must match the Google Maps listing exactly.",
+    "Every post needs one line in Nepali; our customers love seeing their own language.",
+    "Every caption ends with #MomoHouseParramatta, the branch hashtag, so people can find all the posts.",
+    "Say the date and the place in every post; people share one post without the others.",
+    "Keep each caption under 150 characters; people read on their phones.",
+    "Open with the dish people will taste, not with the business: no 'We are pleased to announce'.",
+    "One emoji at most per caption. Let the words do the work.",
+    "Write like you are talking to a neighbour, not like an advert.",
+    "Check the Nepali spelling twice, in Devanagari and in Roman letters.",
+    "Never promise a discount the client didn't agree to in writing.",
+    "Give the client two options for the most important post, so they can choose.",
 ]
 ANUSHA_NOTES = [
     "Cut on the beat. The music and the cuts should feel like one thing.",
@@ -49,6 +53,82 @@ ANUSHA_NOTES = [
     "Music must be royalty-free and credited in the description.",
     "Don't use more than two fonts in one video.",
 ]
+NIMA_NOTES = [
+    "Buttons need to be at least 44px tall so they're easy to tap on a phone.",
+    "Test every page at 375px wide before you send it.",
+    "Images should be compressed WebP under 200KB each; the page must load fast on mobile data.",
+    "Every form field needs a visible label, not just placeholder text.",
+    "Add alt text to every image; describe the dish, not 'image1'.",
+    "Opening hours must match the Google Maps listing exactly.",
+    "Prices must line up on the right so customers can compare them quickly.",
+]
+
+# ---------- the main story: Himalayan Momo House, Parramatta branch ----------
+
+JOB_MOMO_CAPTIONS = {
+    "skill": "writing", "title": "Instagram captions for our opening week",
+    "deliverables": ["Five Instagram captions, one for each day of opening week"],
+    "done_when": ["Five captions, one for each day of opening week", "Every caption has one line in Nepali",
+                  "Says the opening date, 21 November", "Ends with #MomoHouseParramatta"],
+    "details": {"words": "Five captions, under 150 characters each",
+                "audience": "Nepali and Australian families in Western Sydney",
+                "tone": "Warm and festive; simple English", "keywords": "'Parramatta', 'momo'"},
+    "references": [{"link": "https://www.instagram.com/p/example-warm-post", "note": "Warm, food first", "kind": "like"},
+                   {"link": "https://www.instagram.com/p/example-hard-sell", "note": "Too salesy", "kind": "not_like"}],
+    "deadline_days": 3, "budget_minor": 6000, "revisions": 1,
+}
+# Sita's first draft (the live demo): no Nepali lines and no hashtag yet.
+CAPTIONS_V1 = """Day 1: Steaming jhol momo, made the way our family makes them. Opening 21 November in Parramatta!
+Day 2: Bring your family for buff and chicken momo. Opening week in Parramatta from 21 November.
+Day 3: Our chilli sauce is ready. Are you? See you in Parramatta.
+Day 4: Vegetarian momo for everyone at the table. Opening week, Parramatta.
+Day 5: Last day of opening week. Thank you, Parramatta, for coming hungry!"""
+# Her fixed version, after the quick check and Rajan's note.
+CAPTIONS_V2 = """Five captions, one for each day of opening week.
+Day 1: Steaming jhol momo, made the way our family makes them. Opening 21 November in Parramatta!
+Nepali line: परिवारको स्वादमा तातो झोल मम। #MomoHouseParramatta
+Day 2: Bring your family for buff and chicken momo. Opening week from 21 November.
+Nepali line: सबै परिवारलाई स्वागत छ! #MomoHouseParramatta
+Day 3: Our chilli sauce is ready. Are you? Opening 21 November.
+Nepali line: पिरो अचार तयार छ। #MomoHouseParramatta
+Day 4: Vegetarian momo for everyone at the table. Opening week from 21 November.
+Nepali line: सबैका लागि शाकाहारी मम। #MomoHouseParramatta
+Day 5: Last day of opening week. Thank you for coming hungry! Opened 21 November.
+Nepali line: धन्यवाद, पारामाटा! #MomoHouseParramatta"""
+
+JOB_MOMO_EVENT = {
+    "skill": "writing", "title": "Facebook event text for opening day",
+    "deliverables": ["Facebook event title and description", "Short invitation message for WhatsApp groups"],
+    "done_when": ["Event title is under 60 characters", "Description says the date, time and address",
+                  "Invitation has one line in Nepali"],
+    "details": {"words": "Event description 120–180 words; invitation under 40 words",
+                "audience": "Nepali community groups in Sydney", "tone": "Friendly and clear"},
+    "deadline_days": 2, "budget_minor": 4000, "revisions": 1,
+}
+JOB_MOMO_REEL = {
+    "skill": "video", "title": "30-second opening reel for our new branch",
+    "deliverables": ["One vertical video, 30 seconds", "Cover image"],
+    "done_when": ["Length is between 28 and 32 seconds", "Exported 1080×1920 MP4",
+                  "Shows steaming momos in the first 2 seconds", "Says 'Opening 21 November' in English and Nepali"],
+    "details": {"length": "30 seconds", "format": "MP4, 9:16 vertical for Instagram Reels",
+                "captions": "English and Nepali, burned in", "music": "Royalty-free, festive madal, no lyrics",
+                "source": "https://drive.google.com/drive/folders/momo-house-parramatta-footage"},
+    "references": [{"link": "https://www.instagram.com/reel/example-food-reel", "note": "Close-ups, steam, fast cuts",
+                    "kind": "like"}],
+    "deadline_days": 5, "budget_minor": 8000, "revisions": 2,
+}
+JOB_MOMO_WEBSITE = {
+    "skill": "web", "title": "A one-page website for our Parramatta branch",
+    "deliverables": ["One-page website: menu, opening hours, map and an order button"],
+    "done_when": ["Shows the menu with prices", "Shows the opening hours and a map",
+                  "Has an Order online button", "Works on a phone 375px wide"],
+    "details": {"stack": "Plain HTML and CSS, hosted for free", "devices": "Phones first; Chrome and Safari"},
+    "deadline_days": 7, "budget_minor": 25000, "revisions": 2,
+}
+WEBSITE_NOTE = """Built from scratch: menu with prices, opening hours, a map and an Order online button.
+Tested on a phone 375px wide. Buttons are 48px tall; all photos have alt text."""
+
+# ---------- earlier work (the history that earned the badges) ----------
 
 JOB_CAFE_BOOKING = {
     "skill": "web", "title": "Add an online table booking form", "deliverables": ["Booking form on the Contact page"],
@@ -62,37 +142,6 @@ JOB_CAFE_IMAGES = {
     "done_when": ["Every homepage image is WebP under 200KB", "Lighthouse performance score above 80"],
     "details": {"stack": "WordPress", "devices": "Mobile and desktop"},
     "deadline_days": 3, "budget_minor": 6000, "revisions": 1,
-}
-JOB_CAFE_MENU = {
-    "skill": "web", "title": "Make the café menu page work on phones",
-    "deliverables": ["Updated menu page (HTML and CSS)"],
-    "done_when": ["Menu table fits a phone 375px wide without sideways scrolling",
-                  "Buttons are at least 44px tall", "Prices line up on the right",
-                  "Uses the café green #1F5B4B for buttons"],
-    "details": {"stack": "HTML and CSS", "devices": "Mobile first; Chrome and Safari",
-                "repo": "https://github.com/harbour-cafe/site"},
-    "references": [{"link": "https://www.example.com/menu-we-like", "note": "Clean list layout", "kind": "like"},
-                   {"link": "https://www.example.com/menu-too-busy", "note": "Too many photos", "kind": "not_like"}],
-    "deadline_days": 3, "budget_minor": 8000, "revisions": 1,
-}
-JOB_CAFE_SPAM = {
-    "skill": "web", "title": "Stop spam on the contact form", "deliverables": ["Spam protection on the contact form"],
-    "done_when": ["Form has a hidden honeypot field", "Real messages still arrive in the café inbox",
-                  "Form field labels are visible"],
-    "details": {"stack": "WordPress", "devices": "Mobile and desktop"},
-    "deadline_days": 2, "budget_minor": 4000, "revisions": 1,
-}
-JOB_THREADS_REEL = {
-    "skill": "video", "title": "30-second Dashain sale reel",
-    "deliverables": ["One vertical video, 30 seconds", "Thumbnail image"],
-    "done_when": ["Length is between 28 and 32 seconds", "Exported 1080×1920 MP4",
-                  "Burned-in captions in English and Nepali", "Shows the 20% off offer in the first 3 seconds"],
-    "details": {"length": "30 seconds", "format": "MP4, 9:16 vertical for Instagram Reels",
-                "captions": "English and Nepali, burned in", "music": "Royalty-free, festive, no lyrics",
-                "source": "https://drive.google.com/drive/folders/himal-threads-dashain"},
-    "references": [{"link": "https://www.instagram.com/reel/example-like", "note": "Fast cuts, bright colours",
-                    "kind": "like"}],
-    "deadline_days": 4, "budget_minor": 5000, "revisions": 2,
 }
 JOB_THREADS_TIHAR = {
     "skill": "video", "title": "15-second Tihar lights teaser",
@@ -108,10 +157,18 @@ JOB_THREADS_UNBOX = {
     "details": {"length": "45 seconds", "format": "MP4, 9:16 vertical", "source": "https://drive.google.com/drive/folders/himal-threads-scarves"},
     "deadline_days": 4, "budget_minor": 4500, "revisions": 1,
 }
+
+
 def _web(title: str, deliverable: str, done_when: list[str], budget: int, days: int = 3) -> dict:
     return {"skill": "web", "title": title, "deliverables": [deliverable], "done_when": done_when,
             "details": {"stack": "WordPress", "devices": "Mobile and desktop; Chrome, Safari"},
             "deadline_days": days, "budget_minor": budget, "revisions": 1}
+
+
+def _writing(title: str, deliverable: str, done_when: list[str], budget: int, words: str) -> dict:
+    return {"skill": "writing", "title": title, "deliverables": [deliverable], "done_when": done_when,
+            "details": {"words": words, "audience": "Café customers in Melbourne", "tone": "Warm and simple"},
+            "deadline_days": 3, "budget_minor": budget, "revisions": 1}
 
 
 # Bikash's earlier jobs (with the two above): five accepted first time -> Trusted.
@@ -123,12 +180,12 @@ BIKASH_MORE = [
     _web("Add a newsletter sign-up box", "Sign-up box on the homepage", ["Box asks for email only",
          "Sign-up arrives in the café's Mailchimp list", "Box has a visible label"], 5000),
 ]
-# Sita's first two jobs: accepted -> Learner.
+# Sita's first two writing jobs: accepted -> Learner.
 SITA_EARLIER = [
-    _web("Show the café's Instagram posts on the homepage", "Instagram strip on the homepage",
-         ["Shows the 6 newest posts", "Strip fits a phone 375px wide"], 4000),
-    _web("Add the café's opening dates for the holidays", "Holiday hours banner",
-         ["Banner lists the 5 holiday dates and hours", "Banner can be closed with one tap"], 3000, 2),
+    _writing("Three Facebook posts for the winter menu", "Three Facebook posts",
+             ["Three posts, one per new dish", "Each post names the dish and how it is cooked"], 4000, "Three posts, 40–60 words each"),
+    _writing("Google Business description for the café", "Business description",
+             ["Between 150 and 250 words", "Mentions 'Fitzroy' and 'Nepali coffee'"], 3000, "150–250 words"),
 ]
 # Pemba's twenty video jobs for Himal Threads, over five months: first time, on time -> Mentor.
 _PRODUCTS = ["Dhaka topi", "pashmina shawl", "felt slippers", "hemp backpack", "singing bowl", "Tihar candles",
@@ -144,25 +201,6 @@ def _reel(product: str) -> dict:
             "details": {"length": "15 seconds", "format": "MP4, 9:16 vertical",
                         "source": "https://drive.google.com/drive/folders/himal-threads-products"},
             "deadline_days": 3, "budget_minor": 3000, "revisions": 1}
-
-
-JOB_CAFE_HOURS = {
-    "skill": "web", "title": "Show opening hours and a map on the Contact page",
-    "deliverables": ["Opening hours table on the Contact page", "Embedded Google Map"],
-    "done_when": ["Hours match the Google Maps listing exactly", "Map shows the café pin on a phone 375px wide",
-                  "Page loads with no console errors"],
-    "details": {"stack": "WordPress", "devices": "Mobile and desktop; Chrome, Safari"},
-    "deadline_days": 2, "budget_minor": 5000, "revisions": 1,
-}
-SPAM_FIX = """<form class="contact">
-  <label for="name">Your name</label><input id="name" name="name" required>
-  <label for="email">Email</label><input id="email" name="email" type="email" required>
-  <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-  <label for="msg">Message</label><textarea id="msg" name="message" required></textarea>
-  <button type="submit">Send</button>
-</form>
-<!-- server: reject the message if the hidden honeypot field 'website' is filled -->
-<!-- tested: real messages arrive in the café inbox -->"""
 
 
 def _user(uid: str, role: str, name: str, headline: str, country: str, pw: str) -> User:
@@ -199,51 +237,58 @@ def seed(session: Session) -> None:
     if session.exec(select(User)).first():
         return
     pw = hash_password(load_yaml("guthi.yaml")["demo_password"])
-    rajan = _user(RAJAN_ID, "anchor", "Rajan Shrestha", "Web developer · Sydney", "Australia", pw)
+    rajan = _user(RAJAN_ID, "anchor", "Rajan Shrestha", "Digital marketer · Sydney", "Australia", pw)
     anusha = _user(ANUSHA_ID, "anchor", "Anusha Gurung", "Video editor · London", "United Kingdom", pw)
+    nima = _user(NIMA_ID, "anchor", "Nima Lama", "Web developer · Toronto", "Canada", pw)
     sita = _user(SITA_ID, "junior", "Sita Thapa", "", "Nepal", pw)
     bikash = _user(BIKASH_ID, "junior", "Bikash Tamang", "", "Nepal", pw)
     pemba = _user(PEMBA_ID, "junior", "Pemba Sherpa", "", "Nepal", pw)
     asha = _user(ASHA_ID, "junior", "Asha Rai", "", "Nepal", pw)
+    momo = _user(MOMO_ID, "client", "Sunita Basnet", "Himalayan Momo House, Sydney", "Australia", pw)
     cafe = _user(CAFE_ID, "client", "Emma Clarke", "Harbour Café, Melbourne", "Australia", pw)
     threads = _user(THREADS_ID, "client", "Sunil Karki", "Himal Threads, Toronto", "Canada", pw)
-    session.add_all([rajan, anusha, sita, bikash, pemba, asha, cafe, threads])
+    session.add_all([rajan, anusha, nima, sita, bikash, pemba, asha, momo, cafe, threads])
     session.flush()
 
     session.add_all([
-        Pod(id=RAJAN_TEAM, anchor_id=RAJAN_ID, name="Rajan's Web Team", skill="web", seats_open=1,
-            about="Websites for small businesses in Australia: cafés, salons, clinics.",
-            test_task="In 3–5 sentences: how would you make a café menu page load fast on a slow phone?"),
+        Pod(id=RAJAN_TEAM, anchor_id=RAJAN_ID, name="Rajan's Social Media Team", skill="writing", seats_open=1,
+            about="Captions, posts and website words for Nepali-run businesses in Australia.",
+            test_task="Write one Instagram caption (under 150 characters) for a momo restaurant's opening day."),
         Pod(id=ANUSHA_TEAM, anchor_id=ANUSHA_ID, name="Anusha's Video Team", skill="video", seats_open=2,
             about="Short videos for shops and brands run by Nepalis abroad.",
-            test_task="Describe the first 3 seconds of a 30-second sale reel for a clothing shop."),
-        JuniorProfile(user_id=SITA_ID, about="BIT graduate. I like making pages fast and simple.", skills=["web"],
-                      languages=["Nepali", "English"], tools=["HTML", "CSS", "JavaScript", "Git"],
-                      samples=[{"title": "Homestay booking site", "link": "https://github.com/np-dev-07/homestay"}],
-                      hours_per_week=20, education="BIT, Pokhara University", district="Kaski"),
+            test_task="Describe the first 3 seconds of a 30-second opening reel for a restaurant."),
+        Pod(id=NIMA_TEAM, anchor_id=NIMA_ID, name="Nima's Web Team", skill="web", seats_open=1,
+            about="Simple, fast websites for small businesses, built from scratch.",
+            test_task="In 3–5 sentences: how would you make a restaurant menu page load fast on a slow phone?"),
+        JuniorProfile(user_id=SITA_ID, about="BBS graduate. I write posts for my family's shop and love words.",
+                      skills=["writing"], languages=["Nepali", "English"], tools=["Google Docs", "Canva", "Meta Business Suite"],
+                      samples=[{"title": "Posts for a Pokhara homestay", "link": "https://docs.google.com/document/d/homestay-posts"}],
+                      hours_per_week=20, education="BBS, Pokhara University", district="Kaski"),
         JuniorProfile(user_id=BIKASH_ID, about="Front-end developer and part-time designer.", skills=["web", "design"],
-                      languages=["Nepali", "English", "Hindi"], tools=["WordPress", "React", "Figma"],
+                      languages=["Nepali", "English", "Hindi"], tools=["HTML", "CSS", "WordPress", "Figma"],
                       samples=[{"title": "Clinic website", "link": "https://github.com/np-dev-12/clinic"}],
                       hours_per_week=25, education="BSc CSIT, Tribhuvan University", district="Rupandehi"),
         JuniorProfile(user_id=PEMBA_ID, about="I edit trekking videos for local guides.", skills=["video"],
                       languages=["Nepali", "English", "Sherpa"], tools=["DaVinci Resolve", "CapCut"],
                       samples=[{"title": "Everest trail reel", "link": "https://youtu.be/k7Tr3kReel9"}],
                       hours_per_week=15, district="Solukhumbu"),
-        JuniorProfile(user_id=ASHA_ID, about="Video and short captions for social media.", skills=["video", "writing"],
+        JuniorProfile(user_id=ASHA_ID, about="Short videos and reels for social media.", skills=["video"],
                       languages=["Nepali", "English"], tools=["Premiere Pro", "Canva"],
                       samples=[{"title": "Café promo", "link": "https://drive.google.com/file/d/1cafePromoClip"}],
                       hours_per_week=12, district="Sunsari"),
-        PodMember(pod_id=RAJAN_TEAM, junior_id=BIKASH_ID, level=1),  # badges are earned below, by the rules
-        PodMember(pod_id=RAJAN_TEAM, junior_id=SITA_ID, level=1),
-        AnchorClient(anchor_id=RAJAN_ID, client_id=CAFE_ID),
+        PodMember(pod_id=RAJAN_TEAM, junior_id=SITA_ID, level=1),  # badges are earned below, by the rules
+        PodMember(pod_id=NIMA_TEAM, junior_id=BIKASH_ID, level=1),
+        PodMember(pod_id=ANUSHA_TEAM, junior_id=PEMBA_ID, level=1),
+        AnchorClient(anchor_id=RAJAN_ID, client_id=MOMO_ID), AnchorClient(anchor_id=NIMA_ID, client_id=MOMO_ID),
+        AnchorClient(anchor_id=RAJAN_ID, client_id=CAFE_ID), AnchorClient(anchor_id=NIMA_ID, client_id=CAFE_ID),
         AnchorClient(anchor_id=ANUSHA_ID, client_id=THREADS_ID),
         *[AnchorNote(anchor_id=RAJAN_ID, text=t, source="seed") for t in RAJAN_NOTES],
         *[AnchorNote(anchor_id=ANUSHA_ID, text=t, source="seed") for t in ANUSHA_NOTES],
-        PodMember(pod_id=ANUSHA_TEAM, junior_id=PEMBA_ID, level=1),
+        *[AnchorNote(anchor_id=NIMA_ID, text=t, source="seed") for t in NIMA_NOTES],
         JoinRequest(pod_id=ANUSHA_TEAM, junior_id=ASHA_ID, sample_link="https://drive.google.com/file/d/1cafePromoClip",
                     note="I make short promos for cafés and shops; I want to learn client work.",
-                    test_answer="Open on the brightest shirt with '20% OFF' big in the first second, then three quick "
-                                "cuts of people wearing it, timed to the drum."),
+                    test_answer="Open on steam rising from a plate of momos, then three quick cuts of families "
+                                "laughing at the table, timed to the madal."),
     ])
     session.commit()
 
@@ -252,27 +297,31 @@ def seed(session: Session) -> None:
                    (JOB_CAFE_IMAGES, "https://github.com/harbour-cafe/site/pull/15"),
                    *[(spec, f"https://github.com/harbour-cafe/site/pull/{20 + i}") for i, spec in enumerate(BIKASH_MORE)]]
     for i, (spec, link) in enumerate(bikash_jobs):
-        _finished(session, rajan, cafe, bikash, spec, link, days_ago=80 - i * 15)
+        _finished(session, nima, cafe, bikash, spec, link, days_ago=80 - i * 15)
     for i, spec in enumerate(SITA_EARLIER):
-        _finished(session, rajan, cafe, sita, spec, f"https://github.com/harbour-cafe/site/pull/{40 + i}", days_ago=20 - i * 8)
+        _finished(session, rajan, cafe, sita, spec, f"https://docs.google.com/document/d/cafe-posts-{i}", days_ago=20 - i * 8)
     pemba_jobs = [(JOB_THREADS_TIHAR, "https://drive.google.com/file/d/tiharTeaserFinal"),
                   (JOB_THREADS_UNBOX, "https://drive.google.com/file/d/scarfUnboxingFinal"),
                   *[(_reel(p), f"https://drive.google.com/file/d/reel-{i}") for i, p in enumerate(_PRODUCTS[:18])]]
     for i, (spec, link) in enumerate(pemba_jobs):
         _finished(session, anusha, threads, pemba, spec, link, days_ago=150 - i * 7)
 
-    # Sita: a job to do now (the live demo).
-    _agreed_and_started(session, rajan, cafe, sita, JOB_CAFE_MENU, job_id=SITA_JOB)
+    # 1. The live demo: Sita writes Sunita's opening-week captions (agreed and paid; she has accepted).
+    _agreed_and_started(session, rajan, momo, sita, JOB_MOMO_CAPTIONS, job_id=SITA_JOB)
 
-    # Bikash: work waiting on Rajan's desk.
-    spam = _agreed_and_started(session, rajan, cafe, bikash, JOB_CAFE_SPAM, job_id=REVIEW_JOB)
-    work.submit(session, bikash, spam, link="", content=SPAM_FIX, note="Tested with my own email.")
-    spam.agreed_at = spam.agreed_at - timedelta(days=1)  # agreed yesterday, so it's due tomorrow
-    session.add(spam)
+    # 3. Bikash built the website from scratch; Nima approved it; it waits for Sunita to accept.
+    site = _agreed_and_started(session, nima, momo, bikash, JOB_MOMO_WEBSITE, job_id=REVIEW_JOB)
+    sub = work.submit(session, bikash, site, link="", content=WEBSITE_NOTE, note="")
+    sub.link = SITE_URL_PATH  # the sample site the server hosts, so "Open the work" shows a real page
+    session.add(sub)
+    session.commit()
+    work.approve(session, nima, sub.id)
+    site.agreed_at = site.agreed_at - timedelta(days=5)  # agreed last week; due in 2 days
+    session.add(site)
     session.commit()
 
-    # Harbour Café: a new agreement Rajan wrote after a call, waiting for Emma to agree.
-    work.anchor_create_job(session, rajan, CAFE_ID, dict(JOB_CAFE_HOURS), job_id=AGREE_JOB)
+    # Rajan wrote the next agreement after a call with Sunita; it waits for her to agree.
+    work.anchor_create_job(session, rajan, MOMO_ID, dict(JOB_MOMO_EVENT), job_id=AGREE_JOB)
 
-    # Himal Threads: an open video job. Anusha (Team Leader) and Pemba (Mentor) can apply; Sunil chooses.
-    work.create_job(session, threads, dict(JOB_THREADS_REEL), None, job_id=OPEN_JOB)
+    # 2. Sunita posted the opening reel to everyone: Anusha (Team Leader) and Pemba (Mentor) can apply.
+    work.create_job(session, momo, dict(JOB_MOMO_REEL), None, job_id=OPEN_JOB)

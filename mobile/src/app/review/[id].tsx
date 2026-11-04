@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Linking, Platform, View } from 'react-native';
 
+import { workUrl } from '@/api/client';
 import { useApprove, useJob, useSendBack } from '@/api/hooks';
 import { Field, useErrorText } from '@/components/forms';
 import { CheckView, LevelTag } from '@/components/guthi';
@@ -34,7 +35,7 @@ export default function Review() {
           <Txt color={colors.inkSoft}>{t('review.by', { name: d.job.junior?.display_name ?? '' })}</Txt>
           {d.job.supervision_level ? <LevelTag level={d.job.supervision_level} /> : null}
           <Section title={t('review.work')}>
-            {sub.link ? <Button kind="secondary" icon="eye" label={t('job.openWork')} onPress={() => Linking.openURL(sub.link)} /> : null}
+            {sub.link ? <Button kind="secondary" icon="eye" label={t('job.openWork')} onPress={() => Linking.openURL(workUrl(sub.link))} /> : null}
             {sub.content ? (
               <Panel><Txt variant="small" selectable style={{ fontFamily: Platform.select({ ios: 'Menlo', default: 'monospace' }) }}>{sub.content}</Txt></Panel>
             ) : null}

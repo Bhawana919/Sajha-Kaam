@@ -16,7 +16,7 @@ Badges, from new to experienced: ★ Starter · ★★ Learner · ★★★ Trus
 
 | Folder | What it is |
 |---|---|
-| `backend` | API: FastAPI + SQLite. 45 automated tests. |
+| `backend` | API: FastAPI + SQLite. 46 automated tests. |
 | `mobile` | App: Expo (phone and web browser), English and Nepali. |
 | `config` | Skills, badges, the job agreement template, fair minimum budgets. |
 | `shared` | The API contract the app's types are generated from. |
@@ -102,43 +102,44 @@ iPhones use the website.
 
 ## Demo people
 
+**The story:** Himalayan Momo House, a Nepali family restaurant in Sydney, opens a second branch in
+Parramatta on 21 November. The owner needs opening-week captions, an opening reel and a new website,
+each made by a team in Nepal led by a Nepali professional abroad.
+
 On the welcome screen, tap a person to sign in. Password for all: `kaam-demo`.
 
 | Person | Role |
 |---|---|
-| Rajan Shrestha | Team Leader · web developer, Sydney · team: Bikash (★★★ Trusted), Sita (★★ Learner) |
+| Sunita Basnet | Client · Himalayan Momo House, Sydney · the website is ready for her; the reel has applicants; an agreement waits for her |
+| Rajan Shrestha | Team Leader · digital marketer, Sydney · Social Media Team (copywriting) |
 | Anusha Gurung | Team Leader · video editor, London · 2 open spots, 1 team application waiting |
-| Sita Thapa | Member · ★★ Learner (2 verified jobs) · has a café menu job to do now |
-| Bikash Tamang | Member · ★★★ Trusted (5 verified jobs, all first time) · 1 waiting for Rajan's check |
-| Pemba Sherpa | Member · ★★★★★ Mentor in Anusha's video team (20 verified jobs over five months) · can apply for open client jobs |
+| Nima Lama | Team Leader · web developer, Toronto · Web Team |
+| Sita Thapa | Member · copywriting · ★★ Learner (2 verified jobs) · writing the opening-week captions now |
+| Bikash Tamang | Member · web · ★★★ Trusted (5 verified jobs, all first time) · built the new website |
+| Pemba Sherpa | Member · video · ★★★★★ Mentor (20 verified jobs over five months) · can apply for the reel |
 | Asha Rai | Member · video · has asked to join Anusha's team (the waiting application) |
-| Emma Clarke | Client · Harbour Café, Melbourne (Rajan's client) · 1 agreement waiting for her |
-| Sunil Karki | Client · Himal Threads, Toronto · posted an open video job that Anusha or Pemba can apply for |
+| Emma Clarke, Sunil Karki | Earlier clients (Harbour Café, Melbourne; Himal Threads, Toronto) whose jobs earned the badges |
 
 Fresh sample data at any time: `curl.exe -X POST http://localhost:8000/demo/reset`
+(hosted: open `/docs`, then **POST /demo/reset → Try it out → Execute**).
 
-## The 3-minute demo
+## The 5-minute demo
 
-1. **Sita** opens "Make the café menu page work on phones" and pastes weak work:
-   `<button>Order</button> <table class='menu'>prices</table>`.
-   The quick check flags all four "finished when" points and **quotes Rajan's own past notes**
-   for each.
-2. **Rajan** opens his Today screen, checks the work and asks for changes with a note.
-   The note is also added to his notes for future checks.
-3. **Sita** fixes it and sends again; the check now shows 4 of 4.
-4. **Rajan** approves. **Emma** (the café) accepts.
-5. **Sita's Work Record** shows a verified job: "Done as ★★ Learner · approved by Rajan Shrestha ·
-   accepted by a client in Australia", with a QR code. Open the link to see the public page.
-6. **The agreement first:** on Rajan's Today screen, "Show opening hours and a map" is waiting for the
-   client. **Emma** opens it and taps **Agree** (or asks for changes). **Rajan** gives it to
-   Sita; **Sita** sees a job offer with her share ($37.50) but not the client's name, and taps
-   **I accept**. Rajan can then propose a new deadline or budget, which Emma must accept.
-7. Show **Anusha's blind team applications** ("Applicant A", no name) and **Rajan's Team** screen
-   (badges with the facts behind them, invite a client).
-8. **A job posted to everyone:** **Pemba** (★★★★★ Mentor) opens "30-second Dashain sale reel" on his home
-   screen and taps **Apply**; **Anusha** can apply too. **Sunil** sees both under "Choose who does it",
-   with badges, verified jobs and Pemba's Work Record, and chooses Pemba. Pemba starts straight away,
-   and Anusha still checks his work before Sunil sees it.
+1. **The captions, checked live.** **Sita** opens "Instagram captions for our opening week" and pastes her
+   first draft (in [backend/app/seed.py](backend/app/seed.py) as `CAPTIONS_V1`): five captions without a
+   Nepali line or the hashtag. The quick check shows **2 of 4** and quotes **Rajan's own advice**:
+   "Every post needs one line in Nepali…" and "Every caption ends with #MomoHouseParramatta…".
+2. **Rajan** asks for changes with a short note. **Sita** pastes the fixed version (`CAPTIONS_V2`):
+   **4 of 4**. Rajan approves.
+3. **Sunita** reads the captions and taps **Accept**. The demo money is paid out: Sita gets 60% as
+   ★★ Learner. **Sita's Work Record** shows the verified job with a QR code.
+4. **The reel, posted to everyone.** **Pemba** (★★★★★ Mentor) opens "30-second opening reel for our new
+   branch", uploads his 2-minute video and taps **Apply**. **Sunita** compares Pemba and Anusha's team
+   (badges, verified jobs, video), chooses Pemba and pays. Pemba gets 80%; Anusha still checks his work.
+5. **The website, from scratch.** **Sunita** opens "A one-page website for our Parramatta branch",
+   taps **Open the work** (a real page, served at `/samples/momo-house`) and accepts it.
+6. **Fair by design.** **Rajan → Team**: badges go up by the rules, what each member needs next, and how
+   jobs were shared. Tap **नेपाली** to show the whole app in Nepali.
 
 ## How the main parts work
 

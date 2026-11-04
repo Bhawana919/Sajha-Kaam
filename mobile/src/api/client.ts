@@ -11,6 +11,11 @@ const configured = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
 const sameOrigin = configured === 'same-origin' && typeof window !== 'undefined' && !!window.location;
 const API_URL = (sameOrigin ? window.location.origin : configured).replace(/\/$/, '');
 export const PUBLIC_BASE = API_URL;
+
+/** A work link to open: links on our own server (like the demo website) are stored as "/path". */
+export function workUrl(link: string): string {
+  return link.startsWith('/') ? `${PUBLIC_BASE}${link}` : link;
+}
 const TIMEOUT_MS = 15000;
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
