@@ -1,20 +1,22 @@
 // Junior home: profile nudge, my teams and level, my jobs (things to fix first).
 import { router } from 'expo-router';
+import { View } from 'react-native';
 
 import { useJuniorHome, useMe, useSignOut } from '@/api/hooks';
-import { Bell, JobCard, LevelTag, useSkillName } from '@/components/guthi';
+import { BadgeChangeLine, BadgeProgress, Bell, JobCard, LevelTag, useBadge, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { Button, NextAction, Panel, Section, StateView } from '@/components/ui';
 import { useT } from '@/i18n';
 import { money } from '@/lib/format';
-import { colors } from '@/theme';
+import { colors, space } from '@/theme';
 
 export default function JuniorHome() {
   const { t } = useT();
   const q = useJuniorHome();
   const me = useMe().data;
   const skill = useSkillName();
+  const badge = useBadge();
   const signOut = useSignOut();
   const h = q.data;
   return (
@@ -30,14 +32,34 @@ export default function JuniorHome() {
             <NextAction title={t('junior.noTeamTitle')} body={t('junior.noTeamBody', { count: h.open_teams })} cta={t('common.open')}
               onPress={() => router.push('/junior/teams')} />
           ) : null}
-          {h.teams.map((team) => (
-            <Panel key={team.id}>
-              <Txt variant="h3">{team.name}</Txt>
-              <Txt variant="small" color={colors.inkSoft}>{t('junior.anchor', { name: team.anchor.display_name, where: team.anchor.headline })}</Txt>
-              <Txt variant="small">{skill(team.skill)}</Txt>
-              <LevelTag level={h.levels[team.id]} />
-            </Panel>
-          ))}
+          {h.teams.map((team) => {
+            const status = h.team_status?.find((s) => s.team_id === team.id);
+            return (
+              <Panel key={team.id}>
+                <Txt variant="h3">{team.name}</Txt>
+                <Txt variant="small" color={colors.inkSoft}>{t('junior.anchor', { name: team.anchor.display_name, where: team.anchor.headline })}</Txt>
+                <Txt variant="small">{skill(team.skill)}</Txt>
+                <LevelTag level={h.levels[team.id]} />
+                {status ? (
+                  <>
+                    <BadgeChangeLine c={status.last_change} />
+                    <BadgeProgress p={status.progress} />
+                    <Txt variant="small" color={colors.inkSoft}>{t('badge.rulesHelp')}</Txt>
+                    <View style={{ gap: 4 }}>
+                      <Txt variant="label">{t('badge.sharing')}</Txt>
+                      {status.sharing.map((r) => (
+                        <View key={r.person.id} style={{ flexDirection: 'row', gap: space.sm }}>
+                          <Txt variant="small" style={{ flex: 1 }}>{r.person.display_name} · {badge(r.level)}</Txt>
+                          <Txt variant="small" color={colors.inkSoft}>{t('team.jobs30', { count: r.jobs_30d })}</Txt>
+                        </View>
+                      ))}
+                      <Txt variant="small" color={colors.inkSoft}>{t('badge.sharingHelp')}</Txt>
+                    </View>
+                  </>
+                ) : null}
+              </Panel>
+            );
+          })}
           {h.earnings?.map((m) => (
             <Panel key={m.currency} tone="pine" style={{ gap: 2 }}>
               <Txt variant="label" color={colors.pineSoft}>{t('junior.earned')}</Txt>

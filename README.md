@@ -16,7 +16,7 @@ Badges, from new to experienced: ★ Starter · ★★ Learner · ★★★ Trus
 
 | Folder | What it is |
 |---|---|
-| `backend` | API: FastAPI + SQLite. 31 automated tests. |
+| `backend` | API: FastAPI + SQLite. 45 automated tests. |
 | `mobile` | App: Expo (phone and web browser), English and Nepali. |
 | `config` | Skills, badges, the job agreement template, fair minimum budgets. |
 | `shared` | The API contract the app's types are generated from. |
@@ -100,9 +100,9 @@ On the welcome screen, tap a person to sign in. Password for all: `kaam-demo`.
 |---|---|
 | Rajan Shrestha | Team Leader · web developer, Sydney · team: Bikash (★★★ Trusted), Sita (★★ Learner) |
 | Anusha Gurung | Team Leader · video editor, London · 2 open spots, 1 team application waiting |
-| Sita Thapa | Member · has a café menu job to do now |
-| Bikash Tamang | Member · 2 verified jobs, 1 waiting for Rajan's check |
-| Pemba Sherpa | Member · ★★★★★ Mentor in Anusha's video team, 2 verified jobs · can apply for open client jobs |
+| Sita Thapa | Member · ★★ Learner (2 verified jobs) · has a café menu job to do now |
+| Bikash Tamang | Member · ★★★ Trusted (5 verified jobs, all first time) · 1 waiting for Rajan's check |
+| Pemba Sherpa | Member · ★★★★★ Mentor in Anusha's video team (20 verified jobs over five months) · can apply for open client jobs |
 | Asha Rai | Member · video · has asked to join Anusha's team (the waiting application) |
 | Emma Clarke | Client · Harbour Café, Melbourne (Rajan's client) · 1 agreement waiting for her |
 | Sunil Karki | Client · Himal Threads, Toronto · posted an open video job that Anusha or Pemba can apply for |
@@ -156,14 +156,40 @@ items and budgets below the fair minimum.
 **Members join a team**, not a single job. Opening spots notifies everyone with the skill. The
 Team Leader reviews requests blind: no name, district, about-me text or mother tongue.
 
-**Badges** (★ Starter, ★★ Learner, ★★★ Trusted, ★★★★ Pro, ★★★★★ Mentor) change only when the Team Leader decides,
-using facts the app shows.
+**Badges go up automatically** (★ Starter, ★★ Learner, ★★★ Trusted, ★★★★ Pro, ★★★★★ Mentor). When a client
+accepts a job, the member's record in that skill, across all teams, is checked against public rules
+([config/guthi.yaml](config/guthi.yaml)):
+
+| Badge | Rule |
+|---|---|
+| ★★ Learner | 2 verified jobs |
+| ★★★ Trusted | 5 verified jobs, the last 3 approved first time |
+| ★★★★ Pro | 10 verified jobs, 80% approved first time, the last 5 on time |
+| ★★★★★ Mentor | 20 verified jobs, 90% approved first time, the last 10 on time |
+
+Nothing lowers a badge automatically. The Team Leader can only **lower** a badge or **pause the next
+promotion once**, both with a written reason the member sees. Members see what they still need for the
+next badge.
+
+**Pay follows the badge.** Sajha Kaam always takes 15%; the member's share rises with their badge and the
+rest goes to the Team Leader who checks the work (more checking and teaching for newer members):
+
+| Badge on the job | Member | Team Leader (checker) | Sajha Kaam |
+|---|---|---|---|
+| ★ Starter | 50% | 35% | 15% |
+| ★★ Learner | 60% | 25% | 15% |
+| ★★★ Trusted | 70% | 15% | 15% |
+| ★★★★ Pro | 78% | 7% | 15% |
+| ★★★★★ Mentor | 80% | 5% | 15% |
+
+**Fair by design.** A Team Leader supervises at most 2 jobs by Starters at once (like an instructor's limit
+of student pilots), and everyone in the team sees how many jobs each member got in the last 30 days.
 
 **The quick check** is plain rules: it compares the work with the "finished when" list and quotes the
 Leader's closest past note. Only the Leader decides.
 
 **Money (demo, no real payments).** After agreeing, the client taps Pay: the budget shows as held until
-they accept the work, then as paid out in the split (75% member, 10% Team Leader, 15% platform). Once
+they accept the work, then as paid out in the split for the member's badge (table above). Once
 paid, only the deadline can change, not the budget. The Team Leader's Today screen shows deadlines for
 every job in progress and the team's earnings; each member sees what they have earned.
 

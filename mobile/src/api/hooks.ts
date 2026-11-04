@@ -111,6 +111,11 @@ export const useAssign = () =>
 export const useApprove = () => useAction((submissionId: string) => api(`/v1/submissions/${submissionId}/approve`, { method: 'POST' }));
 export const useSendBack = () =>
   useAction((v: { id: string; note: string }) => api(`/v1/submissions/${v.id}/send-back`, { method: 'POST', body: { note: v.note } }));
+/** Pause a member's next automatic promotion, once, with a reason the member sees. */
+export const usePausePromotion = () =>
+  useAction((v: { junior_id: string; reason: string }) =>
+    api(`/v1/anchor/members/${v.junior_id}/pause`, { method: 'POST', body: { reason: v.reason } }));
+/** Lower a member's badge (badges only go up by the rules), with a reason the member sees. */
 export const useSetLevel = () =>
   useAction((v: { junior_id: string; level: number; reason: string }) =>
     api(`/v1/anchor/members/${v.junior_id}/level`, { method: 'POST', body: { level: v.level, reason: v.reason } }));

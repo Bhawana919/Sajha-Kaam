@@ -24,6 +24,7 @@ from app.schemas import (
     MemberOut,
     NoteIn,
     NoteOut,
+    PauseIn,
     PodOut,
     SeatsIn,
     SendBackIn,
@@ -32,7 +33,7 @@ from app.schemas import (
     TeamOut,
 )
 from app.services import work
-from app.services.views import job_detail, job_out, person, pod_out, submission_out
+from app.services.views import badge_change, job_detail, job_out, person, pod_out, progress_out, submission_out
 
 router = APIRouter(prefix="/v1", tags=["anchor"])
 anchor_only = require_role("anchor")
@@ -105,7 +106,10 @@ def team(user: User = Depends(anchor_only), session: Session = Depends(get_sessi
         open_jobs = session.exec(select(func.count()).select_from(Job).where(
             Job.junior_id == m.junior_id, Job.pod_id == pod.id, Job.state != "client_accepted")).one()
         members.append(MemberOut(person=person(session.get(User, m.junior_id)), level=m.level,
-                                 evidence=Evidence(**work.evidence(session, pod, m.junior_id)), open_jobs=open_jobs))
+                                 evidence=Evidence(**work.evidence(session, pod, m.junior_id)), open_jobs=open_jobs,
+                                 jobs_30d=work.jobs_last_30_days(session, pod.id, m.junior_id),
+                                 progress=progress_out(session, pod, m),
+                                 last_change=badge_change(work.last_change(session, pod.id, m.junior_id))))
     clients = [session.get(User, link.client_id) for link in
                session.exec(select(AnchorClient).where(AnchorClient.anchor_id == user.id)).all()]
     return TeamOut(team=pod_out(session, pod), members=members, clients=[person(c) for c in clients])
@@ -136,8 +140,17 @@ def decide(request_id: str, body: DecideIn, user: User = Depends(anchor_only),
 @router.post("/anchor/members/{junior_id}/level", response_model=dict)
 def level(junior_id: str, body: LevelIn, user: User = Depends(anchor_only),
           session: Session = Depends(get_session)) -> dict:
+    """Lower a badge (badges go up automatically by the rules). The member sees the reason."""
     m = work.set_level(session, user, junior_id, body.level, body.reason)
     return {"junior_id": m.junior_id, "level": m.level}
+
+
+@router.post("/anchor/members/{junior_id}/pause", response_model=dict)
+def pause(junior_id: str, body: PauseIn, user: User = Depends(anchor_only),
+          session: Session = Depends(get_session)) -> dict:
+    """Pause the member's next automatic promotion, once, with a reason the member sees."""
+    m = work.pause_promotion(session, user, junior_id, body.reason)
+    return {"junior_id": m.junior_id, "level": m.level, "paused_reason": m.hold_reason}
 
 
 @router.post("/anchor/invites", response_model=InviteOut, status_code=201)

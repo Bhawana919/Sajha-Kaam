@@ -1504,6 +1504,7 @@
           "anchor"
         ],
         "summary": "Level",
+        "description": "Lower a badge (badges go up automatically by the rules). The member sees the reason.",
         "operationId": "level_v1_anchor_members__junior_id__level_post",
         "parameters": [
           {
@@ -1551,6 +1552,77 @@
                   "type": "object",
                   "additionalProperties": true,
                   "title": "Response Level V1 Anchor Members  Junior Id  Level Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/members/{junior_id}/pause": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Pause",
+        "description": "Pause the member's next automatic promotion, once, with a reason the member sees.",
+        "operationId": "pause_v1_anchor_members__junior_id__pause_post",
+        "parameters": [
+          {
+            "name": "junior_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Junior Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PauseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Pause V1 Anchor Members  Junior Id  Pause Post"
                 }
               }
             }
@@ -2022,6 +2094,82 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/JobDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/uploads": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Uploads Status",
+        "description": "Whether the app can upload videos (Cloudinary set up on the server), and the limits.",
+        "operationId": "uploads_status_v1_uploads_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Uploads Status V1 Uploads Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/uploads/video": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Video Upload",
+        "description": "A short-lived signature for one direct upload to Cloudinary. The secret never leaves the server.",
+        "operationId": "video_upload_v1_uploads_video_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Video Upload V1 Uploads Video Post"
                 }
               }
             }
@@ -2982,6 +3130,45 @@
         ],
         "title": "AssignIn"
       },
+      "BadgeChange": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "lowered",
+              "paused"
+            ],
+            "title": "Kind"
+          },
+          "old_level": {
+            "type": "integer",
+            "title": "Old Level"
+          },
+          "new_level": {
+            "type": "integer",
+            "title": "New Level"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "old_level",
+          "new_level",
+          "reason",
+          "created_at"
+        ],
+        "title": "BadgeChange"
+      },
       "BlindRequest": {
         "properties": {
           "id": {
@@ -3865,6 +4052,13 @@
             },
             "type": "array",
             "title": "Earnings"
+          },
+          "team_status": {
+            "items": {
+              "$ref": "#/components/schemas/MyTeamStatus"
+            },
+            "type": "array",
+            "title": "Team Status"
           }
         },
         "type": "object",
@@ -4086,6 +4280,31 @@
           "open_jobs": {
             "type": "integer",
             "title": "Open Jobs"
+          },
+          "jobs_30d": {
+            "type": "integer",
+            "title": "Jobs 30D",
+            "default": 0
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Progress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last_change": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BadgeChange"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -4110,15 +4329,57 @@
           "platform": {
             "type": "integer",
             "title": "Platform"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "junior_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Junior Pct"
+          },
+          "anchor_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor Pct"
+          },
+          "platform_pct": {
+            "type": "integer",
+            "title": "Platform Pct"
           }
         },
         "type": "object",
         "required": [
           "junior",
           "anchor",
-          "platform"
+          "platform",
+          "level",
+          "junior_pct",
+          "anchor_pct",
+          "platform_pct"
         ],
-        "title": "MoneySplit"
+        "title": "MoneySplit",
+        "description": "The member's share follows their badge for this job; before a member is chosen it isn't known yet."
       },
       "MyMoney": {
         "properties": {
@@ -4142,6 +4403,43 @@
           "held_minor"
         ],
         "title": "MyMoney"
+      },
+      "MyTeamStatus": {
+        "properties": {
+          "team_id": {
+            "type": "string",
+            "title": "Team Id"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/Progress"
+          },
+          "last_change": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BadgeChange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sharing": {
+            "items": {
+              "$ref": "#/components/schemas/ShareRow"
+            },
+            "type": "array",
+            "title": "Sharing"
+          }
+        },
+        "type": "object",
+        "required": [
+          "team_id",
+          "progress",
+          "last_change",
+          "sharing"
+        ],
+        "title": "MyTeamStatus",
+        "description": "For a member: their progress in one team, the last badge change, and how jobs were shared."
       },
       "NoteIn": {
         "properties": {
@@ -4254,6 +4552,21 @@
           "my_request"
         ],
         "title": "OpenTeam"
+      },
+      "PauseIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "PauseIn"
       },
       "PendingChange": {
         "properties": {
@@ -4541,6 +4854,50 @@
         ],
         "title": "ProfileOut"
       },
+      "Progress": {
+        "properties": {
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "next_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Level"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/RuleCheck"
+            },
+            "type": "array",
+            "title": "Checks"
+          },
+          "verified": {
+            "type": "integer",
+            "title": "Verified"
+          },
+          "paused_reason": {
+            "type": "string",
+            "title": "Paused Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "next_level",
+          "checks",
+          "verified",
+          "paused_reason"
+        ],
+        "title": "Progress",
+        "description": "The next badge and what is still needed, by the public rules. Badges go up automatically."
+      },
       "Reference": {
         "properties": {
           "link": {
@@ -4648,6 +5005,40 @@
           "password"
         ],
         "title": "RegisterIn"
+      },
+      "RuleCheck": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "jobs",
+              "last_first_time",
+              "first_time_pct",
+              "last_on_time"
+            ],
+            "title": "Code"
+          },
+          "need": {
+            "type": "integer",
+            "title": "Need"
+          },
+          "have": {
+            "type": "integer",
+            "title": "Have"
+          },
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "need",
+          "have",
+          "ok"
+        ],
+        "title": "RuleCheck"
       },
       "Sample": {
         "properties": {
@@ -4765,6 +5156,28 @@
           "ai_helper"
         ],
         "title": "SettingsIn"
+      },
+      "ShareRow": {
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/PersonOut"
+          },
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "jobs_30d": {
+            "type": "integer",
+            "title": "Jobs 30D"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person",
+          "level",
+          "jobs_30d"
+        ],
+        "title": "ShareRow"
       },
       "SubmissionOut": {
         "properties": {

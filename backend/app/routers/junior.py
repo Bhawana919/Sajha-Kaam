@@ -5,7 +5,7 @@ from sqlmodel import Session, func, select
 
 from app.auth import require_role
 from app.db import get_session
-from app.models import Job, JuniorProfile, LogEntry, Pod, User
+from app.models import Job, JuniorProfile, LogEntry, Pod, PodMember, User
 from app.schemas import (
     AnswerIn,
     JobOut,
@@ -13,14 +13,25 @@ from app.schemas import (
     JuniorHome,
     LogEntryOut,
     MyMoney,
+    MyTeamStatus,
     OpenTeam,
     ProfileIn,
     ProfileOut,
+    ShareRow,
     SubmissionOut,
     SubmitIn,
 )
 from app.services import agreement, work
-from app.services.views import entry_out, job_out, levels_by_team, pod_out, submission_out
+from app.services.views import (
+    badge_change,
+    entry_out,
+    job_out,
+    levels_by_team,
+    person,
+    pod_out,
+    progress_out,
+    submission_out,
+)
 
 router = APIRouter(prefix="/v1", tags=["junior"])
 junior_only = require_role("junior")
@@ -77,7 +88,18 @@ def home(user: User = Depends(junior_only), session: Session = Depends(get_sessi
                       jobs=[job_out(session, j, user) for j in jobs], open_teams=len(work.open_teams_for(session, user)),
                       log_entries=entries, profile_slug=user.profile_slug,
                       open_jobs=[job_out(session, j, user) for j in work.open_jobs_for(session, user)],
-                      earnings=[MyMoney(**m) for m in work.junior_money(session, user.id)])
+                      earnings=[MyMoney(**m) for m in work.junior_money(session, user.id)],
+                      team_status=[_team_status(session, user, m) for m in work.memberships(session, user.id)])
+
+
+def _team_status(session: Session, user: User, m: PodMember) -> MyTeamStatus:
+    """The member's own progress and last badge change, and how the team's jobs were shared (visible to all)."""
+    pod = session.get(Pod, m.pod_id)
+    rows = session.exec(select(PodMember).where(PodMember.pod_id == pod.id).order_by(PodMember.joined_at)).all()
+    return MyTeamStatus(team_id=pod.id, progress=progress_out(session, pod, m),
+                        last_change=badge_change(work.last_change(session, pod.id, user.id)),
+                        sharing=[ShareRow(person=person(session.get(User, r.junior_id)), level=r.level,
+                                          jobs_30d=work.jobs_last_30_days(session, pod.id, r.junior_id)) for r in rows])
 
 
 @router.post("/jobs/{job_id}/brief", response_model=JobOut)

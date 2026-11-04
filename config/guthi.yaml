@@ -1,10 +1,25 @@
 # Sajha Kaam settings that are product decisions, not secrets.
 
-# How a client's payment is shared, in percent. Shown on screen only: Sajha Kaam never holds money.
+# How a client's payment is shared, in percent (demo payments only: no real money moves).
+# The member's share follows their badge for that job; Sajha Kaam always takes the same 15%; the rest
+# goes to the checker (the Team Leader), who does more checking and teaching for newer members.
+#   $100 job:  Starter 50/35/15 · Learner 60/25/15 · Trusted 70/15/15 · Pro 78/7/15 · Mentor 80/5/15
 split:
-  junior: 75
-  anchor: 10
   platform: 15
+  member_by_level: {1: 50, 2: 60, 3: 70, 4: 78, 5: 80}
+
+# Badges go up automatically when a client accepts a job and the member's record in that skill (across
+# all teams) meets the rule. "First time" = approved without "please change". "On time" = sent before the
+# deadline. Nothing lowers a badge automatically: only the Team Leader can, with a reason the member sees.
+promotion:
+  2: {jobs: 2}
+  3: {jobs: 5, last_first_time: 3}
+  4: {jobs: 10, first_time_pct: 80, last_on_time: 5}
+  5: {jobs: 20, first_time_pct: 90, last_on_time: 10}
+
+# A Team Leader can supervise at most this many jobs by Starters (level 1) at once, like the
+# instructor-to-student limit in flight training.
+beginner_limit: 2
 
 # Demo accounts all use this password (DEMO_MODE only).
 demo_password: kaam-demo

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useNotifications, useTemplate } from '@/api/hooks';
-import type { FirstCheck, Job, JobState } from '@/api/types';
+import type { BadgeChange, FirstCheck, Job, JobState, Progress } from '@/api/types';
 import { useT } from '@/i18n';
 import { money } from '@/lib/format';
 import { colors, radius, space, touchMin } from '@/theme';
@@ -106,14 +106,54 @@ export function JobCard({ job, showClient = true, href }: { job: Job; showClient
 /** How the payment is shared. Sajha Kaam never holds the money: this is shown, not processed. */
 export function SplitRows({ job }: { job: Job }) {
   const { t } = useT();
+  const badge = useBadge();
+  const s = job.split;
   return (
     <View style={{ gap: 2 }}>
       <Row label={t('job.budget')} value={money(job.budget_minor, job.currency)} />
-      <Row label={t('job.toJunior')} value={money(job.split.junior, job.currency)} />
-      <Row label={t('job.toAnchor')} value={money(job.split.anchor, job.currency)} />
-      <Row label={t('job.toPlatform')} value={money(job.split.platform, job.currency)} />
+      {s.level && s.junior_pct != null && s.anchor_pct != null ? (
+        <>
+          <Txt variant="small" color={colors.honeyDeep}>{t('job.splitBadge', { badge: badge(s.level) })}</Txt>
+          <Row label={t('job.toJunior', { pct: s.junior_pct })} value={money(s.junior, job.currency)} />
+          <Row label={t('job.toAnchor', { pct: s.anchor_pct })} value={money(s.anchor, job.currency)} />
+          <Row label={t('job.toPlatform', { pct: s.platform_pct })} value={money(s.platform, job.currency)} />
+        </>
+      ) : <Txt variant="small" color={colors.inkSoft}>{t('job.splitPending')}</Txt>}
       <Txt variant="small" color={colors.inkSoft}>{t('job.splitNote')}</Txt>
     </View>
+  );
+}
+
+/** The next badge and what is still needed for it, by the public rules (a tick when done). */
+export function BadgeProgress({ p }: { p: Progress }) {
+  const { t } = useT();
+  const badge = useBadge();
+  if (!p.next_level) return <Txt variant="small" color={colors.green}>{t('badge.top')}</Txt>;
+  return (
+    <View style={{ gap: 4 }}>
+      <Txt variant="label">{t('badge.next', { badge: badge(p.next_level) })}</Txt>
+      {p.checks.map((c) => (
+        <View key={c.code} style={styles.item}>
+          <Icon name={c.ok ? 'check' : 'clock'} size={16} color={c.ok ? colors.green : colors.inkSoft} strokeWidth={2.2} />
+          <Txt variant="small" color={c.ok ? colors.ink : colors.inkSoft} style={{ flex: 1 }}>
+            {t(`badge.check_${c.code}`, { need: c.need, have: c.have })}
+          </Txt>
+        </View>
+      ))}
+      {p.paused_reason ? <Txt variant="small" color={colors.warnInk}>{t('badge.paused', { reason: p.paused_reason })}</Txt> : null}
+    </View>
+  );
+}
+
+/** The last badge change, with the Leader's reason when a person made it. */
+export function BadgeChangeLine({ c }: { c: BadgeChange | null | undefined }) {
+  const { t } = useT();
+  const badge = useBadge();
+  if (!c) return null;
+  return (
+    <Txt variant="small" color={c.kind === 'auto' ? colors.green : colors.warnInk}>
+      {t(`badge.change_${c.kind}`, { from: badge(c.old_level), to: badge(c.new_level), reason: c.reason })}
+    </Txt>
   );
 }
 

@@ -94,14 +94,23 @@
     "short": "Level {{n}}"
   },
   "levelScreen": {
-    "help": "Only you decide a badge. Use the facts below and your own judgement.",
+    "help": "Badges go up by themselves when the rules are met. You can lower a badge or pause one promotion, always with a reason the member sees.",
     "means1": "Learning by helping the Leader.",
     "means2": "Does the work; the Leader checks everything.",
     "means3": "Does the work; the Leader checks some of it.",
     "means4": "Ready to work with clients directly.",
     "means5": "Guides new members.",
     "reason": "Reason (the member sees it)",
-    "reasonEx": "Last 6 jobs needed no changes."
+    "reasonEx": "Last 6 jobs needed no changes.",
+    "lowerTitle": "Lower the badge",
+    "lowerHelp": "Only for a real problem, like copied work or a broken promise to a client.",
+    "lowerSave": "Lower the badge",
+    "lowerEx": "Copied a template without telling the client.",
+    "pauseTitle": "Pause the next promotion",
+    "pauseHelp": "Once. After that, their next verified job counts again.",
+    "pauseSave": "Pause the next promotion",
+    "pauseEx": "Let's see one more on-time job after the late delivery.",
+    "topBadge": "This member has the top badge."
   },
   "check": {
     "title": "Quick check",
@@ -117,9 +126,9 @@
     "days_other": "{{count}} days",
     "doneBy": "Done by {{name}}",
     "budget": "Budget",
-    "toJunior": "To the member (75%)",
-    "toAnchor": "To the Leader (10%)",
-    "toPlatform": "To Sajha Kaam (15%)",
+    "toJunior": "To the member ({{pct}}%)",
+    "toAnchor": "To the checker, the Leader ({{pct}}%)",
+    "toPlatform": "To Sajha Kaam ({{pct}}%)",
     "splitNote": "Demo payment: the client pays after agreeing, it's held until they accept the work, then shared like this. No real money moves.",
     "assignTitle": "Give it to a team member",
     "assignHelp": "Their badge is recorded with the job.",
@@ -155,7 +164,9 @@
     "history": "Tries",
     "sub_waiting": "Waiting for the Leader",
     "sub_sent_back": "Changes asked",
-    "sub_approved": "Approved"
+    "sub_approved": "Approved",
+    "splitBadge": "Shared by the member's badge: {{badge}}",
+    "splitPending": "The member's share depends on their badge: from 50% (★ Starter) to 80% (★★★★★ Mentor). Sajha Kaam takes 15%; the rest goes to the Leader who checks the work."
   },
   "desk": {
     "title": "Today",
@@ -189,9 +200,9 @@
   },
   "team": {
     "members": "Team members",
-    "membersHelp": "Badges change only when you decide.",
+    "membersHelp": "Badges go up by themselves by the rules. Jobs in the last 30 days show how work is shared.",
     "evidence": "{{jobs}} verified jobs · {{streak}} in a row with no changes · changes asked {{back}} times",
-    "changeLevel": "Change badge",
+    "changeLevel": "Lower badge or pause promotion",
     "noMembers": "No one yet. Open a spot below.",
     "seats": "Open spots",
     "seatsHelp": "Everyone with this skill is told when you open spots.",
@@ -204,7 +215,9 @@
     "invite": "Invite a client",
     "inviteCode": "Invite code",
     "inviteHow": "The client opens Sajha Kaam, taps Create account, chooses Client and enters this code.",
-    "inviteMessage": "Join my team {{team}} on Sajha Kaam to post your jobs. Sign up as a client with invite code {{code}}."
+    "inviteMessage": "Join my team {{team}} on Sajha Kaam to post your jobs. Sign up as a client with invite code {{code}}.",
+    "jobs30_one": "{{count}} job in the last 30 days",
+    "jobs30_other": "{{count}} jobs in the last 30 days"
   },
   "notes": {
     "title": "My notes",
@@ -432,7 +445,7 @@
     "join_request": "Someone applied to join your team.",
     "join_accepted": "You were accepted into a team!",
     "join_declined": "A team said not this time.",
-    "level_changed": "Your Leader changed your badge.",
+    "level_changed": "Your Leader lowered your badge. See the reason.",
     "client_joined": "A client joined with your invite code.",
     "job_sent": "A client sent your team a job.",
     "job_open": "A new job was posted for your skill.",
@@ -457,7 +470,10 @@
     "application_chosen": "A client chose you for a job!",
     "application_not_chosen": "A client chose someone else for a job.",
     "mentor_chosen": "A client chose your Mentor for a job. You'll check the work.",
-    "payment_held": "A client paid for a job. It's held until they accept the work."
+    "payment_held": "A client paid for a job. It's held until they accept the work.",
+    "level_up": "Your badge went up! See what's next.",
+    "member_level_up": "A team member's badge went up by the rules.",
+    "promotion_paused": "Your Leader paused your next promotion. See the reason."
   },
   "apply": {
     "title": "Apply for this job",
@@ -519,5 +535,23 @@
     "failed": "The upload didn't finish. Check your internet and try again, or paste a link below.",
     "orLink": "Or paste a link instead (YouTube, Google Drive, Vimeo, Loom)",
     "linkHelp": "Upload it to YouTube as “Unlisted” or to Google Drive shared with “anyone with the link”, then paste the link."
+  },
+  "badge": {
+    "next": "Next badge: {{badge}}",
+    "top": "Top badge reached.",
+    "check_jobs": "{{need}} verified jobs (now {{have}})",
+    "check_last_first_time": "Last {{need}} approved first time (now {{have}} in a row)",
+    "check_first_time_pct": "{{need}}% approved first time (now {{have}}%)",
+    "check_last_on_time": "Last {{need}} sent on time (now {{have}} in a row)",
+    "paused": "Next promotion paused by the Leader: “{{reason}}”",
+    "change_auto": "Badge went up by the rules: {{from}} → {{to}}",
+    "change_lowered": "Badge lowered by the Leader, {{from}} → {{to}}: “{{reason}}”",
+    "change_paused": "The Leader paused the next promotion: “{{reason}}”",
+    "yourProgress": "Your next badge",
+    "rulesHelp": "Badges go up by themselves when a client accepts your work and the rules are met. Your pay share goes up with them.",
+    "sharing": "How jobs were shared (last 30 days)",
+    "sharingHelp": "Everyone in the team sees this.",
+    "beginnerLimit": "You already supervise 2 jobs by Starters. Finish one first, or give this job to a more experienced member.",
+    "alreadyPaused": "A promotion is already paused for this member."
   }
 }

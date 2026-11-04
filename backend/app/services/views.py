@@ -2,10 +2,11 @@
 
 from sqlmodel import Session, func, select
 
-from app.models import Job, JobApplication, LogEntry, Pod, PodMember, Submission, User
+from app.models import Job, JobApplication, LevelChange, LogEntry, Pod, PodMember, Submission, User
 from app.schemas import (
     Amendment,
     ApplicationOut,
+    BadgeChange,
     FirstCheck,
     JobDetail,
     JobOut,
@@ -14,10 +15,12 @@ from app.schemas import (
     PendingChange,
     PersonOut,
     PodOut,
+    Progress,
     Reference,
+    RuleCheck,
     SubmissionOut,
 )
-from app.services import signing
+from app.services import signing, work
 from app.services.work import anchor_of, applications_of, due_at, my_application, split
 
 
@@ -46,7 +49,7 @@ def job_out(session: Session, j: Job, viewer: User | None = None) -> JobOut:
         amendments=[Amendment(**a) for a in j.amendments], supervision_level=j.supervision_level,
         junior_accepted_at=j.junior_accepted_at, created_at=j.created_at, due_at=due_at(j), payment=j.payment,
         paid_at=j.paid_at, paid_out_at=j.paid_out_at, client=client, anchor=person(anchor) if anchor else None,
-        junior=person(junior) if junior else None, split=MoneySplit(**split(j.budget_minor)),
+        junior=person(junior) if junior else None, split=MoneySplit(**split(j.budget_minor, j.supervision_level)),
     )
 
 
@@ -89,6 +92,17 @@ def job_detail(session: Session, j: Job, approved_only: bool = False, viewer: Us
 def entry_out(e: LogEntry) -> LogEntryOut:
     return LogEntryOut(id=e.id, credential=e.credential, signature_b64=e.signature_b64, key_id=e.key_id,
                        issued_at=e.issued_at, valid=signing.verify(e.credential, e.signature_b64))
+
+
+def badge_change(lc: LevelChange | None) -> BadgeChange | None:
+    return BadgeChange(kind=lc.kind, old_level=lc.old_level, new_level=lc.new_level, reason=lc.reason,
+                       created_at=lc.created_at) if lc else None
+
+
+def progress_out(session: Session, pod: Pod, m: PodMember) -> Progress:
+    p = work.progress(session, m, pod.skill)
+    return Progress(level=p["level"], next_level=p["next_level"], checks=[RuleCheck(**c) for c in p["checks"]],
+                    verified=p["verified"], paused_reason=p["paused_reason"])
 
 
 def levels_by_team(session: Session, junior_id: str) -> dict[str, int]:

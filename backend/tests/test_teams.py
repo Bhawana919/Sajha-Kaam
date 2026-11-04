@@ -1,6 +1,6 @@
 """Joining a team (blind review), seats, levels and client invites."""
 
-from app.seed import ANUSHA_ID, ASHA_ID, BIKASH_ID, CAFE_ID, PEMBA_ID, RAJAN_ID, SITA_ID
+from app.seed import ANUSHA_ID, ASHA_ID, BIKASH_ID, PEMBA_ID, RAJAN_ID, SITA_ID
 from tests.conftest import GOOD_JOB, auth
 
 
@@ -64,21 +64,6 @@ def test_opening_seats_notifies_everyone_with_the_skill(client):
     client.put("/v1/anchor/seats", json={"seats_open": 0}, headers=rajan)
     client.put("/v1/anchor/seats", json={"seats_open": 1}, headers=rajan)
     assert "seats_open" in [n["kind"] for n in client.get("/v1/notifications", headers=asha).json()]
-
-
-def test_anchor_changes_levels_from_evidence(client):
-    rajan = auth(client, RAJAN_ID)
-    members = {m["person"]["display_name"]: m for m in client.get("/v1/anchor/team", headers=rajan).json()["members"]}
-    assert members["Bikash Tamang"]["level"] == 3
-    assert members["Bikash Tamang"]["evidence"] == {"signed_jobs": 2, "first_try_streak": 2, "sent_back_total": 0}
-    r = client.post(f"/v1/anchor/members/{SITA_ID}/level", json={"level": 3, "reason": "Clean work, no changes."},
-                    headers=rajan)
-    assert r.json()["level"] == 3
-    assert "level_changed" in [n["kind"] for n in client.get("/v1/notifications", headers=auth(client, SITA_ID)).json()]
-    assert client.post(f"/v1/anchor/members/{SITA_ID}/level", json={"level": 6, "reason": "x"},
-                       headers=rajan).status_code == 422
-    assert client.post(f"/v1/anchor/members/{SITA_ID}/level", json={"level": 4, "reason": "nope"},
-                       headers=auth(client, CAFE_ID)).status_code == 403
 
 
 def test_invited_client_signs_up_and_sends_a_job(client):

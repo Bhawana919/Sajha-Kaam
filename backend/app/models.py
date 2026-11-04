@@ -84,8 +84,12 @@ class PodMember(SQLModel, table=True):
     __tablename__ = "pod_members"
     pod_id: str = Field(foreign_key="pods.id", primary_key=True)
     junior_id: str = Field(foreign_key="users.id", primary_key=True)
-    level: int = 2  # 1 shadow · 2 close review · 3 spot check · 4 solo · 5 lead
+    level: int = 1  # 1 Starter · 2 Learner · 3 Trusted · 4 Pro · 5 Mentor (goes up automatically by the rules)
     joined_at: datetime = Field(default_factory=utcnow)
+    # The Team Leader paused the next automatic promotion (once, with a reason the member sees).
+    # Promotion is skipped while the member's verified jobs in the skill are <= hold_at_jobs.
+    hold_at_jobs: int | None = None
+    hold_reason: str = ""
 
 
 class LevelChange(SQLModel, table=True):
@@ -96,6 +100,7 @@ class LevelChange(SQLModel, table=True):
     old_level: int
     new_level: int
     reason: str
+    kind: str = "auto"  # auto (the rules) | lowered (Team Leader) | paused (Team Leader paused a promotion)
     created_at: datetime = Field(default_factory=utcnow)
 
 
@@ -161,6 +166,7 @@ class Job(SQLModel, table=True):
     pending_change: dict = _json(dict)  # an Anchor's proposed amendment: {deadline_days, budget_minor, note}
     amendments: list[dict] = _json()  # accepted amendments: [{field, old, new, note, at}]
     supervision_level: int | None = None  # the junior's level when assigned, recorded in the logbook
+    assigned_at: datetime | None = None  # when it was given to a member (for the team's fairness view)
     junior_accepted_at: datetime | None = None  # the junior tapped "I accept" on the brief
     # Demo payment (no real money): the client pays after agreeing, it is held until the client
     # accepts the work, then paid out as the split.  unpaid -> held -> paid_out

@@ -78,10 +78,17 @@ def test_style_search_finds_the_anchors_closest_note():
     assert style.rank("zzz", notes) == []
 
 
-def test_split_always_adds_up():
+def test_split_always_adds_up_and_follows_the_badge():
     for price in (1, 999, 8000, 12345):
-        parts = work.split(price)
-        assert sum(parts.values()) == price and parts["junior"] >= parts["platform"] >= parts["anchor"] or price < 10
+        for level in (1, 2, 3, 4, 5):
+            p = work.split(price, level)
+            assert p["junior"] + p["anchor"] + p["platform"] == price
+            assert p["junior_pct"] + p["anchor_pct"] + p["platform_pct"] == 100
+    shares = [work.split(10000, level) for level in (1, 2, 3, 4, 5)]
+    assert [(s["junior"], s["anchor"], s["platform"]) for s in shares] == [
+        (5000, 3500, 1500), (6000, 2500, 1500), (7000, 1500, 1500), (7800, 700, 1500), (8000, 500, 1500)]
+    unassigned = work.split(10000, None)  # before a member is chosen, only the platform part is known
+    assert unassigned["level"] is None and unassigned["junior"] == 0 and unassigned["platform"] == 1500
 
 
 def test_client_cannot_switch_ai_setting(client):

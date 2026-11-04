@@ -3,9 +3,10 @@
 Story: Rajan (web developer, Sydney) and Anusha (video editor, London) are Anchors. Rajan's team
 already has Bikash (Level 3, two signed jobs) and Sita (Level 2, one job to do now). Harbour Café in
 Melbourne is Rajan's client: Rajan writes its job agreements and Emma agrees to them; one new
-agreement is waiting for Emma. Pemba is a Mentor (Level 5) in Anusha's team with two signed jobs.
-Himal Threads in Toronto has posted an open video job that Anusha or Pemba can apply for. Asha has
-asked to join Anusha's team. All accounts use the demo password.
+agreement is waiting for Emma. Every badge below was earned by the automatic rules while the history
+was replayed: Sita 2 jobs (Learner), Bikash 5 first-time jobs (Trusted), Pemba 20 first-time, on-time
+video jobs over five months (Mentor). Himal Threads in Toronto has posted an open video job that Anusha
+or Pemba can apply for. Asha has asked to join Anusha's team. All accounts use the demo password.
 """
 
 from datetime import timedelta
@@ -107,6 +108,44 @@ JOB_THREADS_UNBOX = {
     "details": {"length": "45 seconds", "format": "MP4, 9:16 vertical", "source": "https://drive.google.com/drive/folders/himal-threads-scarves"},
     "deadline_days": 4, "budget_minor": 4500, "revisions": 1,
 }
+def _web(title: str, deliverable: str, done_when: list[str], budget: int, days: int = 3) -> dict:
+    return {"skill": "web", "title": title, "deliverables": [deliverable], "done_when": done_when,
+            "details": {"stack": "WordPress", "devices": "Mobile and desktop; Chrome, Safari"},
+            "deadline_days": days, "budget_minor": budget, "revisions": 1}
+
+
+# Bikash's earlier jobs (with the two above): five accepted first time -> Trusted.
+BIKASH_MORE = [
+    _web("Add a photo gallery of the café", "Gallery page with 12 photos",
+         ["Gallery shows 12 photos in a grid", "Each photo has alt text describing the dish", "Page loads in under 3 seconds"], 7000),
+    _web("Fix the broken footer links", "Working footer links", ["All 8 footer links open the right page",
+         "Footer looks the same on a phone 375px wide"], 3000, 2),
+    _web("Add a newsletter sign-up box", "Sign-up box on the homepage", ["Box asks for email only",
+         "Sign-up arrives in the café's Mailchimp list", "Box has a visible label"], 5000),
+]
+# Sita's first two jobs: accepted -> Learner.
+SITA_EARLIER = [
+    _web("Show the café's Instagram posts on the homepage", "Instagram strip on the homepage",
+         ["Shows the 6 newest posts", "Strip fits a phone 375px wide"], 4000),
+    _web("Add the café's opening dates for the holidays", "Holiday hours banner",
+         ["Banner lists the 5 holiday dates and hours", "Banner can be closed with one tap"], 3000, 2),
+]
+# Pemba's twenty video jobs for Himal Threads, over five months: first time, on time -> Mentor.
+_PRODUCTS = ["Dhaka topi", "pashmina shawl", "felt slippers", "hemp backpack", "singing bowl", "Tihar candles",
+             "lokta notebooks", "Thangka prints", "yak-wool socks", "Dashain gift box", "brass diyo", "silk scarf",
+             "prayer flags", "Newari jewellery", "Teej bangles", "khukuri keyring", "tea gift set", "wool beanie",
+             "cotton kurta", "handmade soap"]
+
+
+def _reel(product: str) -> dict:
+    return {"skill": "video", "title": f"15-second reel: {product}", "deliverables": ["One vertical video, 15 seconds"],
+            "done_when": ["Length is between 14 and 16 seconds", "Exported 1080×1920 MP4",
+                          f"Shows the {product} in the first 2 seconds", "Shop logo shows in the last 2 seconds"],
+            "details": {"length": "15 seconds", "format": "MP4, 9:16 vertical",
+                        "source": "https://drive.google.com/drive/folders/himal-threads-products"},
+            "deadline_days": 3, "budget_minor": 3000, "revisions": 1}
+
+
 JOB_CAFE_HOURS = {
     "skill": "web", "title": "Show opening hours and a map on the Contact page",
     "deliverables": ["Opening hours table on the Contact page", "Embedded Google Map"],
@@ -139,6 +178,21 @@ def _agreed_and_started(session: Session, anchor: User, client: User, junior: Us
     work.pay(session, client, job)
     work.assign(session, anchor, job, junior.id)
     return work.answer_brief(session, junior, job, accept=True)
+
+
+def _finished(session: Session, anchor: User, client: User, junior: User, spec: dict, link: str, days_ago: int) -> None:
+    """A job done right the first time, on time, and accepted: the real steps, then dated in the past so the
+    team's "jobs in the last 30 days" view is realistic. Accepting it may raise the badge by the rules."""
+    job = _agreed_and_started(session, anchor, client, junior, spec)
+    sub = work.submit(session, junior, job, link="", content=f"Done: {'; '.join(spec['done_when'])}", note="")
+    sub.link = link  # added after the check, so seeding never tries to open these sample links
+    session.add(sub)
+    session.commit()
+    work.approve(session, anchor, sub.id)
+    work.accept(session, client, job, show_client=True)
+    job.assigned_at = job.assigned_at - timedelta(days=days_ago)
+    session.add(job)
+    session.commit()
 
 
 def seed(session: Session) -> None:
@@ -179,13 +233,13 @@ def seed(session: Session) -> None:
                       languages=["Nepali", "English"], tools=["Premiere Pro", "Canva"],
                       samples=[{"title": "Café promo", "link": "https://drive.google.com/file/d/1cafePromoClip"}],
                       hours_per_week=12, district="Sunsari"),
-        PodMember(pod_id=RAJAN_TEAM, junior_id=BIKASH_ID, level=3),
-        PodMember(pod_id=RAJAN_TEAM, junior_id=SITA_ID, level=2),
+        PodMember(pod_id=RAJAN_TEAM, junior_id=BIKASH_ID, level=1),  # badges are earned below, by the rules
+        PodMember(pod_id=RAJAN_TEAM, junior_id=SITA_ID, level=1),
         AnchorClient(anchor_id=RAJAN_ID, client_id=CAFE_ID),
         AnchorClient(anchor_id=ANUSHA_ID, client_id=THREADS_ID),
         *[AnchorNote(anchor_id=RAJAN_ID, text=t, source="seed") for t in RAJAN_NOTES],
         *[AnchorNote(anchor_id=ANUSHA_ID, text=t, source="seed") for t in ANUSHA_NOTES],
-        PodMember(pod_id=ANUSHA_TEAM, junior_id=PEMBA_ID, level=4),
+        PodMember(pod_id=ANUSHA_TEAM, junior_id=PEMBA_ID, level=1),
         JoinRequest(pod_id=ANUSHA_TEAM, junior_id=ASHA_ID, sample_link="https://drive.google.com/file/d/1cafePromoClip",
                     note="I make short promos for cafés and shops; I want to learn client work.",
                     test_answer="Open on the brightest shirt with '20% OFF' big in the first second, then three quick "
@@ -193,26 +247,19 @@ def seed(session: Session) -> None:
     ])
     session.commit()
 
-    # Bikash: two finished jobs for Harbour Café, approved first time, accepted, signed.
-    for spec, work_link in ((JOB_CAFE_BOOKING, "https://github.com/harbour-cafe/site/pull/12"),
-                            (JOB_CAFE_IMAGES, "https://github.com/harbour-cafe/site/pull/15")):
-        job = _agreed_and_started(session, rajan, cafe, bikash, spec)
-        sub = work.submit(session, bikash, job, link="", content=f"Done: {'; '.join(spec['done_when'])}",
-                          note=f"PR: {work_link}")
-        sub.link = work_link
-        session.add(sub)
-        session.commit()
-        work.approve(session, rajan, sub.id)
-        work.accept(session, cafe, job, show_client=True)
-
-    # Pemba: two finished video jobs for Himal Threads, then Anusha makes him a Mentor.
-    for spec, work_link in ((JOB_THREADS_TIHAR, "https://drive.google.com/file/d/tiharTeaserFinal"),
-                            (JOB_THREADS_UNBOX, "https://drive.google.com/file/d/scarfUnboxingFinal")):
-        job = _agreed_and_started(session, anusha, threads, pemba, spec)
-        sub = work.submit(session, pemba, job, link=work_link, content=f"Done: {'; '.join(spec['done_when'])}", note="")
-        work.approve(session, anusha, sub.id)
-        work.accept(session, threads, job, show_client=True)
-    work.set_level(session, anusha, PEMBA_ID, 5, "Two client jobs accepted first time; ready to lead.")
+    # The history, replayed through the real steps. Badges go up by themselves as clients accept work.
+    bikash_jobs = [(JOB_CAFE_BOOKING, "https://github.com/harbour-cafe/site/pull/12"),
+                   (JOB_CAFE_IMAGES, "https://github.com/harbour-cafe/site/pull/15"),
+                   *[(spec, f"https://github.com/harbour-cafe/site/pull/{20 + i}") for i, spec in enumerate(BIKASH_MORE)]]
+    for i, (spec, link) in enumerate(bikash_jobs):
+        _finished(session, rajan, cafe, bikash, spec, link, days_ago=80 - i * 15)
+    for i, spec in enumerate(SITA_EARLIER):
+        _finished(session, rajan, cafe, sita, spec, f"https://github.com/harbour-cafe/site/pull/{40 + i}", days_ago=20 - i * 8)
+    pemba_jobs = [(JOB_THREADS_TIHAR, "https://drive.google.com/file/d/tiharTeaserFinal"),
+                  (JOB_THREADS_UNBOX, "https://drive.google.com/file/d/scarfUnboxingFinal"),
+                  *[(_reel(p), f"https://drive.google.com/file/d/reel-{i}") for i, p in enumerate(_PRODUCTS[:18])]]
+    for i, (spec, link) in enumerate(pemba_jobs):
+        _finished(session, anusha, threads, pemba, spec, link, days_ago=150 - i * 7)
 
     # Sita: a job to do now (the live demo).
     _agreed_and_started(session, rajan, cafe, sita, JOB_CAFE_MENU, job_id=SITA_JOB)

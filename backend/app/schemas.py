@@ -145,16 +145,61 @@ class Evidence(BaseModel):
     sent_back_total: int
 
 
+class RuleCheck(BaseModel):
+    code: Literal["jobs", "last_first_time", "first_time_pct", "last_on_time"]
+    need: int
+    have: int
+    ok: bool
+
+
+class Progress(BaseModel):
+    """The next badge and what is still needed, by the public rules. Badges go up automatically."""
+    level: int
+    next_level: int | None
+    checks: list[RuleCheck]
+    verified: int  # verified jobs in this skill, across all teams
+    paused_reason: str  # the Team Leader paused the next promotion, with this reason
+
+
+class BadgeChange(BaseModel):
+    kind: Literal["auto", "lowered", "paused"]
+    old_level: int
+    new_level: int
+    reason: str
+    created_at: datetime
+
+
 class MemberOut(BaseModel):
     person: PersonOut
     level: int
     evidence: Evidence
     open_jobs: int
+    jobs_30d: int = 0  # jobs given to them in the last 30 days (fairness view)
+    progress: Progress | None = None
+    last_change: BadgeChange | None = None
 
 
 class LevelIn(BaseModel):
-    level: int = Field(ge=1, le=5)
+    level: int = Field(ge=1, le=5)  # lower only: badges go up by the rules
     reason: str = Field(min_length=3, max_length=300)
+
+
+class PauseIn(BaseModel):
+    reason: str = Field(min_length=3, max_length=300)
+
+
+class ShareRow(BaseModel):
+    person: PersonOut
+    level: int
+    jobs_30d: int
+
+
+class MyTeamStatus(BaseModel):
+    """For a member: their progress in one team, the last badge change, and how jobs were shared."""
+    team_id: str
+    progress: Progress
+    last_change: BadgeChange | None
+    sharing: list[ShareRow]
 
 
 class TeamOut(BaseModel):
@@ -233,9 +278,14 @@ class CheckOut(BaseModel):
 
 
 class MoneySplit(BaseModel):
+    """The member's share follows their badge for this job; before a member is chosen it isn't known yet."""
     junior: int
-    anchor: int
+    anchor: int  # the checker (Team Leader)
     platform: int
+    level: int | None
+    junior_pct: int | None
+    anchor_pct: int | None
+    platform_pct: int
 
 
 class JobOut(BaseModel):
@@ -404,6 +454,7 @@ class JuniorHome(BaseModel):
     profile_slug: str
     open_jobs: list[JobOut] = Field(default_factory=list)  # Mentors only: client jobs they may apply for
     earnings: list[MyMoney] = Field(default_factory=list)
+    team_status: list[MyTeamStatus] = Field(default_factory=list)
 
 
 class ClientHome(BaseModel):

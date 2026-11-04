@@ -7,7 +7,7 @@ import { Share, View } from 'react-native';
 import { useInvite, useSeats, useTeam } from '@/api/hooks';
 import type { Team } from '@/api/types';
 import { Field, useErrorText } from '@/components/forms';
-import { Bell, LevelTag, useSkillName } from '@/components/guthi';
+import { BadgeChangeLine, BadgeProgress, Bell, LevelTag, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { Button, Panel, Section, StateView } from '@/components/ui';
@@ -58,7 +58,10 @@ export default function TeamScreen() {
                   {t('team.evidence', { jobs: digits(m.evidence.signed_jobs), streak: digits(m.evidence.first_try_streak),
                     back: digits(m.evidence.sent_back_total) })}
                 </Txt>
-                <Button kind="secondary" label={t('team.changeLevel')} onPress={() => router.push(`/level/${m.person.id}`)} />
+                <Txt variant="small">{t('team.jobs30', { count: m.jobs_30d ?? 0 })}</Txt>
+                {m.progress ? <BadgeProgress p={m.progress} /> : null}
+                <BadgeChangeLine c={m.last_change} />
+                <Button kind="quiet" label={t('team.changeLevel')} onPress={() => router.push(`/level/${m.person.id}`)} />
               </Panel>
             )) : <Txt color={colors.inkSoft}>{t('team.noMembers')}</Txt>}
           </Section>

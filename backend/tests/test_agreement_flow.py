@@ -73,7 +73,7 @@ def test_junior_accepts_the_brief_before_starting(client):
 
     brief = client.get(f"/v1/jobs/{AGREE_JOB}", headers=sita).json()["job"]
     assert brief["client"] == {"id": "", "display_name": "", "headline": "", "country": "Australia"}
-    assert brief["split"]["junior"] == 3750  # her share, 75% of $50
+    assert brief["split"]["junior"] == 3000 and brief["split"]["junior_pct"] == 60  # ★★ Learner: 60% of $50
     # No work before "I accept", and only Sita can answer.
     assert client.post(f"/v1/jobs/{AGREE_JOB}/submit", json={"content": "x"}, headers=sita).status_code == 409
     assert client.post(f"/v1/jobs/{AGREE_JOB}/brief", json={"accept": True}, headers=bikash).status_code == 403

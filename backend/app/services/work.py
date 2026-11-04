@@ -38,12 +38,20 @@ from app.services import agreement, checker, notify, signing, uploads
 LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
-def split(price_minor: int) -> dict[str, int]:
-    """How a payment is shared. Rounding goes to the junior, so the parts always add up."""
-    pct = load_yaml("guthi.yaml")["split"]
-    anchor = price_minor * pct["anchor"] // 100
-    platform = price_minor * pct["platform"] // 100
-    return {"junior": price_minor - anchor - platform, "anchor": anchor, "platform": platform}
+def split(price_minor: int, level: int | None) -> dict:
+    """How a payment is shared. The member's share follows their badge for the job; Sajha Kaam's is fixed;
+    the rest goes to the checker. Before a job has a member, only the platform part is known.
+    Rounding goes to the member, so the parts always add up."""
+    cfg = load_yaml("guthi.yaml")["split"]
+    platform = price_minor * cfg["platform"] // 100
+    if level is None:
+        return {"junior": 0, "anchor": 0, "platform": platform, "level": None, "junior_pct": None, "anchor_pct": None,
+                "platform_pct": cfg["platform"]}
+    junior_pct = cfg["member_by_level"][level]
+    anchor_pct = 100 - cfg["platform"] - junior_pct
+    anchor = price_minor * anchor_pct // 100
+    return {"junior": price_minor - anchor - platform, "anchor": anchor, "platform": platform, "level": level,
+            "junior_pct": junior_pct, "anchor_pct": anchor_pct, "platform_pct": cfg["platform"]}
 
 
 def level_name(level: int) -> str:
@@ -192,7 +200,9 @@ def decide_request(session: Session, anchor: User, request_id: str, accept: bool
         raise HTTPException(409, "no_seats_left")
     req.status, req.decided_at = ("accepted" if accept else "declined"), utcnow()
     if accept:
-        session.add(PodMember(pod_id=pod.id, junior_id=req.junior_id, level=2))
+        # A new member starts at the level their record in this skill already earned (often Starter).
+        session.add(PodMember(pod_id=pod.id, junior_id=req.junior_id,
+                              level=earned_level(skill_record(session, req.junior_id, pod.skill))))
         pod.seats_open -= 1
         session.add(pod)
     session.add(req)
@@ -204,26 +214,144 @@ def decide_request(session: Session, anchor: User, request_id: str, accept: bool
 
 # ---------- levels ----------
 
+def _rules() -> dict[int, dict]:
+    return {int(k): v for k, v in load_yaml("guthi.yaml")["promotion"].items()}
+
+
+def skill_record(session: Session, junior_id: str, skill: str) -> list[dict]:
+    """Every job the member finished in this skill (any team), newest first: approved first time? on time?"""
+    jobs = session.exec(select(Job).where(Job.junior_id == junior_id, Job.skill == skill,
+                                          Job.state == "client_accepted")).all()
+    out = []
+    for job in jobs:
+        subs = session.exec(select(Submission).where(Submission.job_id == job.id)).all()
+        approved = next((x for x in subs if x.status == "approved"), None)
+        due, sent = due_at(job), approved.created_at if approved else None
+        if sent is not None and sent.tzinfo is None:
+            sent = sent.replace(tzinfo=UTC)
+        out.append({"first_time": not any(x.status == "sent_back" for x in subs),
+                    "on_time": due is None or sent is None or sent <= due,
+                    "at": job.paid_out_at or job.created_at})
+    return sorted(out, key=lambda r: r["at"].replace(tzinfo=None), reverse=True)
+
+
+def _streak(record: list[dict], key: str) -> int:
+    n = 0
+    for r in record:
+        if not r[key]:
+            break
+        n += 1
+    return n
+
+
+def rule_checks(level: int, record: list[dict]) -> list[dict]:
+    """The rule for one level as checks the member can read: what is needed, what they have."""
+    rule, done = _rules()[level], len(record)
+    first_pct = round(100 * sum(r["first_time"] for r in record) / done) if done else 0
+    checks = [{"code": "jobs", "need": rule["jobs"], "have": done}]
+    if "last_first_time" in rule:
+        checks.append({"code": "last_first_time", "need": rule["last_first_time"], "have": _streak(record, "first_time")})
+    if "first_time_pct" in rule:
+        checks.append({"code": "first_time_pct", "need": rule["first_time_pct"], "have": first_pct})
+    if "last_on_time" in rule:
+        checks.append({"code": "last_on_time", "need": rule["last_on_time"], "have": _streak(record, "on_time")})
+    return [{**c, "ok": c["have"] >= c["need"]} for c in checks]
+
+
+def earned_level(record: list[dict]) -> int:
+    """The highest badge the record meets by the public rules (Starter if none)."""
+    for level in sorted(_rules(), reverse=True):
+        if all(c["ok"] for c in rule_checks(level, record)):
+            return level
+    return 1
+
+
+def progress(session: Session, member: PodMember, skill: str) -> dict:
+    """Where the member stands: the next badge and what is still needed for it."""
+    record = skill_record(session, member.junior_id, skill)
+    paused = member.hold_at_jobs is not None and len(record) <= member.hold_at_jobs
+    nxt = member.level + 1 if member.level < 5 else None
+    return {"level": member.level, "next_level": nxt, "checks": rule_checks(nxt, record) if nxt else [],
+            "verified": len(record), "paused_reason": member.hold_reason if paused else ""}
+
+
+def promote_by_record(session: Session, junior_id: str, skill: str) -> None:
+    """After a client accepts a job: raise the badge in every team with this skill if the rules are met.
+    Never lowers. Skips once if the Team Leader paused this promotion (with a reason the member saw)."""
+    record = skill_record(session, junior_id, skill)
+    target = earned_level(record)
+    for m in memberships(session, junior_id):
+        pod = session.get(Pod, m.pod_id)
+        if pod is None or pod.skill != skill:
+            continue
+        if m.hold_at_jobs is not None:
+            if len(record) <= m.hold_at_jobs:
+                continue
+            m.hold_at_jobs, m.hold_reason = None, ""
+        if target > m.level:
+            session.add(LevelChange(pod_id=pod.id, junior_id=junior_id, old_level=m.level, new_level=target,
+                                    reason="", kind="auto"))
+            m.level = target
+            notify.send(session, [junior_id], "level_up", pod.id)
+            notify.send(session, [pod.anchor_id], "member_level_up", pod.id)
+        session.add(m)
+
+
 def set_level(session: Session, anchor: User, junior_id: str, level: int, reason: str) -> PodMember:
+    """The Team Leader can only LOWER a badge (badges go up by the rules), with a reason the member sees."""
     pod = pod_of_anchor(session, anchor.id)
     member = session.get(PodMember, (pod.id, junior_id))
     if member is None:
         raise HTTPException(404, "not_in_team")
     if not 1 <= level <= 5:
         raise HTTPException(422, "level_out_of_range")
-    if level != member.level:
-        session.add(LevelChange(pod_id=pod.id, junior_id=junior_id, old_level=member.level, new_level=level,
-                                reason=reason.strip()))
-        member.level = level
-        session.add(member)
-        notify.send(session, [junior_id], "level_changed", pod.id)
-        session.commit()
-        session.refresh(member)
+    if level >= member.level:
+        raise HTTPException(422, "can_only_lower")
+    session.add(LevelChange(pod_id=pod.id, junior_id=junior_id, old_level=member.level, new_level=level,
+                            reason=reason.strip(), kind="lowered"))
+    member.level = level
+    session.add(member)
+    notify.send(session, [junior_id], "level_changed", pod.id)
+    session.commit()
+    session.refresh(member)
     return member
 
 
+def pause_promotion(session: Session, anchor: User, junior_id: str, reason: str) -> PodMember:
+    """Pause the member's NEXT automatic promotion, once, with a reason the member sees. The verified job
+    after that counts again."""
+    pod = pod_of_anchor(session, anchor.id)
+    member = session.get(PodMember, (pod.id, junior_id))
+    if member is None:
+        raise HTTPException(404, "not_in_team")
+    done = len(skill_record(session, junior_id, pod.skill))
+    if member.hold_at_jobs is not None and done <= member.hold_at_jobs:
+        raise HTTPException(409, "already_paused")
+    if member.level >= 5:
+        raise HTTPException(409, "already_top")
+    member.hold_at_jobs, member.hold_reason = done + 1, reason.strip()
+    session.add_all([member, LevelChange(pod_id=pod.id, junior_id=junior_id, old_level=member.level,
+                                         new_level=member.level, reason=reason.strip(), kind="paused")])
+    notify.send(session, [junior_id], "promotion_paused", pod.id)
+    session.commit()
+    session.refresh(member)
+    return member
+
+
+def last_change(session: Session, pod_id: str, junior_id: str) -> LevelChange | None:
+    return session.exec(select(LevelChange).where(LevelChange.pod_id == pod_id, LevelChange.junior_id == junior_id)
+                        .order_by(LevelChange.created_at.desc())).first()
+
+
+def jobs_last_30_days(session: Session, pod_id: str, junior_id: str) -> int:
+    """How many jobs the member was given in the last 30 days (the team's fairness view)."""
+    since = (utcnow() - timedelta(days=30)).replace(tzinfo=None)
+    jobs = session.exec(select(Job).where(Job.pod_id == pod_id, Job.junior_id == junior_id)).all()
+    return sum(1 for j in jobs if j.assigned_at and j.assigned_at.replace(tzinfo=None) >= since)
+
+
 def evidence(session: Session, pod: Pod, junior_id: str) -> dict:
-    """Facts for the Anchor's level decision. It suggests nothing: the Anchor decides."""
+    """Facts behind the badge in this team, shown next to it."""
     jobs = session.exec(select(Job).where(Job.pod_id == pod.id, Job.junior_id == junior_id,
                                           Job.state == "client_accepted").order_by(Job.created_at.desc())).all()
     streak = 0
@@ -425,6 +553,7 @@ def choose_applicant(session: Session, client: User, job: Job, application_id: s
     if member is not None:
         # Applying was the Mentor's "I accept": they start straight away at their level.
         job.junior_id, job.supervision_level, job.junior_accepted_at = applicant.id, member.level, now
+        job.assigned_at = now
         job.state = "working"
         notify.send(session, [pod.anchor_id], "mentor_chosen", job.id)
     if session.get(AnchorClient, (pod.anchor_id, client.id)) is None:
@@ -493,8 +622,15 @@ def assign(session: Session, anchor: User, job: Job, junior_id: str) -> Job:
     member = session.get(PodMember, (pod.id, junior_id))
     if member is None:
         raise HTTPException(422, "not_in_team")
+    if member.level == 1 and job.junior_id != junior_id:
+        # Like an instructor's limit of student pilots: a Leader supervises only a few Starters at once.
+        starters = session.exec(select(Job).where(Job.pod_id == pod.id, Job.supervision_level == 1,
+                                                  Job.state.in_(("assigned", "working", "submitted", "sent_back")),
+                                                  Job.id != job.id)).all()
+        if len(starters) >= load_yaml("guthi.yaml")["beginner_limit"]:
+            raise HTTPException(409, "beginner_limit")
     job.junior_id, job.state, job.supervision_level = junior_id, "assigned", member.level
-    job.junior_accepted_at = None
+    job.junior_accepted_at, job.assigned_at = None, utcnow()
     notify.send(session, [junior_id], "job_assigned", job.id)
     return _save(session, job)
 
@@ -612,7 +748,7 @@ def team_money(session: Session, pod: Pod) -> tuple[list[dict], list[dict]]:
         if job.payment == "held":
             t["held_minor"] += job.budget_minor
             continue
-        s = split(job.budget_minor)
+        s = split(job.budget_minor, job.supervision_level)
         t["paid_out_minor"] += job.budget_minor
         t["anchor_minor"] += s["anchor"]
         t["jobs_paid"] += 1
@@ -628,7 +764,7 @@ def junior_money(session: Session, junior_id: str) -> list[dict]:
     out: dict[str, dict] = {}
     for job in session.exec(select(Job).where(Job.junior_id == junior_id, Job.payment != "unpaid")).all():
         row = out.setdefault(job.currency, {"currency": job.currency, "paid_out_minor": 0, "held_minor": 0})
-        row["paid_out_minor" if job.payment == "paid_out" else "held_minor"] += split(job.budget_minor)["junior"]
+        row["paid_out_minor" if job.payment == "paid_out" else "held_minor"] += split(job.budget_minor, job.supervision_level)["junior"]
     return list(out.values())
 
 
@@ -671,6 +807,8 @@ def accept(session: Session, client: User, job: Job, show_client: bool) -> LogEn
     notify.send(session, [junior.id], "log_signed", job.id)
     notify.send(session, [anchor.id], "client_accepted", job.id)
     session.add_all([entry, job])
+    session.flush()
+    promote_by_record(session, junior.id, job.skill)  # badges go up by the public rules, never by hand
     session.commit()
     session.refresh(entry)
     return entry

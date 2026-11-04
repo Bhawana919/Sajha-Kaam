@@ -43,7 +43,7 @@ def test_client_chooses_between_a_leader_and_a_mentor(client):
     assert OPEN_JOB not in [j["id"] for j in home["in_progress"]]
     a = apps(client, threads)
     assert a["Pemba Sherpa"]["role"] == "junior" and a["Pemba Sherpa"]["level"] == 5
-    assert a["Pemba Sherpa"]["signed_jobs"] == 2 and a["Pemba Sherpa"]["profile_slug"]
+    assert a["Pemba Sherpa"]["signed_jobs"] == 20 and a["Pemba Sherpa"]["profile_slug"]
     assert a["Anusha Gurung"]["role"] == "anchor" and a["Anusha Gurung"]["level"] is None
     assert a["Pemba Sherpa"]["video_link"] == VIDEO["video_link"] and a["Anusha Gurung"]["video_link"] == ""
     assert "@demo" not in str(a)

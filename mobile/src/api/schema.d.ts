@@ -452,8 +452,31 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Level */
+        /**
+         * Level
+         * @description Lower a badge (badges go up automatically by the rules). The member sees the reason.
+         */
         post: operations["level_v1_anchor_members__junior_id__level_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/anchor/members/{junior_id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pause
+         * @description Pause the member's next automatic promotion, once, with a reason the member sees.
+         */
+        post: operations["pause_v1_anchor_members__junior_id__pause_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -600,6 +623,46 @@ export interface paths {
          * @description A Team Leader, or a Mentor (★★★★★) with the skill, applies for an open job. The client chooses.
          */
         post: operations["apply_v1_jobs__job_id__apply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Uploads Status
+         * @description Whether the app can upload videos (Cloudinary set up on the server), and the limits.
+         */
+        get: operations["uploads_status_v1_uploads_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/uploads/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Video Upload
+         * @description A short-lived signature for one direct upload to Cloudinary. The secret never leaves the server.
+         */
+        post: operations["video_upload_v1_uploads_video_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -984,6 +1047,25 @@ export interface components {
             /** Junior Id */
             junior_id: string;
         };
+        /** BadgeChange */
+        BadgeChange: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "auto" | "lowered" | "paused";
+            /** Old Level */
+            old_level: number;
+            /** New Level */
+            new_level: number;
+            /** Reason */
+            reason: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /**
          * BlindRequest
          * @description What the Anchor sees: work and skills only, as "Applicant A". No name, district, about-me, or
@@ -1292,6 +1374,8 @@ export interface components {
             open_jobs?: components["schemas"]["JobOut"][];
             /** Earnings */
             earnings?: components["schemas"]["MyMoney"][];
+            /** Team Status */
+            team_status?: components["schemas"]["MyTeamStatus"][];
         };
         /** LevelIn */
         LevelIn: {
@@ -1378,8 +1462,18 @@ export interface components {
             evidence: components["schemas"]["Evidence"];
             /** Open Jobs */
             open_jobs: number;
+            /**
+             * Jobs 30D
+             * @default 0
+             */
+            jobs_30d: number;
+            progress?: components["schemas"]["Progress"] | null;
+            last_change?: components["schemas"]["BadgeChange"] | null;
         };
-        /** MoneySplit */
+        /**
+         * MoneySplit
+         * @description The member's share follows their badge for this job; before a member is chosen it isn't known yet.
+         */
         MoneySplit: {
             /** Junior */
             junior: number;
@@ -1387,6 +1481,14 @@ export interface components {
             anchor: number;
             /** Platform */
             platform: number;
+            /** Level */
+            level: number | null;
+            /** Junior Pct */
+            junior_pct: number | null;
+            /** Anchor Pct */
+            anchor_pct: number | null;
+            /** Platform Pct */
+            platform_pct: number;
         };
         /** MyMoney */
         MyMoney: {
@@ -1396,6 +1498,18 @@ export interface components {
             paid_out_minor: number;
             /** Held Minor */
             held_minor: number;
+        };
+        /**
+         * MyTeamStatus
+         * @description For a member: their progress in one team, the last badge change, and how jobs were shared.
+         */
+        MyTeamStatus: {
+            /** Team Id */
+            team_id: string;
+            progress: components["schemas"]["Progress"];
+            last_change: components["schemas"]["BadgeChange"] | null;
+            /** Sharing */
+            sharing: components["schemas"]["ShareRow"][];
         };
         /** NoteIn */
         NoteIn: {
@@ -1440,6 +1554,11 @@ export interface components {
             team: components["schemas"]["PodOut"];
             /** My Request */
             my_request: ("waiting" | "accepted" | "declined") | null;
+        };
+        /** PauseIn */
+        PauseIn: {
+            /** Reason */
+            reason: string;
         };
         /** PendingChange */
         PendingChange: {
@@ -1554,6 +1673,22 @@ export interface components {
             /** Complete */
             complete: boolean;
         };
+        /**
+         * Progress
+         * @description The next badge and what is still needed, by the public rules. Badges go up automatically.
+         */
+        Progress: {
+            /** Level */
+            level: number;
+            /** Next Level */
+            next_level: number | null;
+            /** Checks */
+            checks: components["schemas"]["RuleCheck"][];
+            /** Verified */
+            verified: number;
+            /** Paused Reason */
+            paused_reason: string;
+        };
         /** Reference */
         Reference: {
             /** Link */
@@ -1614,6 +1749,20 @@ export interface components {
              */
             team_skill: string;
         };
+        /** RuleCheck */
+        RuleCheck: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "jobs" | "last_first_time" | "first_time_pct" | "last_on_time";
+            /** Need */
+            need: number;
+            /** Have */
+            have: number;
+            /** Ok */
+            ok: boolean;
+        };
         /** Sample */
         Sample: {
             /** Title */
@@ -1659,6 +1808,14 @@ export interface components {
         SettingsIn: {
             /** Ai Helper */
             ai_helper: boolean;
+        };
+        /** ShareRow */
+        ShareRow: {
+            person: components["schemas"]["PersonOut"];
+            /** Level */
+            level: number;
+            /** Jobs 30D */
+            jobs_30d: number;
         };
         /** SubmissionOut */
         SubmissionOut: {
@@ -2709,6 +2866,45 @@ export interface operations {
             };
         };
     };
+    pause_v1_anchor_members__junior_id__pause_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                junior_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PauseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     invite_v1_anchor_invites_post: {
         parameters: {
             query?: never;
@@ -2988,6 +3184,61 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    uploads_status_v1_uploads_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    video_upload_v1_uploads_video_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Validation Error */

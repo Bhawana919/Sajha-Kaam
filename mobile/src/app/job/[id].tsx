@@ -213,7 +213,7 @@ function AnchorActions({ d }: { d: JobDetail }) {
           ))}
           <Button label={t('job.assign')} disabled={!junior || junior === j.junior?.id} busy={assign.isPending}
             onPress={() => junior && assign.mutate({ id: j.id, junior_id: junior })} />
-          {assign.error ? <Txt color={colors.brick}>{errorText(assign.error)}</Txt> : null}
+          {assign.error ? <Txt color={colors.brick}>{errorText(assign.error, { beginner_limit: t('badge.beginnerLimit') })}</Txt> : null}
         </Section>
         {change}
       </>
