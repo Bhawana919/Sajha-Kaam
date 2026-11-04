@@ -9,7 +9,7 @@ led by a Nepali professional abroad:
   3. A one-page website from scratch: Nima's web team (Toronto), built by Bikash (★★★ Trusted), approved
      by Nima and waiting for Sunita to accept. The site itself is served at /samples/momo-house.
 Every badge was earned by the automatic rules while the history below was replayed through the real
-steps (earlier clients: Harbour Café in Melbourne and Himal Threads in Toronto): Sita 2 jobs, Bikash 5
+steps (earlier clients: Lygon Street Bakery in Melbourne and Himal Threads in Toronto): Sita 2 jobs, Bikash 5
 first-time jobs, Pemba 20 first-time, on-time videos over five months. Asha has asked to join Anusha's
 team. All accounts use the demo password.
 """
@@ -313,7 +313,7 @@ def seed(session: Session) -> None:
     pemba = _user(PEMBA_ID, "junior", "Pemba Sherpa", "", "Nepal", pw)
     asha = _user(ASHA_ID, "junior", "Asha Rai", "", "Nepal", pw)
     momo = _user(MOMO_ID, "client", "Sunita Basnet", "Himalayan Momo House, Sydney", "Australia", pw)
-    cafe = _user(CAFE_ID, "client", "Emma Clarke", "Harbour Café, Melbourne", "Australia", pw)
+    cafe = _user(CAFE_ID, "client", "Grace Wilson", "Lygon Street Bakery, Melbourne", "Australia", pw)
     threads = _user(THREADS_ID, "client", "Sunil Karki", "Himal Threads, Toronto", "Canada", pw)
     for leader_ in (rajan, anusha, nima):
         leader_.leader_verified = True  # checked by Sajha Kaam
