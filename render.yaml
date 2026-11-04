@@ -1,12 +1,13 @@
 # Render blueprint: one web service built from the Dockerfile (app + API on one address).
 # Render dashboard -> New -> Blueprint -> pick this GitHub repo.
-# Starter plan (paid from hackathon credit): never sleeps, so the demo link opens straight away.
-# The database stays temporary on purpose: each deploy or restart starts from fresh demo data.
+# Free plan (no card): sleeps after 15 minutes without visitors; the next visit takes about a minute.
+# Data: set DATABASE_URL to a free Neon Postgres link so accounts and jobs are kept. Without it the
+# database is temporary and each restart starts again from the demo.
 services:
   - type: web
     name: sajha-kaam
     runtime: docker
-    plan: starter
+    plan: free
     region: singapore
     healthCheckPath: /health
     envVars:
@@ -14,7 +15,10 @@ services:
         generateValue: true
       - key: DEMO_MODE
         value: "1"
-      # Video uploads: paste the "API environment variable" from the Cloudinary dashboard
+      # Permanent data: the connection string from Neon (neon.tech, free, no card).
+      - key: DATABASE_URL
+        sync: false
+      # Video and photo uploads: the "API environment variable" from the Cloudinary dashboard
       # (cloudinary://key:secret@cloud). Without it, members paste a video link instead.
       - key: CLOUDINARY_URL
         sync: false

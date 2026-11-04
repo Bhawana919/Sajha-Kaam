@@ -16,7 +16,7 @@ Badges, from new to experienced: ★ Starter · ★★ Learner · ★★★ Trus
 
 | Folder | What it is |
 |---|---|
-| `backend` | API: FastAPI + SQLite. 52 automated tests. |
+| `backend` | API: FastAPI + SQLite or Postgres. 57 automated tests. |
 | `mobile` | App: Expo (phone and web browser), English and Nepali. |
 | `config` | Skills, badges, the job agreement template, fair minimum budgets. |
 | `shared` | The API contract the app's types are generated from. |
@@ -91,6 +91,23 @@ about 10 minutes.
   Without it, members paste a YouTube, Google Drive, Vimeo or Loom link instead.
 - The database is temporary on purpose: every deploy or restart brings back fresh demo data
   (or reset any time: `POST /demo/reset`).
+
+## Keep real users' data (free Neon Postgres)
+
+Without a database setting, the hosted app keeps its data in a temporary file: every restart starts
+again from the demo. To keep real accounts and jobs:
+
+1. Sign up free at [neon.tech](https://neon.tech) (no card), create a project, and copy its
+   **connection string** (it starts with `postgresql://` and ends with `?sslmode=require`).
+2. On Render: your service → **Environment** → add `DATABASE_URL` with that string. Check `JWT_SECRET`
+   is set to a long random value (the server refuses to start on a real database without one).
+3. Save. The server creates its tables on the first start and adds the demo people.
+
+The demo stays available next to real accounts: one-tap sign-in works only for the demo people, and
+**Reset the demo** (`POST /demo/reset`) removes and recreates only the demo people and their jobs, never
+real accounts. Nobody can sign up with a demo address.
+
+To run the tests on Postgres: `TEST_DATABASE_URL=postgresql://… pytest -q` (it empties that database).
 
 ## Android app (APK)
 
