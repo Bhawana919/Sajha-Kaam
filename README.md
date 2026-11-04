@@ -92,6 +92,14 @@ about 10 minutes.
 - The database is temporary on purpose: every deploy or restart brings back fresh demo data
   (or reset any time: `POST /demo/reset`).
 
+## Android app (APK)
+
+GitHub builds the Android app by itself whenever the app changes ([workflow](.github/workflows/android-apk.yml)),
+and attaches it to the **Android app (latest)** release of this repo. To install: open the release page on
+an Android phone, tap **sajha-kaam.apk**, then **Install** (allow "install unknown apps" if asked: it's a
+test app, not from the Play Store). The app uses the live server, so it shows the same data as the website.
+iPhones use the website.
+
 ## Demo people
 
 On the welcome screen, tap a person to sign in. Password for all: `kaam-demo`.
