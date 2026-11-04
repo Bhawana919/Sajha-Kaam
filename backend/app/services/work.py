@@ -407,6 +407,12 @@ def earned_level(record: list[dict]) -> int:
     return 1
 
 
+def member_skill(session: Session, junior_id: str, pod: Pod) -> str:
+    """The skill a member works in for this team: in a team with several skills, the one with most verified jobs."""
+    skills = team_skills(pod)
+    return max(skills, key=lambda sk: (len(skill_record(session, junior_id, sk)), sk == pod.skill))
+
+
 def progress(session: Session, member: PodMember, skill: str) -> dict:
     """Where the member stands: the next badge and what is still needed for it."""
     record = skill_record(session, member.junior_id, skill)

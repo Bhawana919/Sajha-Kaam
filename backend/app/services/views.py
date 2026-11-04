@@ -111,7 +111,7 @@ def badge_change(lc: LevelChange | None) -> BadgeChange | None:
 
 
 def progress_out(session: Session, pod: Pod, m: PodMember) -> Progress:
-    p = work.progress(session, m, pod.skill)
+    p = work.progress(session, m, work.member_skill(session, m.junior_id, pod))
     return Progress(level=p["level"], next_level=p["next_level"], checks=[RuleCheck(**c) for c in p["checks"]],
                     verified=p["verified"], paused_reason=p["paused_reason"])
 
