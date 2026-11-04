@@ -166,6 +166,11 @@ class Phone:
 
 # ---------- the run ----------
 STEPS: list[dict] = []
+CHAPTER = [1]  # the film's chapter for the steps that follow
+
+
+def chapter(n: int):
+    CHAPTER[0] = n
 
 
 class step:
@@ -183,7 +188,8 @@ class step:
             self.phone.pause(self.hold)  # let the result sit on screen
             n = len(STEPS) + 1
             secs = self.phone.stop_rec(OUT / "clips" / f"step{n:02d}.mp4")
-            STEPS.append({"who": self.phone.name, "line": self.line, "seconds": round(secs, 2), "pair": self.pair})
+            STEPS.append({"who": self.phone.name, "line": self.line, "seconds": round(secs, 2), "pair": self.pair,
+                          "chapter": CHAPTER[0]})
             print(f"  ✓ {self.phone.name}: {self.line} ({secs:.1f} s)", flush=True)
         else:
             self.phone.frames = None
@@ -223,16 +229,19 @@ def main():
 
     with sync_playwright() as pw:
         browser = pw.chromium.launch(executable_path=CHROME, headless=True)
-        phones = [Phone(browser, n, base) for n in ("rajan", "emma", "sita", "bikash", "pemba", "review")]
-        rajan, emma, sita, bikash, pemba, review = phones
+        phones = [Phone(browser, n, base) for n in ("rajan", "emma", "sita", "bikash", "pemba", "review", "anusha")]
+        rajan, emma, sita, bikash, pemba, review, anusha = phones
         rajan.sign_in("rajan@demo.sajhakaam")
         sita.sign_in(members["sita"]["email"])
         bikash.sign_in(members["bikash"]["email"])
         pemba.sign_in("pemba@demo.sajhakaam")
         review.sign_in("sajha@demo.sajhakaam")
+        anusha.sign_in("anusha@demo.sajhakaam")
         try:
             run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, args.upload)
-            leaders(api, sita, rajan, pemba, review)
+            records(sita, rajan)
+            client_posts(api, emma, anusha, pemba, api.login(emma_email))
+            leaders(api, pemba, review)
         except Exception:
             for p in phones:
                 shoot(p, "fail")
@@ -245,6 +254,7 @@ def main():
 
 
 def run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, upload):
+    chapter(1)
     # 1. Rajan writes the landing-page job and makes an invite link for Emma.
     rajan.go("/anchor/desk")
     with step(rajan, "Rajan writes the job for Emma's café"):
@@ -300,6 +310,7 @@ def run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, up
         emma.tap("Agree", role="button", after=1.2)
         emma.tap("Pay $150 (demo)", role="button", after=1.5)
 
+    chapter(2)
     # 3. Rajan finds people with the skill.
     with step(rajan, "Rajan finds people with the skill", pair=True):
         rajan.go(f"/job/{web_job}")
@@ -323,6 +334,7 @@ def run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, up
         rajan.go(f"/job/{video_job}")
         rajan.tap("Approve Bikash", role="button", after=1.2)
 
+    chapter(3)
     # 6. The job room: tasks, messages, files.
     with step(sita, "One room for the work: tasks and messages", pair=True):
         sita.go(f"/job/{web_job}?tab=room")
@@ -350,6 +362,7 @@ def run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, up
     room = api.call("GET", f"/v1/jobs/{video_job}/room", token=members["bikash"]["token"])
     video_link = room["files"][0]["link"]
 
+    chapter(4)
     # 7. They send their work for checking.
     for who, job, link, note, line in (
             (sita, web_job, f"{site}", "Works on a phone 375px wide. Emma can change the menu prices herself.",
@@ -382,6 +395,7 @@ def run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, up
         rajan.tap("Check Bikash", after=1.5)
         rajan.tap("Approve and send to client", role="button", after=1.5)
 
+    chapter(5)
     # 9. Emma sees the work and accepts: the money is released.
     with step(emma, "Emma sees her new page"):
         emma.go(f"{''}/samples/harbour-cafe?v=2")
@@ -394,6 +408,7 @@ def run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, up
         emma.go(f"/job/{video_job}")
         emma.tap("Accept and release", role="button", after=2.0)
 
+    chapter(6)
     # 10. First pay: wallet and withdraw.
     for who, method, phone, line in ((sita, "eSewa", "9801234567", "Sita's first pay, to eSewa"),
                                      (bikash, "Khalti", "9807654321", "Bikash's first pay, to Khalti")):
@@ -409,7 +424,42 @@ def run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, up
         rajan.pause(1.5)
 
 
-def leaders(api, sita, rajan, pemba, review):
+def client_posts(api, emma, anusha, pemba, emma_tok):
+    """The other way in: a client posts a job directly; verified Leaders and Mentors with the skill apply."""
+    chapter(8)
+    with step(emma, "Emma posts a job herself"):
+        emma.go("/client/home")
+        emma.tap("Post a new job", after=1.0)
+        emma.tap("Video editing", role="switch")
+        emma.type("Job title", "Opening week reel")
+        emma.type("What will be delivered", "One 30-second reel for Instagram", enter=True)
+        emma.tap("Exported as MP4, 9:16")
+        emma.type("Final length", "30 seconds")
+        emma.type("Format and aspect ratio", "MP4, 9:16 vertical")
+        emma.type("Where the raw footage is", "Our photos from opening week")
+        emma.type("Days to finish", "4")
+        emma.type("Budget (USD)", "120")
+        emma.tap("Check and post", role="button", after=2.0)
+    home = api.call("GET", "/v1/client/home", token=emma_tok)
+    jobs = [j for k in ("to_agree", "to_choose", "in_progress") for j in home.get(k, [])]
+    reel = next(j for j in jobs if j["title"] == "Opening week reel")["id"]
+    with step(anusha, "Anusha, a verified Leader, applies", pair=True):
+        anusha.go(f"/job/{reel}")
+        anusha.type("Note for the client (optional)", "My team made reels for three Melbourne cafés.")
+        anusha.tap("Apply", role="button", after=1.5)
+    with step(pemba, "Pemba, a Mentor, applies with her video", pair=True):
+        pemba.go(f"/job/{reel}")
+        pemba.type("Your 2-minute video (link)", "https://vimeo.com/76979871")
+        pemba.type("Note for the client (optional)", "I film cafés and treks in Kathmandu.")
+        pemba.tap("Apply", role="button", after=1.5)
+    with step(emma, "Emma compares them and chooses", hold=1.8):
+        emma.go(f"/job/{reel}")
+        emma.scroll(450)
+        emma.tap("Choose Anusha", role="button", after=2.0)
+
+
+def records(sita, rajan):
+    chapter(7)
     # Work Record and badge progress: the experience Sita never had.
     with step(sita, "Sita's first verified job, on her Work Record", hold=1.8):
         sita.go("/junior/home")
@@ -418,6 +468,10 @@ def leaders(api, sita, rajan, pemba, review):
     with step(rajan, "Badges grow by public rules, not by the Leader", hold=1.8):
         rajan.go("/anchor/team")
         rajan.scroll(350)
+
+
+def leaders(api, pemba, review):
+    chapter(9)
     # A Mentor becomes a verified Team Leader by her record.
     with step(pemba, "Pemba, a ★★★★★ Mentor, starts her own team", hold=1.8):
         pemba.go("/junior/home")
@@ -439,7 +493,7 @@ def cut(base: str):
     """The film's manifest, and the clips copied next to it."""
     clips = OUT / "clips"
     manifest = [{"clip": f"demo/step{i:02d}.mp4", "who": s["who"], "line": s["line"], "seconds": s["seconds"],
-                 **({"pair": True} if s["pair"] else {})} for i, s in enumerate(STEPS, 1)]
+                 "chapter": s["chapter"], **({"pair": True} if s["pair"] else {})} for i, s in enumerate(STEPS, 1)]
     (OUT / "manifest.json").write_text(json.dumps({"source": base, "steps": manifest}, indent=2, ensure_ascii=False),
                                        encoding="utf-8")
     film = HERE.parent / "film" / "public" / "demo"
