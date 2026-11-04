@@ -536,7 +536,8 @@
     "level_up": "Your badge went up! See what's next.",
     "member_level_up": "A team member's badge went up by the rules.",
     "promotion_paused": "Your Leader paused your next promotion. See the reason.",
-    "room_file": "A new file was shared in a job room."
+    "room_file": "A new file was shared in a job room.",
+    "payment_released": "Payment released: your share is in. See how much."
   },
   "apply": {
     "title": "Apply for this job",
@@ -577,7 +578,22 @@
     "held": "Paid {{amount}} · held until the client accepts the work",
     "paidOut": "Paid out to the team",
     "payFirst": "Pay first: accepting the work releases the payment to the team.",
-    "alreadyPaid": "The client has paid this budget, so only the deadline can change."
+    "alreadyPaid": "The client has paid this budget, so only the deadline can change.",
+    "trackerTitle": "Payment",
+    "releasedTitle": "Payment released",
+    "stepAgreed": "Terms agreed",
+    "stepHeld": "Client paid {{amount}}, held safely",
+    "stepReleased": "Client accepted the work: released",
+    "whoGets": "Who will receive what",
+    "whoGot": "Who received what",
+    "theMember": "The member",
+    "theLeader": "The Leader",
+    "roleMember": "member",
+    "roleLeader": "Leader, checks",
+    "rolePlatform": "platform",
+    "you": "you",
+    "demoNote": "Demo payment: no real money moves.",
+    "acceptRelease": "Accept and release {{amount}}"
   },
   "due": {
     "today": "Due today",

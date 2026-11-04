@@ -10,6 +10,8 @@ import type {
 } from './types';
 
 const signedIn = () => !!useSession.getState().tokens;
+/** Screens refresh themselves while open, so phones watching the same job update each other live. */
+const LIVE = 4000;
 
 // ---------- session ----------
 export function useSamples() {
@@ -57,12 +59,13 @@ export function useTemplate() {
 }
 
 export function useJob(id: string) {
-  return useQuery({ queryKey: ['job', id], queryFn: () => api<JobDetail>(`/v1/jobs/${id}`), enabled: signedIn() && !!id });
+  return useQuery({ queryKey: ['job', id], queryFn: () => api<JobDetail>(`/v1/jobs/${id}`), enabled: signedIn() && !!id,
+    refetchInterval: LIVE });
 }
 
 export function useNotifications() {
   return useQuery({ queryKey: ['notifications'], queryFn: () => api<Notification[]>('/v1/notifications'),
-    enabled: signedIn(), refetchInterval: 30000 });
+    enabled: signedIn(), refetchInterval: 10000 });
 }
 
 export function useReadAll() {
@@ -87,7 +90,8 @@ function useAction<V, R = unknown>(fn: (v: V) => Promise<R>) {
 }
 
 // ---------- anchor ----------
-export const useDesk = () => useQuery({ queryKey: ['desk'], queryFn: () => api<Desk>('/v1/anchor/desk'), enabled: signedIn() });
+export const useDesk = () =>
+  useQuery({ queryKey: ['desk'], queryFn: () => api<Desk>('/v1/anchor/desk'), enabled: signedIn(), refetchInterval: LIVE + 1000 });
 export const useTeam = () => useQuery({ queryKey: ['team'], queryFn: () => api<TeamView>('/v1/anchor/team'), enabled: signedIn() });
 export const useNotes = () => useQuery({ queryKey: ['notes'], queryFn: () => api<Note[]>('/v1/anchor/notes'), enabled: signedIn() });
 export const useRequests = () =>
@@ -152,7 +156,8 @@ export function useNoteActions() {
 
 // ---------- junior ----------
 export const useJuniorHome = () =>
-  useQuery({ queryKey: ['junior-home'], queryFn: () => api<JuniorHome>('/v1/junior/home'), enabled: signedIn() });
+  useQuery({ queryKey: ['junior-home'], queryFn: () => api<JuniorHome>('/v1/junior/home'), enabled: signedIn(),
+    refetchInterval: LIVE + 1000 });
 export const useOpenTeams = () =>
   useQuery({ queryKey: ['open-teams'], queryFn: () => api<OpenTeam[]>('/v1/teams/open'), enabled: signedIn() });
 export const useProfile = () => useQuery({ queryKey: ['profile'], queryFn: () => api<Profile>('/v1/me/profile'), enabled: signedIn() });
@@ -191,7 +196,8 @@ export const useSubmit = () =>
 
 // ---------- client ----------
 export const useClientHome = () =>
-  useQuery({ queryKey: ['client-home'], queryFn: () => api<ClientHome>('/v1/client/home'), enabled: signedIn() });
+  useQuery({ queryKey: ['client-home'], queryFn: () => api<ClientHome>('/v1/client/home'), enabled: signedIn(),
+    refetchInterval: LIVE + 1000 });
 export const useCheckAgreement = () =>
   useMutation({ mutationFn: (j: JobIn) => api<CheckOut>('/v1/agreement/check', { method: 'POST', body: j, auth: false }) });
 export const usePostJob = () => useAction((j: JobIn) => api<{ id: string }>('/v1/jobs', { method: 'POST', body: j }));
@@ -199,7 +205,8 @@ export const usePostJob = () => useAction((j: JobIn) => api<{ id: string }>('/v1
 export const useAgree = () => useAction((id: string) => api(`/v1/jobs/${id}/agree`, { method: 'POST' }));
 // ---------- the job room ----------
 export const useRoom = (jobId: string, enabled = true) =>
-  useQuery({ queryKey: ['room', jobId], queryFn: () => api<Room>(`/v1/jobs/${jobId}/room`), enabled: signedIn() && enabled });
+  useQuery({ queryKey: ['room', jobId], queryFn: () => api<Room>(`/v1/jobs/${jobId}/room`), enabled: signedIn() && enabled,
+    refetchInterval: LIVE + 1000 });
 
 export function useRoomActions(jobId: string) {
   const qc = useQueryClient();

@@ -123,6 +123,12 @@ JOB_MOMO_EVENT = {
                 "audience": "Nepali community groups in Sydney", "tone": "Friendly and clear"},
     "deadline_days": 2, "budget_minor": 4000, "revisions": 1,
 }
+# What Sita sends for the Facebook event job in the live recording (scores 3 of 3 on the quick check).
+EVENT_TEXT = """Event title: Momo House Parramatta opening day (under 60 characters)
+Description with the date, time and address: Join us on Saturday 21 November, 11:30 am to 9 pm, at Church Street, Parramatta NSW 2150. Steaming jhol momo, free tea for the first 50 families, and music all afternoon.
+Invitation: Our new branch opens Saturday 21 November at 11:30 am, Church Street, Parramatta. See you there!
+Nepali line: शनिबार भेटौँ, सबैलाई स्वागत छ!"""
+
 JOB_MOMO_REEL = {
     "skill": "video", "title": "30-second opening reel for our new branch",
     "deliverables": ["One vertical video, 30 seconds", "Cover image"],

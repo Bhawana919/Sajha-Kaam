@@ -867,6 +867,7 @@ def accept(session: Session, client: User, job: Job, show_client: bool) -> LogEn
     job.payment, job.paid_out_at = "paid_out", now
     notify.send(session, [junior.id], "log_signed", job.id)
     notify.send(session, [anchor.id], "client_accepted", job.id)
+    notify.send(session, [junior.id, anchor.id], "payment_released", job.id)  # each one's share, by the split
     session.add_all([entry, job])
     session.flush()
     promote_by_record(session, junior.id, job.skill)  # badges go up by the public rules, never by hand

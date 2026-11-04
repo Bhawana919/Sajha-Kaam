@@ -371,6 +371,65 @@ function PaymentLine({ job }: { job: JobDetail['job'] }) {
   return <Row label={t('pay.status')} value={label} />;
 }
 
+/** The money, for everyone on the job: agreed → paid and held → released, and who gets what, by name. */
+function PaymentTracker({ job }: { job: JobDetail['job'] }) {
+  const { t } = useT();
+  const me = useMe().data;
+  if (!job.agreed_at) return null;
+  const released = job.payment === 'paid_out';
+  const date = (s?: string | null) => (s ? new Date(s).toLocaleDateString() : '');
+  const steps = [
+    { key: 'agreed', on: true, label: t('pay.stepAgreed'), when: date(job.agreed_at) },
+    { key: 'held', on: job.payment !== 'unpaid', label: t('pay.stepHeld', { amount: money(job.budget_minor, job.currency) }),
+      when: date(job.paid_at) },
+    { key: 'released', on: released, label: t('pay.stepReleased'), when: date(job.paid_out_at) },
+  ];
+  const s = job.split;
+  const rows = s.level && s.junior_pct != null && s.anchor_pct != null ? [
+    { who: job.junior?.display_name ?? t('pay.theMember'), role: t('pay.roleMember'), pct: s.junior_pct, amount: s.junior,
+      mine: me?.id === job.junior?.id },
+    { who: job.anchor?.display_name ?? t('pay.theLeader'), role: t('pay.roleLeader'), pct: s.anchor_pct, amount: s.anchor,
+      mine: me?.id === job.anchor?.id },
+    { who: 'Sajha Kaam', role: t('pay.rolePlatform'), pct: s.platform_pct, amount: s.platform, mine: false },
+  ] : [];
+  const ink = released ? colors.white : colors.ink;
+  const soft = released ? colors.pineSoft : colors.inkSoft;
+  return (
+    <Panel tone={released ? 'pine' : 'white'} style={{ gap: space.md }}>
+      <Txt variant="label" color={released ? colors.honeyLight : colors.brick}>{t(released ? 'pay.releasedTitle' : 'pay.trackerTitle')}</Txt>
+      <View style={{ gap: space.sm }}>
+        {steps.map((st) => (
+          <View key={st.key} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+            <View style={{ width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center',
+              backgroundColor: st.on ? (released ? colors.honey : colors.green) : 'transparent',
+              borderWidth: st.on ? 0 : 2, borderColor: soft }}>
+              {st.on ? <Txt variant="label" color={colors.white}>✓</Txt> : null}
+            </View>
+            <Txt color={st.on ? ink : soft} style={{ flex: 1 }}>{st.label}</Txt>
+            {st.when ? <Txt variant="small" color={soft}>{st.when}</Txt> : null}
+          </View>
+        ))}
+      </View>
+      {rows.length ? (
+        <View style={{ gap: 6, borderTopWidth: 1, borderTopColor: released ? 'rgba(255,255,255,0.18)' : colors.line, paddingTop: space.md }}>
+          <Txt variant="label" color={soft}>{t(released ? 'pay.whoGot' : 'pay.whoGets')}</Txt>
+          {rows.map((r) => (
+            <View key={r.role} style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>
+              <Txt style={{ flex: 1 }} color={ink}>
+                {r.who}{r.mine ? ` (${t('pay.you')})` : ''} · <Txt variant="small" color={soft}>{r.role} {r.pct}%</Txt>
+              </Txt>
+              <Txt variant="money" color={r.mine ? (released ? colors.honeyLight : colors.green) : ink} style={{ fontSize: 22 }}>
+                {money(r.amount, job.currency)}
+              </Txt>
+            </View>
+          ))}
+        </View>
+      ) : <Txt variant="small" color={soft}>{t('job.splitPending')}</Txt>}
+      <Txt variant="small" color={soft}>{t('pay.demoNote')}</Txt>
+    </Panel>
+  );
+}
+
 /** The client pays once the agreement is agreed. Demo: nothing real is charged. */
 function PayPanel({ d }: { d: JobDetail }) {
   const { t } = useT();
@@ -418,7 +477,8 @@ function ClientActions({ d }: { d: JobDetail }) {
         <Checkbox label={t('job.showName')} checked={show} onChange={setShow} />
         <HelpLine text={t('job.showNameHelp')} />
         {j.payment === 'unpaid' ? <Txt variant="small" color={colors.warnInk}>{t('pay.payFirst')}</Txt> : null}
-        <Button label={t('job.accept')} disabled={j.payment === 'unpaid'} busy={accept.isPending}
+        <Button icon="check" label={t('pay.acceptRelease', { amount: money(j.budget_minor, j.currency) })} disabled={j.payment === 'unpaid'}
+          busy={accept.isPending}
           onPress={() => accept.mutate({ id: j.id, show_client: show })} />
         {accept.error ? <Txt color={colors.brick}>{errorText(accept.error)}</Txt> : null}
       </Section>
@@ -459,6 +519,7 @@ export default function JobScreen() {
           ]} />
           {tab === 'do' ? (
             <>
+              <PaymentTracker job={d.job} />
               {role === 'anchor' ? <AnchorActions d={d} /> : null}
               {role === 'junior' ? <JuniorActions d={d} /> : null}
               {role === 'client' ? <ClientActions d={d} /> : null}
