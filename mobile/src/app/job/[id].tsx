@@ -6,7 +6,7 @@ import { Linking, View } from 'react-native';
 import { PUBLIC_BASE, workUrl } from '@/api/client';
 import {
   useAccept, useAgree, useAnswerBrief, useApply, useAssign, useChoose, useDecideChange, useJob, useJuniorHome, useMe,
-  usePay, useProposeChange, useRequestChanges, useSubmit, useTeam, useTemplate, useUploads,
+  useApproveWorker, useAskToJoin, usePay, usePostOpening, useProposeChange, useRequestChanges, useSubmit, useTeam, useTemplate, useUploads,
 } from '@/api/hooks';
 import type { JobDetail } from '@/api/types';
 import { Checkbox, Field, useErrorText } from '@/components/forms';
@@ -162,8 +162,60 @@ function Choose({ d }: { d: JobDetail }) {
   );
 }
 
+/** The Leader's opening: who asked to join, with the facts behind them; approve one. */
+function Openings({ d }: { d: JobDetail }) {
+  const { t, digits } = useT();
+  const approve = useApproveWorker();
+  const errorText = useErrorText();
+  const waiting = (d.applications ?? []).filter((a) => a.status === 'waiting');
+  return (
+    <Section title={t('opening.requestsTitle', { n: digits(waiting.length) })} help={t('opening.requestsHelp')}>
+      {waiting.length ? waiting.map((a) => (
+        <Panel key={a.id} style={{ gap: space.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+            <Txt variant="h3" style={{ flex: 1 }}>{a.applicant.display_name}</Txt>
+            {a.level ? <LevelTag level={a.level} /> : null}
+          </View>
+          <Txt variant="small" color={colors.inkSoft}>{t('apply.signedMentor', { count: a.signed_jobs })}</Txt>
+          {a.note ? <Txt>“{a.note}”</Txt> : null}
+          <Button label={t('opening.approve', { name: a.applicant.display_name.split(' ')[0] })} busy={approve.isPending}
+            onPress={() => approve.mutate({ id: d.job.id, application_id: a.id })} />
+        </Panel>
+      )) : <Panel tone="honey"><Txt>{t('opening.noneYet')}</Txt></Panel>}
+      {approve.error ? <Txt color={colors.brick}>{errorText(approve.error, { member_full: t('limits.memberFull'),
+        leader_full: t('limits.leaderFull'), team_full: t('limits.teamFull'), beginner_limit: t('badge.beginnerLimit') })}</Txt> : null}
+    </Section>
+  );
+}
+
+/** A member looking at an opening: their share at their badge, and one button. */
+function AskToJoin({ d }: { d: JobDetail }) {
+  const { t } = useT();
+  const badge = useBadge();
+  const ask = useAskToJoin();
+  const errorText = useErrorText();
+  const [note, setNote] = useState('');
+  const j = d.job;
+  if (d.my_application === 'waiting') {
+    return <Panel tone="honey"><Txt>{t('opening.waiting', { name: j.anchor?.display_name ?? '' })}</Txt></Panel>;
+  }
+  return (
+    <Section title={t('opening.title')} help={t('opening.help', { name: j.anchor?.display_name ?? '' })}>
+      <Panel tone="honey" style={{ gap: 4 }}>
+        <Row label={t('brief.yourShare')} value={`${money(j.split.junior, j.currency)} (${j.split.junior_pct ?? 0}%)`} />
+        <Row label={t('brief.level')} value={badge(j.split.level)} />
+        <Row label={t('post.f_deadline_days')} value={t('job.days', { count: j.deadline_days })} />
+      </Panel>
+      <Field label={t('apply.note')} placeholder={t('opening.noteEx')} value={note} onChangeText={setNote} multiline />
+      <Button label={t('opening.ask')} busy={ask.isPending} onPress={() => ask.mutate({ id: j.id, note })} />
+      {ask.error ? <Txt color={colors.brick}>{errorText(ask.error, { member_full: t('limits.memberFull') })}</Txt> : null}
+    </Section>
+  );
+}
+
 function AnchorActions({ d }: { d: JobDetail }) {
   const { t } = useT();
+  const openUp = usePostOpening();
   const team = useTeam().data;
   const agree = useAgree();
   const assign = useAssign();
@@ -200,9 +252,15 @@ function AnchorActions({ d }: { d: JobDetail }) {
     );
   }
   const change = AMENDABLE.includes(j.state) ? <ProposeChange d={d} /> : null;
+  if (j.state === 'agreed' && j.opening) return <Openings d={d} />;
   if (j.state === 'agreed' || j.state === 'assigned') {
     return (
       <>
+        {j.state === 'agreed' ? (
+          <Section title={t('opening.findTitle')} help={t('opening.findHelp')}>
+            <Button icon="search" label={t('opening.find')} busy={openUp.isPending} onPress={() => openUp.mutate(j.id)} />
+          </Section>
+        ) : null}
         {j.state === 'assigned' && j.junior ? (
           <Panel tone="honey"><Txt>{t('agree.waitingJunior', { name: j.junior.display_name })}</Txt></Panel>
         ) : null}
@@ -266,6 +324,7 @@ function JuniorActions({ d }: { d: JobDetail }) {
   const [note, setNote] = useState('');
   const j = d.job;
   const last = d.submissions[0];
+  if (j.opening && j.state === 'agreed') return <AskToJoin d={d} />;
   if (j.state === 'open' || d.my_application === 'not_chosen') {
     // The Mentor's own Leader checks the work: the team where they are a Mentor in this skill.
     const team = home?.teams.find((x) => x.skill === j.skill && home.levels[x.id] === 5);

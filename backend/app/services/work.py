@@ -88,12 +88,93 @@ def can_see(session: Session, user: User, job: Job) -> bool:
         return True
     if job.state == "open":
         return apply_team(session, user, job.skill) is not None
+    if user.role == "junior" and job.opening and job.state == "agreed" and job.skill in _skills_of(session, user.id):
+        return True
     if my_application(session, user, job) is not None:  # applied, so they can see who it went to
         return True
     if user.role == "anchor":
         a = anchor_of(session, job)
         return a is not None and a.id == user.id
     return False
+
+
+def _skills_of(session: Session, junior_id: str) -> set[str]:
+    p = session.get(JuniorProfile, junior_id)
+    return set(p.skills) if p else set()
+
+
+def openings_for(session: Session, junior: User) -> list[Job]:
+    """Project openings in the member's skills that they have not asked to join yet."""
+    skills = _skills_of(session, junior.id)
+    jobs = session.exec(select(Job).where(Job.opening == True, Job.state == "agreed")  # noqa: E712
+                        .order_by(Job.created_at)).all()
+    return [j for j in jobs if j.skill in skills and my_application(session, junior, j) is None]
+
+
+def level_for(session: Session, junior_id: str, pod_id: str, skill: str) -> int:
+    """The badge a member works at in this team: theirs if they are in it, else what their record earned."""
+    m = session.get(PodMember, (pod_id, junior_id))
+    return m.level if m else earned_level(skill_record(session, junior_id, skill))
+
+
+def post_opening(session: Session, anchor: User, job: Job) -> Job:
+    """Ask everyone with the skill (in the team or not) to ask to join this agreed job."""
+    pod = pod_of_anchor(session, anchor.id)
+    if job.pod_id != pod.id:
+        raise HTTPException(403, "not_your_job")
+    if job.state != "agreed" or job.junior_id:
+        raise HTTPException(409, "cannot_open_now")
+    job.opening = True
+    notify.send(session, notify.juniors_with_skill(session, job.skill), "job_opening", job.id)
+    return _save(session, job)
+
+
+def ask_to_join(session: Session, junior: User, job: Job, note: str) -> JobApplication:
+    """Asking to join is agreeing to the terms, and to the share the member's badge gives them."""
+    if not job.opening or job.state != "agreed":
+        raise HTTPException(409, "not_open")
+    if job.skill not in _skills_of(session, junior.id):
+        raise HTTPException(422, "skill_not_in_profile")
+    if my_application(session, junior, job) is not None:
+        raise HTTPException(409, "already_applied")
+    _check_member_room(session, junior.id, level_for(session, junior.id, job.pod_id, job.skill), job)
+    app = JobApplication(job_id=job.id, applicant_id=junior.id, pod_id=job.pod_id, note=note.strip())
+    session.add(app)
+    notify.send(session, [anchor_of(session, job).id], "job_join_request", job.id)
+    session.commit()
+    session.refresh(app)
+    return app
+
+
+def approve_worker(session: Session, anchor: User, job: Job, application_id: str) -> Job:
+    """The Leader picks who joins: a new member joins the team at the badge their record earned, then starts."""
+    pod = pod_of_anchor(session, anchor.id)
+    if job.pod_id != pod.id:
+        raise HTTPException(403, "not_your_job")
+    if not job.opening or job.state != "agreed":
+        raise HTTPException(409, "not_open")
+    app = session.get(JobApplication, application_id)
+    if app is None or app.job_id != job.id or app.status != "waiting":
+        raise HTTPException(404, "application_not_found")
+    member = session.get(PodMember, (pod.id, app.applicant_id))
+    if member is None:
+        if team_size(session, pod.id) >= _cap()["team_members"]:
+            raise HTTPException(409, "team_full")
+        member = PodMember(pod_id=pod.id, junior_id=app.applicant_id,
+                           level=earned_level(skill_record(session, app.applicant_id, pod.skill)))
+        session.add(member)
+        session.flush()
+    _check_member_room(session, member.junior_id, member.level, job)
+    _check_leader_room(session, pod.id, job)
+    now = utcnow()
+    job.junior_id, job.supervision_level, job.state = member.junior_id, member.level, "working"
+    job.junior_accepted_at, job.assigned_at, job.opening = now, now, False
+    for other in applications_of(session, job):
+        if other.status == "waiting":
+            other.status, other.decided_at = ("chosen" if other.id == app.id else "not_chosen"), now
+            session.add(other)
+            notify.send(session, [other.applicant_id], "worker_approved" if other.id == app.id else "application_not_chosen", job.id)
+    return _save(session, job)
 
 
 def apply_team(session: Session, user: User, skill: str) -> Pod | None:

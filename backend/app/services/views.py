@@ -49,8 +49,16 @@ def job_out(session: Session, j: Job, viewer: User | None = None) -> JobOut:
         amendments=[Amendment(**a) for a in j.amendments], supervision_level=j.supervision_level,
         junior_accepted_at=j.junior_accepted_at, created_at=j.created_at, due_at=due_at(j), payment=j.payment,
         paid_at=j.paid_at, paid_out_at=j.paid_out_at, client=client, anchor=person(anchor) if anchor else None,
-        junior=person(junior) if junior else None, split=MoneySplit(**split(j.budget_minor, j.supervision_level)),
+        junior=person(junior) if junior else None, split=MoneySplit(**split(j.budget_minor, _level_shown(session, j, viewer))),
+        opening=j.opening,
     )
+
+
+def _level_shown(session: Session, j: Job, viewer: User | None) -> int | None:
+    """The badge the split is worked out at: the job's, or, for a member looking at an opening, their own."""
+    if j.supervision_level is None and j.opening and viewer is not None and viewer.role == "junior" and j.pod_id:
+        return work.level_for(session, viewer.id, j.pod_id, j.skill)
+    return j.supervision_level
 
 
 def submission_out(s: Submission) -> SubmissionOut:
@@ -64,13 +72,13 @@ def application_out(session: Session, a: JobApplication) -> ApplicationOut:
     mentor = u.role == "junior"
     if mentor:
         signed = session.exec(select(func.count()).select_from(LogEntry).where(LogEntry.junior_id == u.id)).one()
-        level = session.get(PodMember, (pod.id, u.id))
+        level = work.level_for(session, u.id, pod.id, pod.skill)
     else:
         signed = session.exec(select(func.count()).select_from(Job).where(
             Job.pod_id == pod.id, Job.state == "client_accepted")).one()
         level = None
     return ApplicationOut(id=a.id, status=a.status, note=a.note, video_link=a.video_link, created_at=a.created_at, applicant=person(u),
-                          role=u.role, team_name=pod.name, level=level.level if level else None, signed_jobs=signed,
+                          role=u.role, team_name=pod.name, level=level, signed_jobs=signed,
                           profile_slug=u.profile_slug if mentor else None)
 
 
@@ -80,9 +88,12 @@ def job_detail(session: Session, j: Job, approved_only: bool = False, viewer: Us
     if approved_only:  # the client sees only work the Anchor approved
         subs = [s for s in subs if s.status == "approved"]
     out = JobDetail(job=job_out(session, j, viewer), submissions=[submission_out(s) for s in subs])
+    leader = anchor_of(session, j)
     if viewer is not None and viewer.id == j.client_id:
         if j.state == "open":
             out.applications = [application_out(session, a) for a in applications_of(session, j)]
+    elif viewer is not None and leader is not None and viewer.id == leader.id and j.opening:
+        out.applications = [application_out(session, a) for a in applications_of(session, j)]
     elif viewer is not None:
         mine = my_application(session, viewer, j)
         out.my_application = mine.status if mine else None

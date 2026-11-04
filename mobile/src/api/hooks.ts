@@ -236,6 +236,14 @@ export const useUploads = () =>
   useQuery({ queryKey: ['uploads'], staleTime: Infinity,
     queryFn: () => api<{ video: boolean; max_seconds: number; max_mb: number }>('/v1/uploads', { auth: false }) });
 
+// ---------- project openings ----------
+export const usePostOpening = () => useAction((id: string) => api(`/v1/jobs/${id}/opening`, { method: 'POST' }));
+export const useAskToJoin = () =>
+  useAction((v: { id: string; note: string }) => api(`/v1/jobs/${v.id}/ask-to-join`, { method: 'POST', body: { note: v.note } }));
+export const useApproveWorker = () =>
+  useAction((v: { id: string; application_id: string }) =>
+    api(`/v1/jobs/${v.id}/approve-worker`, { method: 'POST', body: { application_id: v.application_id } }));
+
 /** Demo payment (no real money): held until the client accepts the work. */
 export const usePay = () => useAction((id: string) => api(`/v1/jobs/${id}/pay`, { method: 'POST' }));
 export const useChoose = () =>

@@ -328,6 +328,7 @@ class JobOut(BaseModel):
     created_at: datetime
     due_at: datetime | None  # agreed date + deadline days; None before agreement
     payment: Literal["unpaid", "held", "paid_out"]  # demo payment, no real money
+    opening: bool = False  # posted to everyone with the skill; members ask to join
     paid_at: datetime | None
     paid_out_at: datetime | None
     client: PersonOut  # for juniors: only the client's country
@@ -515,6 +516,7 @@ class JuniorHome(BaseModel):
     profile_slug: str
     open_jobs: list[JobOut] = Field(default_factory=list)  # Mentors only: client jobs they may apply for
     applied_jobs: list[JobOut] = Field(default_factory=list)  # applied for, waiting for the client
+    openings: list[JobOut] = Field(default_factory=list)  # project openings in their skills, to ask to join
     earnings: list[MyMoney] = Field(default_factory=list)
     team_status: list[MyTeamStatus] = Field(default_factory=list)
     active_jobs: int = 0  # jobs in hand now

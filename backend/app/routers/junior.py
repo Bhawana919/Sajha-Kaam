@@ -89,6 +89,7 @@ def home(user: User = Depends(junior_only), session: Session = Depends(get_sessi
                       log_entries=entries, profile_slug=user.profile_slug,
                       open_jobs=[job_out(session, j, user) for j in work.open_jobs_for(session, user)],
                       applied_jobs=[job_out(session, j, user) for j in work.open_jobs_for(session, user, applied=True)],
+                      openings=[job_out(session, j, user) for j in work.openings_for(session, user)],
                       earnings=[MyMoney(**m) for m in work.junior_money(session, user.id)],
                       team_status=[_team_status(session, user, m) for m in work.memberships(session, user.id)],
                       active_jobs=work.member_active(session, user.id),

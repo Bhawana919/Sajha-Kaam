@@ -46,6 +46,10 @@ export default function JuniorHome() {
                   cta={t(j.state === 'assigned' ? 'junior.ctaRead' : j.state === 'sent_back' ? 'junior.ctaFix' : 'junior.ctaSend')}
                   onPress={() => go(j.id)} />
               )),
+              ...(h.openings ?? []).map((j) => (
+                <ActionCard key={j.id} icon="search" title={t('opening.card')} line={`${j.title} · ${money(j.budget_minor, j.currency)}`}
+                  cta={t('common.open')} onPress={() => go(j.id)} />
+              )),
               ...(h.open_jobs ?? []).map((j) => (
                 <ActionCard key={j.id} icon="search" title={t('junior.doApply')} line={`${j.title} · ${money(j.budget_minor, j.currency)}`}
                   cta={t('common.open')} onPress={() => go(j.id)} />

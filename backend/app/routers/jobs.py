@@ -94,6 +94,28 @@ def video_upload(user: User = Depends(require_role("anchor", "junior"))) -> dict
     return uploads.video_signature()
 
 
+@router.post("/jobs/{job_id}/opening", response_model=JobDetail)
+def post_opening(job_id: str, user: User = Depends(require_role("anchor")), session: Session = Depends(get_session)) -> JobDetail:
+    """Ask everyone with the skill to ask to join this agreed job."""
+    job = work.post_opening(session, user, work.get_job(session, job_id))
+    return job_detail(session, job, viewer=user)
+
+
+@router.post("/jobs/{job_id}/ask-to-join", response_model=JobDetail, status_code=201)
+def ask_to_join(job_id: str, body: ApplyIn, user: User = Depends(require_role("junior")),
+                session: Session = Depends(get_session)) -> JobDetail:
+    job = work.get_job(session, job_id)
+    work.ask_to_join(session, user, job, body.note)
+    return job_detail(session, job, viewer=user)
+
+
+@router.post("/jobs/{job_id}/approve-worker", response_model=JobDetail)
+def approve_worker(job_id: str, body: ChooseIn, user: User = Depends(require_role("anchor")),
+                   session: Session = Depends(get_session)) -> JobDetail:
+    job = work.approve_worker(session, user, work.get_job(session, job_id), body.application_id)
+    return job_detail(session, job, viewer=user)
+
+
 @router.post("/uploads/file", response_model=dict)
 def file_upload(user: User = Depends(require_role("anchor", "junior"))) -> dict:
     """A signature for one upload to the job room (images, videos or a PDF)."""

@@ -492,7 +492,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Invite */
+        /**
+         * Invite
+         * @description A join link for a client the Leader knows; with `job`, the agreement waits for them when they join.
+         */
         post: operations["invite_v1_anchor_invites_post"];
         delete?: never;
         options?: never;
@@ -663,6 +666,60 @@ export interface paths {
          * @description A short-lived signature for one direct upload to Cloudinary. The secret never leaves the server.
          */
         post: operations["video_upload_v1_uploads_video_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/opening": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Opening
+         * @description Ask everyone with the skill to ask to join this agreed job.
+         */
+        post: operations["post_opening_v1_jobs__job_id__opening_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/ask-to-join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ask To Join */
+        post: operations["ask_to_join_v1_jobs__job_id__ask_to_join_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/approve-worker": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Worker */
+        post: operations["approve_worker_v1_jobs__job_id__approve_worker_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -934,6 +991,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/invites/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Invite
+         * @description The join page: who invited the client, and the job waiting for them (no sign-in needed).
+         */
+        get: operations["invite_v1_invites__code__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/p/{slug}": {
         parameters: {
             query?: never;
@@ -962,7 +1039,7 @@ export interface paths {
         put?: never;
         /**
          * Reset
-         * @description Start the demo again with fresh sample data.
+         * @description Start the demo again with fresh sample data. Only the demo people are reset: real accounts stay.
          */
         post: operations["reset_demo_reset_post"];
         delete?: never;
@@ -1309,10 +1386,32 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** InviteIn */
+        InviteIn: {
+            job?: components["schemas"]["JobIn"] | null;
+        };
+        /** InviteInfo */
+        InviteInfo: {
+            /** Code */
+            code: string;
+            leader: components["schemas"]["PersonOut"];
+            /** Team Name */
+            team_name: string;
+            /** Skill */
+            skill: string;
+            /** Job Title */
+            job_title: string | null;
+            /** Budget Minor */
+            budget_minor: number | null;
+            /** Used */
+            used: boolean;
+        };
         /** InviteOut */
         InviteOut: {
             /** Code */
             code: string;
+            /** Job Title */
+            job_title?: string | null;
         };
         /** ItemResult */
         ItemResult: {
@@ -1439,6 +1538,11 @@ export interface components {
              * @enum {string}
              */
             payment: "unpaid" | "held" | "paid_out";
+            /**
+             * Opening
+             * @default false
+             */
+            opening: boolean;
             /** Paid At */
             paid_at: string | null;
             /** Paid Out At */
@@ -1485,6 +1589,8 @@ export interface components {
             open_jobs?: components["schemas"]["JobOut"][];
             /** Applied Jobs */
             applied_jobs?: components["schemas"]["JobOut"][];
+            /** Openings */
+            openings?: components["schemas"]["JobOut"][];
             /** Earnings */
             earnings?: components["schemas"]["MyMoney"][];
             /** Team Status */
@@ -3114,7 +3220,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["InviteIn"] | null;
+            };
+        };
         responses: {
             /** @description Successful Response */
             201: {
@@ -3439,6 +3549,113 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_opening_v1_jobs__job_id__opening_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_to_join_v1_jobs__job_id__ask_to_join_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_worker_v1_jobs__job_id__approve_worker_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChooseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDetail"];
                 };
             };
             /** @description Validation Error */
@@ -3980,6 +4197,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LogbookOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    invite_v1_invites__code__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteInfo"];
                 };
             };
             /** @description Validation Error */

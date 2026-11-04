@@ -1646,6 +1646,7 @@
           "anchor"
         ],
         "summary": "Invite",
+        "description": "A join link for a client the Leader knows; with `job`, the agreement waits for them when they join.",
         "operationId": "invite_v1_anchor_invites_post",
         "parameters": [
           {
@@ -1665,6 +1666,23 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/InviteIn"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "Successful Response",
@@ -2170,6 +2188,201 @@
                   "type": "object",
                   "additionalProperties": true,
                   "title": "Response Video Upload V1 Uploads Video Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/opening": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Post Opening",
+        "description": "Ask everyone with the skill to ask to join this agreed job.",
+        "operationId": "post_opening_v1_jobs__job_id__opening_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/ask-to-join": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Ask To Join",
+        "operationId": "ask_to_join_v1_jobs__job_id__ask_to_join_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/approve-worker": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Approve Worker",
+        "operationId": "approve_worker_v1_jobs__job_id__approve_worker_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChooseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetail"
                 }
               }
             }
@@ -3125,6 +3338,49 @@
         }
       }
     },
+    "/v1/invites/{code}": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Invite",
+        "description": "The join page: who invited the client, and the job waiting for them (no sign-in needed).",
+        "operationId": "invite_v1_invites__code__get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/p/{slug}": {
       "get": {
         "tags": [
@@ -3173,7 +3429,7 @@
           "demo"
         ],
         "summary": "Reset",
-        "description": "Start the demo again with fresh sample data.",
+        "description": "Start the demo again with fresh sample data. Only the demo people are reset: real accounts stay.",
         "operationId": "reset_demo_reset_post",
         "responses": {
           "200": {
@@ -3982,11 +4238,94 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "InviteIn": {
+        "properties": {
+          "job": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JobIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "InviteIn"
+      },
+      "InviteInfo": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "leader": {
+            "$ref": "#/components/schemas/PersonOut"
+          },
+          "team_name": {
+            "type": "string",
+            "title": "Team Name"
+          },
+          "skill": {
+            "type": "string",
+            "title": "Skill"
+          },
+          "job_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Title"
+          },
+          "budget_minor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Minor"
+          },
+          "used": {
+            "type": "boolean",
+            "title": "Used"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "leader",
+          "team_name",
+          "skill",
+          "job_title",
+          "budget_minor",
+          "used"
+        ],
+        "title": "InviteInfo"
+      },
       "InviteOut": {
         "properties": {
           "code": {
             "type": "string",
             "title": "Code"
+          },
+          "job_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Title"
           }
         },
         "type": "object",
@@ -4315,6 +4654,11 @@
             ],
             "title": "Payment"
           },
+          "opening": {
+            "type": "boolean",
+            "title": "Opening",
+            "default": false
+          },
           "paid_at": {
             "anyOf": [
               {
@@ -4478,6 +4822,13 @@
             },
             "type": "array",
             "title": "Applied Jobs"
+          },
+          "openings": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Openings"
           },
           "earnings": {
             "items": {

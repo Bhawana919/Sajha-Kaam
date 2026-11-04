@@ -537,7 +537,10 @@
     "member_level_up": "A team member's badge went up by the rules.",
     "promotion_paused": "Your Leader paused your next promotion. See the reason.",
     "room_file": "A new file was shared in a job room.",
-    "payment_released": "Payment released: your share is in. See how much."
+    "payment_released": "Payment released: your share is in. See how much.",
+    "job_opening": "A new project matches your skills. See your share.",
+    "job_join_request": "Someone asked to join your project.",
+    "worker_approved": "You are in! Your Leader approved you for a project."
   },
   "apply": {
     "title": "Apply for this job",
@@ -683,5 +686,20 @@
     "join": "Join and see the agreement",
     "notFound": "This invite link doesn't work. Ask your Team Leader for a new one.",
     "used": "This invite was already used. Sign in to see your jobs."
+  },
+  "opening": {
+    "findTitle": "Find people for this job",
+    "findHelp": "Everyone with this skill is told. They see their share and ask to join; you choose. Or give it to someone in your team below.",
+    "find": "Find people",
+    "requestsTitle": "Asked to join ({{n}})",
+    "requestsHelp": "Members with this skill. Approving one adds them to your team if they are new.",
+    "noneYet": "Nobody yet. Everyone with this skill has been told.",
+    "approve": "Approve {{name}}",
+    "title": "A project for you",
+    "help": "{{name}} is looking for people. Asking to join means you accept these terms; {{name}} chooses.",
+    "noteEx": "I wrote posts for two cafés in Pokhara.",
+    "ask": "Ask to join",
+    "waiting": "You asked to join. Waiting for {{name}} to choose.",
+    "card": "A new project matches your skills"
   }
 }

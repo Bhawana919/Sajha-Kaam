@@ -171,6 +171,7 @@ class Job(SQLModel, table=True):
     amendments: list[dict] = _json()  # accepted amendments: [{field, old, new, note, at}]
     supervision_level: int | None = None  # the junior's level when assigned, recorded in the logbook
     assigned_at: datetime | None = None  # when it was given to a member (for the team's fairness view)
+    opening: bool = False  # the Leader asked everyone with the skill to ask to join this job
     junior_accepted_at: datetime | None = None  # the junior tapped "I accept" on the brief
     # Demo payment (no real money): the client pays after agreeing, it is held until the client
     # accepts the work, then paid out as the split.  unpaid -> held -> paid_out
