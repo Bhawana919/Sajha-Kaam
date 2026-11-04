@@ -3,6 +3,7 @@
 import os
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlparse
 
 import yaml
 
@@ -25,7 +26,17 @@ class Settings:
         self.llm_timeout_s = float(os.environ.get("LLM_TIMEOUT_S", "12"))
         self.jwt_secret = os.environ.get("JWT_SECRET", "dev-only-secret-change-me-before-any-real-deploy")
         self.signing_seed_b64 = os.environ.get("SIGNING_SEED_B64")
-        self.read_links = _flag("READ_LINKS", "1")  # let the AI check read public GitHub PRs and Google Docs
+        self.read_links = _flag("READ_LINKS", "1")  # let the check read public GitHub PRs and Google Docs
+        # Video uploads (Cloudinary). Off unless set. Paste the "API environment variable" from the
+        # Cloudinary dashboard: cloudinary://<api_key>:<api_secret>@<cloud_name>. The secret stays here.
+        self.cloudinary = _cloudinary(os.environ.get("CLOUDINARY_URL", ""))
+
+
+def _cloudinary(url: str) -> dict | None:
+    parts = urlparse(url.strip())
+    if parts.scheme != "cloudinary" or not (parts.username and parts.password and parts.hostname):
+        return None
+    return {"api_key": parts.username, "api_secret": parts.password, "cloud_name": parts.hostname}
 
 
 @lru_cache

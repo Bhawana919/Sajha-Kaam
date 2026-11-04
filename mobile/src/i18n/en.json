@@ -505,5 +505,19 @@
     "in_other": "Due in {{count}} days",
     "late_one": "{{count}} day late",
     "late_other": "{{count}} days late"
+  },
+  "upload": {
+    "title": "Your 2-minute video",
+    "help": "Up to 2 minutes: who you are and one piece of work you're proud of. Phone video is fine.",
+    "button": "Upload my video",
+    "uploading": "Uploading… {{percent}}%",
+    "done": "Video uploaded",
+    "doneTime": "Video uploaded ({{time}})",
+    "change": "Choose another video",
+    "tooLong": "This video is {{time}} long. Please keep it to 2 minutes or less.",
+    "tooBig": "This video is {{mb}} MB. Please keep it under {{max}} MB: record at 720p or trim it.",
+    "failed": "The upload didn't finish. Check your internet and try again, or paste a link below.",
+    "orLink": "Or paste a link instead (YouTube, Google Drive, Vimeo, Loom)",
+    "linkHelp": "Upload it to YouTube as “Unlisted” or to Google Drive shared with “anyone with the link”, then paste the link."
   }
 }

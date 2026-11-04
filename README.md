@@ -85,6 +85,10 @@ about 10 minutes.
 
 - No card or credit? Change `plan: starter` to `plan: free`. The free plan sleeps after 15 minutes without
   visitors and takes about a minute to wake, so open the link a few minutes before presenting.
+- **Video uploads** (Mentors applying for a job): add the environment variable `CLOUDINARY_URL` on Render,
+  copied from the Cloudinary dashboard ("API environment variable", `cloudinary://key:secret@cloud`). Videos go
+  straight from the phone to Cloudinary; the server only signs each upload, so the secret stays on Render.
+  Without it, members paste a YouTube, Google Drive, Vimeo or Loom link instead.
 - The database is temporary on purpose: every deploy or restart brings back fresh demo data
   (or reset any time: `POST /demo/reset`).
 

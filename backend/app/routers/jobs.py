@@ -22,7 +22,7 @@ from app.schemas import (
     NotificationOut,
     Problem,
 )
-from app.services import agreement, work
+from app.services import agreement, uploads, work
 from app.services.views import entry_out, job_detail, job_out, person
 
 router = APIRouter(prefix="/v1", tags=["jobs"])
@@ -72,6 +72,20 @@ def apply(job_id: str, body: ApplyIn, user: User = Depends(require_role("anchor"
     job = work.get_job(session, job_id)
     work.apply_for_job(session, user, job, body.note, body.video_link)
     return job_detail(session, job, viewer=user)
+
+
+@router.get("/uploads", response_model=dict)
+def uploads_status() -> dict:
+    """Whether the app can upload videos (Cloudinary set up on the server), and the limits."""
+    return uploads.status()
+
+
+@router.post("/uploads/video", response_model=dict)
+def video_upload(user: User = Depends(require_role("anchor", "junior"))) -> dict:
+    """A short-lived signature for one direct upload to Cloudinary. The secret never leaves the server."""
+    if not uploads.enabled():
+        raise HTTPException(503, "uploads_off")
+    return uploads.video_signature()
 
 
 @router.post("/jobs/{job_id}/choose", response_model=JobDetail)

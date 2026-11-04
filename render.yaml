@@ -14,3 +14,7 @@ services:
         generateValue: true
       - key: DEMO_MODE
         value: "1"
+      # Video uploads: paste the "API environment variable" from the Cloudinary dashboard
+      # (cloudinary://key:secret@cloud). Without it, members paste a video link instead.
+      - key: CLOUDINARY_URL
+        sync: false

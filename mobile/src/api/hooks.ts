@@ -192,6 +192,11 @@ export const useCheckAgreement = () =>
 export const usePostJob = () => useAction((j: JobIn) => api<{ id: string }>('/v1/jobs', { method: 'POST', body: j }));
 /** Agree to an agreement: the client to one their Anchor wrote, or the Anchor to one their client sent. */
 export const useAgree = () => useAction((id: string) => api(`/v1/jobs/${id}/agree`, { method: 'POST' }));
+/** Whether the server can sign video uploads (Cloudinary set up), and the limits. */
+export const useUploads = () =>
+  useQuery({ queryKey: ['uploads'], staleTime: Infinity,
+    queryFn: () => api<{ video: boolean; max_seconds: number; max_mb: number }>('/v1/uploads', { auth: false }) });
+
 /** Demo payment (no real money): held until the client accepts the work. */
 export const usePay = () => useAction((id: string) => api(`/v1/jobs/${id}/pay`, { method: 'POST' }));
 export const useChoose = () =>

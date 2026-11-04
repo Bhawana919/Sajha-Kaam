@@ -6,12 +6,13 @@ import { Linking, View } from 'react-native';
 import { PUBLIC_BASE } from '@/api/client';
 import {
   useAccept, useAgree, useAnswerBrief, useApply, useAssign, useChoose, useDecideChange, useJob, useJuniorHome, useMe,
-  usePay, useProposeChange, useRequestChanges, useSubmit, useTeam, useTemplate,
+  usePay, useProposeChange, useRequestChanges, useSubmit, useTeam, useTemplate, useUploads,
 } from '@/api/hooks';
 import type { JobDetail } from '@/api/types';
 import { Checkbox, Field, useErrorText } from '@/components/forms';
 import { CheckView, LevelTag, SplitRows, StateTag, useBadge, useClientName, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
+import { VideoUpload } from '@/components/VideoUpload';
 import { Txt } from '@/components/Txt';
 import { Bullet, Button, Chip, Panel, Row, Section, StateView, Tag } from '@/components/ui';
 import { useT } from '@/i18n';
@@ -91,6 +92,7 @@ function Apply({ d, leaderName }: { d: JobDetail; leaderName?: string }) {
   const [note, setNote] = useState('');
   const [video, setVideo] = useState('');
   const mentor = leaderName !== undefined;
+  const uploads = useUploads().data;
   const mine = d.my_application;
   if (mine) {
     return <Panel tone={mine === 'not_chosen' ? 'clay' : 'honey'}><Txt>{t(`apply.${mine}`)}</Txt></Panel>;
@@ -98,9 +100,16 @@ function Apply({ d, leaderName }: { d: JobDetail; leaderName?: string }) {
   if (d.job.state !== 'open') return null;
   return (
     <Section title={t('apply.title')} help={mentor ? t('apply.helpMentor', { name: leaderName }) : t('apply.helpAnchor')}>
-      {mentor ? (
-        <Field label={t('apply.video')} help={t('apply.videoHelp')} value={video} onChangeText={setVideo}
-          autoCapitalize="none" keyboardType="url" placeholder="https://youtu.be/..." />
+      {mentor && uploads?.video ? (
+        <View style={{ gap: space.sm }}>
+          <Txt variant="h3">{t('upload.title')}</Txt>
+          <Txt variant="small" color={colors.inkSoft}>{t('upload.help')}</Txt>
+          <VideoUpload limits={uploads} value={video} onUploaded={setVideo} />
+        </View>
+      ) : null}
+      {mentor && !video.includes('res.cloudinary.com') ? (
+        <Field label={uploads?.video ? t('upload.orLink') : t('apply.video')} help={uploads?.video ? t('upload.linkHelp') : t('apply.videoHelp')} value={video}
+          onChangeText={setVideo} autoCapitalize="none" keyboardType="url" placeholder="https://youtu.be/..." />
       ) : null}
       <Field label={t('apply.note')} placeholder={t('apply.noteEx')} value={note} onChangeText={setNote} multiline />
       <Button label={t('apply.send')} disabled={mentor && !video.trim()} busy={apply.isPending}

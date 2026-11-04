@@ -33,7 +33,7 @@ from app.models import (
     new_id,
     utcnow,
 )
-from app.services import agreement, checker, notify, signing
+from app.services import agreement, checker, notify, signing, uploads
 
 LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -367,7 +367,8 @@ VIDEO_HOSTS = {"youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be", "d
 def video_link_ok(link: str) -> bool:
     """Only video sites the client can open in a browser; nothing is fetched by Sajha Kaam."""
     parts = urlparse(link)
-    return parts.scheme == "https" and (parts.hostname or "").lower() in VIDEO_HOSTS
+    host = (parts.hostname or "").lower()
+    return parts.scheme == "https" and (host in VIDEO_HOSTS or uploads.is_our_video(link, host, parts.path))
 
 
 def apply_for_job(session: Session, user: User, job: Job, note: str, video_link: str = "") -> JobApplication:
