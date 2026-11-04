@@ -79,12 +79,14 @@ npm run check
 ## Host it free (one link for the demo)
 
 The [Dockerfile](Dockerfile) builds the web app and the API into one container, so the app and API share one
-address. On [Render](https://render.com) (free plan, no card): sign in with GitHub → **New** → **Blueprint** →
-pick this repo. [render.yaml](render.yaml) sets everything up. The first build takes about 10 minutes.
+address. On [Render](https://render.com): sign in with GitHub → **New** → **Blueprint** → pick this repo.
+[render.yaml](render.yaml) sets everything up on the Starter plan, which never sleeps. The first build takes
+about 10 minutes.
 
-- The free plan sleeps after 15 minutes without visitors; the next visit takes about a minute. Open the
-  link a few minutes before presenting.
-- The database is temporary: every restart brings back fresh demo data.
+- No card or credit? Change `plan: starter` to `plan: free`. The free plan sleeps after 15 minutes without
+  visitors and takes about a minute to wake, so open the link a few minutes before presenting.
+- The database is temporary on purpose: every deploy or restart brings back fresh demo data
+  (or reset any time: `POST /demo/reset`).
 
 ## Demo people
 

@@ -1,10 +1,12 @@
-# Render blueprint: one free web service built from the Dockerfile (app + API on one address).
+# Render blueprint: one web service built from the Dockerfile (app + API on one address).
 # Render dashboard -> New -> Blueprint -> pick this GitHub repo.
+# Starter plan (paid from hackathon credit): never sleeps, so the demo link opens straight away.
+# The database stays temporary on purpose: each deploy or restart starts from fresh demo data.
 services:
   - type: web
     name: sajha-kaam
     runtime: docker
-    plan: free
+    plan: starter
     region: singapore
     healthCheckPath: /health
     envVars:
