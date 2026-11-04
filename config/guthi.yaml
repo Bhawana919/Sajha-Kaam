@@ -1,0 +1,15 @@
+# Sajha Kaam settings that are product decisions, not secrets.
+
+# How a client's payment is shared, in percent. Shown on screen only: Sajha Kaam never holds money.
+split:
+  junior: 75
+  anchor: 10
+  platform: 15
+
+# Demo accounts all use this password (DEMO_MODE only).
+demo_password: kaam-demo
+
+# The AI check may read work from these public links only (nothing else is ever fetched).
+link_reading:
+  timeout_s: 5
+  max_chars: 20000

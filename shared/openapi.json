@@ -1,0 +1,4537 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sajha Kaam API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/v1/auth/samples": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Samples",
+        "operationId": "samples_v1_auth_samples_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SampleIdentity"
+                  },
+                  "type": "array",
+                  "title": "Response Samples V1 Auth Samples Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/sample-login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sample Login",
+        "operationId": "sample_login_v1_auth_sample_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleLoginIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Refresh",
+        "operationId": "refresh_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Me",
+        "operationId": "me_v1_me_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/settings": {
+      "put": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Update Settings",
+        "operationId": "update_settings_v1_me_settings_put",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/profile": {
+      "get": {
+        "tags": [
+          "junior"
+        ],
+        "summary": "Get Profile",
+        "operationId": "get_profile_v1_me_profile_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "junior"
+        ],
+        "summary": "Put Profile",
+        "operationId": "put_profile_v1_me_profile_put",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/teams/open": {
+      "get": {
+        "tags": [
+          "junior"
+        ],
+        "summary": "Open Teams",
+        "operationId": "open_teams_v1_teams_open_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OpenTeam"
+                  },
+                  "title": "Response Open Teams V1 Teams Open Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/teams/{team_id}/join": {
+      "post": {
+        "tags": [
+          "junior"
+        ],
+        "summary": "Join",
+        "operationId": "join_v1_teams__team_id__join_post",
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Team Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Join V1 Teams  Team Id  Join Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/junior/home": {
+      "get": {
+        "tags": [
+          "junior"
+        ],
+        "summary": "Home",
+        "operationId": "home_v1_junior_home_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JuniorHome"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/brief": {
+      "post": {
+        "tags": [
+          "junior"
+        ],
+        "summary": "Answer Brief",
+        "description": "The junior accepts (or declines) the task brief before starting.",
+        "operationId": "answer_brief_v1_jobs__job_id__brief_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/submit": {
+      "post": {
+        "tags": [
+          "junior"
+        ],
+        "summary": "Submit",
+        "operationId": "submit_v1_jobs__job_id__submit_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/logbook": {
+      "get": {
+        "tags": [
+          "junior"
+        ],
+        "summary": "My Logbook",
+        "operationId": "my_logbook_v1_me_logbook_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LogEntryOut"
+                  },
+                  "title": "Response My Logbook V1 Me Logbook Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/desk": {
+      "get": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Desk",
+        "operationId": "desk_v1_anchor_desk_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeskOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/jobs": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Write Job",
+        "description": "The Anchor writes the agreement for a client; it goes to the client to agree.",
+        "operationId": "write_job_v1_anchor_jobs_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnchorJobIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}": {
+      "put": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Edit Job",
+        "description": "Rewrite an agreement that isn't agreed yet; it goes (back) to the client.",
+        "operationId": "edit_job_v1_jobs__job_id__put",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Detail",
+        "operationId": "detail_v1_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/change": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Propose Change",
+        "description": "Propose a new deadline or budget after agreement. The client must accept it.",
+        "operationId": "propose_change_v1_jobs__job_id__change_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmendIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/take": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Take",
+        "operationId": "take_v1_jobs__job_id__take_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/assign": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Assign",
+        "operationId": "assign_v1_jobs__job_id__assign_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/submissions/{submission_id}/approve": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Approve",
+        "operationId": "approve_v1_submissions__submission_id__approve_post",
+        "parameters": [
+          {
+            "name": "submission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Submission Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/submissions/{submission_id}/send-back": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Send Back",
+        "operationId": "send_back_v1_submissions__submission_id__send_back_post",
+        "parameters": [
+          {
+            "name": "submission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Submission Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendBackIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/team": {
+      "get": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Team",
+        "operationId": "team_v1_anchor_team_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/seats": {
+      "put": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Seats",
+        "operationId": "seats_v1_anchor_seats_put",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeatsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PodOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/requests": {
+      "get": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Requests",
+        "operationId": "requests_v1_anchor_requests_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlindRequest"
+                  },
+                  "title": "Response Requests V1 Anchor Requests Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/requests/{request_id}/decide": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Decide",
+        "operationId": "decide_v1_anchor_requests__request_id__decide_post",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecideIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Decide V1 Anchor Requests  Request Id  Decide Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/members/{junior_id}/level": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Level",
+        "operationId": "level_v1_anchor_members__junior_id__level_post",
+        "parameters": [
+          {
+            "name": "junior_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Junior Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LevelIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Level V1 Anchor Members  Junior Id  Level Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/invites": {
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Invite",
+        "operationId": "invite_v1_anchor_invites_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/notes": {
+      "get": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Notes",
+        "operationId": "notes_v1_anchor_notes_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NoteOut"
+                  },
+                  "title": "Response Notes V1 Anchor Notes Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Add Note",
+        "operationId": "add_note_v1_anchor_notes_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/anchor/notes/{note_id}": {
+      "delete": {
+        "tags": [
+          "anchor"
+        ],
+        "summary": "Delete Note",
+        "operationId": "delete_note_v1_anchor_notes__note_id__delete",
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Note Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete Note V1 Anchor Notes  Note Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/agreement/template": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Template",
+        "description": "The fixed template: skills, extra questions per skill, examples and fair minimum budgets.",
+        "operationId": "template_v1_agreement_template_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Template V1 Agreement Template Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/agreement/check": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Check",
+        "operationId": "check_v1_agreement_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Create",
+        "operationId": "create_v1_jobs_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/agree": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Agree",
+        "description": "The side that didn't write the latest version agrees. Only then can juniors see the job.",
+        "operationId": "agree_v1_jobs__job_id__agree_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/request-changes": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Request Changes",
+        "operationId": "request_changes_v1_jobs__job_id__request_changes_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangesIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/change/decide": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Decide Change",
+        "description": "The client accepts or declines an amendment the Anchor proposed.",
+        "operationId": "decide_change_v1_jobs__job_id__change_decide_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/client/home": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Client Home",
+        "operationId": "client_home_v1_client_home_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientHome"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/accept": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Accept",
+        "operationId": "accept_v1_jobs__job_id__accept_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Notifications",
+        "operationId": "notifications_v1_notifications_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationOut"
+                  },
+                  "title": "Response Notifications V1 Notifications Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/read": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Read All",
+        "operationId": "read_all_v1_notifications_read_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Read All V1 Notifications Read Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/sajha-kaam-keys.json": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Keys",
+        "operationId": "keys__well_known_sajha_kaam_keys_json_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Keys  Well Known Sajha Kaam Keys Json Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/public/logbook/{slug}": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Logbook Json",
+        "operationId": "logbook_json_v1_public_logbook__slug__get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogbookOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/p/{slug}": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Logbook Page",
+        "operationId": "logbook_page_p__slug__get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/reset": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Reset",
+        "description": "Start the demo again with fresh sample data.",
+        "operationId": "reset_demo_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Reset Demo Reset Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AcceptIn": {
+        "properties": {
+          "show_client": {
+            "type": "boolean",
+            "title": "Show Client",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "AcceptIn"
+      },
+      "AmendIn": {
+        "properties": {
+          "deadline_days": {
+            "type": "integer",
+            "maximum": 90.0,
+            "minimum": 1.0,
+            "title": "Deadline Days"
+          },
+          "budget_minor": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Budget Minor"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deadline_days",
+          "budget_minor",
+          "note"
+        ],
+        "title": "AmendIn"
+      },
+      "Amendment": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "deadline_days",
+              "budget_minor"
+            ],
+            "title": "Field"
+          },
+          "old": {
+            "type": "integer",
+            "title": "Old"
+          },
+          "new": {
+            "type": "integer",
+            "title": "New"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "at": {
+            "type": "string",
+            "title": "At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "old",
+          "new",
+          "note",
+          "at"
+        ],
+        "title": "Amendment"
+      },
+      "AnchorJobIn": {
+        "properties": {
+          "skill": {
+            "type": "string",
+            "title": "Skill"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Title",
+            "default": ""
+          },
+          "deliverables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Deliverables"
+          },
+          "done_when": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Done When"
+          },
+          "details": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Details"
+          },
+          "references": {
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "References"
+          },
+          "deadline_days": {
+            "type": "integer",
+            "title": "Deadline Days",
+            "default": 0
+          },
+          "budget_minor": {
+            "type": "integer",
+            "title": "Budget Minor",
+            "default": 0
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Currency",
+            "default": "USD"
+          },
+          "revisions": {
+            "type": "integer",
+            "title": "Revisions",
+            "default": 1
+          },
+          "allow_ai": {
+            "type": "boolean",
+            "title": "Allow Ai",
+            "default": false
+          },
+          "send_to_anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Send To Anchor"
+          },
+          "client_id": {
+            "type": "string",
+            "title": "Client Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "skill",
+          "client_id"
+        ],
+        "title": "AnchorJobIn",
+        "description": "The Anchor writes the agreement for one of their clients."
+      },
+      "AnswerIn": {
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "title": "Accept"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accept"
+        ],
+        "title": "AnswerIn"
+      },
+      "AssignIn": {
+        "properties": {
+          "junior_id": {
+            "type": "string",
+            "title": "Junior Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "junior_id"
+        ],
+        "title": "AssignIn"
+      },
+      "BlindRequest": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Languages"
+          },
+          "tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tools"
+          },
+          "hours_per_week": {
+            "type": "integer",
+            "title": "Hours Per Week"
+          },
+          "sample_link": {
+            "type": "string",
+            "title": "Sample Link"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "test_answer": {
+            "type": "string",
+            "title": "Test Answer"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "skills",
+          "languages",
+          "tools",
+          "hours_per_week",
+          "sample_link",
+          "note",
+          "test_answer",
+          "created_at"
+        ],
+        "title": "BlindRequest",
+        "description": "What the Anchor sees: work and skills only, as \"Applicant A\". No name, district, about-me, or\nlanguages beyond the working languages clients use."
+      },
+      "ChangesIn": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "ChangesIn"
+      },
+      "CheckOut": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "problems": {
+            "items": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "type": "array",
+            "title": "Problems"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "problems"
+        ],
+        "title": "CheckOut"
+      },
+      "ClientHome": {
+        "properties": {
+          "anchors": {
+            "items": {
+              "$ref": "#/components/schemas/PersonOut"
+            },
+            "type": "array",
+            "title": "Anchors"
+          },
+          "to_agree": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "To Agree"
+          },
+          "ready": {
+            "items": {
+              "$ref": "#/components/schemas/JobDetail"
+            },
+            "type": "array",
+            "title": "Ready"
+          },
+          "in_progress": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "In Progress"
+          },
+          "done": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Done"
+          }
+        },
+        "type": "object",
+        "required": [
+          "anchors",
+          "to_agree",
+          "ready",
+          "in_progress",
+          "done"
+        ],
+        "title": "ClientHome"
+      },
+      "DecideIn": {
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "title": "Accept"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accept"
+        ],
+        "title": "DecideIn"
+      },
+      "DeskOut": {
+        "properties": {
+          "team": {
+            "$ref": "#/components/schemas/PodOut"
+          },
+          "waiting_review": {
+            "items": {
+              "$ref": "#/components/schemas/JobDetail"
+            },
+            "type": "array",
+            "title": "Waiting Review"
+          },
+          "agreements": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Agreements"
+          },
+          "to_assign": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "To Assign"
+          },
+          "open_jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Open Jobs"
+          },
+          "join_requests": {
+            "type": "integer",
+            "title": "Join Requests"
+          },
+          "with_clients": {
+            "type": "integer",
+            "title": "With Clients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "team",
+          "waiting_review",
+          "agreements",
+          "to_assign",
+          "open_jobs",
+          "join_requests",
+          "with_clients"
+        ],
+        "title": "DeskOut"
+      },
+      "Evidence": {
+        "properties": {
+          "signed_jobs": {
+            "type": "integer",
+            "title": "Signed Jobs"
+          },
+          "first_try_streak": {
+            "type": "integer",
+            "title": "First Try Streak"
+          },
+          "sent_back_total": {
+            "type": "integer",
+            "title": "Sent Back Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signed_jobs",
+          "first_try_streak",
+          "sent_back_total"
+        ],
+        "title": "Evidence"
+      },
+      "FirstCheck": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "ai",
+              "offline"
+            ],
+            "title": "Source"
+          },
+          "read_from": {
+            "type": "string",
+            "enum": [
+              "github",
+              "google_doc",
+              "pasted",
+              "note_only"
+            ],
+            "title": "Read From"
+          },
+          "link_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "unsupported",
+                  "unreadable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Note"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ItemResult"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "done_count": {
+            "type": "integer",
+            "title": "Done Count"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "to_fix": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "To Fix"
+          },
+          "good": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Good"
+          },
+          "anchor_examples": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Anchor Examples"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "read_from",
+          "items",
+          "done_count",
+          "total",
+          "to_fix",
+          "good",
+          "anchor_examples",
+          "summary"
+        ],
+        "title": "FirstCheck"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InviteOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "InviteOut"
+      },
+      "ItemResult": {
+        "properties": {
+          "item": {
+            "type": "string",
+            "title": "Item"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "looks_done",
+              "needs_work",
+              "cant_tell"
+            ],
+            "title": "Status"
+          },
+          "comment": {
+            "type": "string",
+            "title": "Comment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "item",
+          "status",
+          "comment"
+        ],
+        "title": "ItemResult"
+      },
+      "JobDetail": {
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/JobOut"
+          },
+          "submissions": {
+            "items": {
+              "$ref": "#/components/schemas/SubmissionOut"
+            },
+            "type": "array",
+            "title": "Submissions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job",
+          "submissions"
+        ],
+        "title": "JobDetail"
+      },
+      "JobIn": {
+        "properties": {
+          "skill": {
+            "type": "string",
+            "title": "Skill"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Title",
+            "default": ""
+          },
+          "deliverables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Deliverables"
+          },
+          "done_when": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Done When"
+          },
+          "details": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Details"
+          },
+          "references": {
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "References"
+          },
+          "deadline_days": {
+            "type": "integer",
+            "title": "Deadline Days",
+            "default": 0
+          },
+          "budget_minor": {
+            "type": "integer",
+            "title": "Budget Minor",
+            "default": 0
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Currency",
+            "default": "USD"
+          },
+          "revisions": {
+            "type": "integer",
+            "title": "Revisions",
+            "default": 1
+          },
+          "allow_ai": {
+            "type": "boolean",
+            "title": "Allow Ai",
+            "default": false
+          },
+          "send_to_anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Send To Anchor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "skill"
+        ],
+        "title": "JobIn"
+      },
+      "JobOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "skill": {
+            "type": "string",
+            "title": "Skill"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "deliverables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Deliverables"
+          },
+          "done_when": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Done When"
+          },
+          "details": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Details"
+          },
+          "references": {
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            },
+            "type": "array",
+            "title": "References"
+          },
+          "deadline_days": {
+            "type": "integer",
+            "title": "Deadline Days"
+          },
+          "budget_minor": {
+            "type": "integer",
+            "title": "Budget Minor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "revisions": {
+            "type": "integer",
+            "title": "Revisions"
+          },
+          "allow_ai": {
+            "type": "boolean",
+            "title": "Allow Ai"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "with_client",
+              "with_anchor",
+              "open",
+              "agreed",
+              "assigned",
+              "working",
+              "submitted",
+              "sent_back",
+              "anchor_approved",
+              "client_accepted"
+            ],
+            "title": "State"
+          },
+          "change_note": {
+            "type": "string",
+            "title": "Change Note"
+          },
+          "agreed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agreed At"
+          },
+          "pending_change": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PendingChange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "amendments": {
+            "items": {
+              "$ref": "#/components/schemas/Amendment"
+            },
+            "type": "array",
+            "title": "Amendments"
+          },
+          "supervision_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supervision Level"
+          },
+          "junior_accepted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Junior Accepted At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "client": {
+            "$ref": "#/components/schemas/PersonOut"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "junior": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "split": {
+            "$ref": "#/components/schemas/MoneySplit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "skill",
+          "title",
+          "deliverables",
+          "done_when",
+          "details",
+          "references",
+          "deadline_days",
+          "budget_minor",
+          "currency",
+          "revisions",
+          "allow_ai",
+          "state",
+          "change_note",
+          "agreed_at",
+          "pending_change",
+          "amendments",
+          "supervision_level",
+          "junior_accepted_at",
+          "created_at",
+          "client",
+          "anchor",
+          "junior",
+          "split"
+        ],
+        "title": "JobOut"
+      },
+      "JoinIn": {
+        "properties": {
+          "sample_link": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 8,
+            "title": "Sample Link"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 600,
+            "title": "Note",
+            "default": ""
+          },
+          "test_answer": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Test Answer",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "sample_link"
+        ],
+        "title": "JoinIn"
+      },
+      "JuniorHome": {
+        "properties": {
+          "profile_complete": {
+            "type": "boolean",
+            "title": "Profile Complete"
+          },
+          "teams": {
+            "items": {
+              "$ref": "#/components/schemas/PodOut"
+            },
+            "type": "array",
+            "title": "Teams"
+          },
+          "levels": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Levels"
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Jobs"
+          },
+          "open_teams": {
+            "type": "integer",
+            "title": "Open Teams"
+          },
+          "log_entries": {
+            "type": "integer",
+            "title": "Log Entries"
+          },
+          "profile_slug": {
+            "type": "string",
+            "title": "Profile Slug"
+          }
+        },
+        "type": "object",
+        "required": [
+          "profile_complete",
+          "teams",
+          "levels",
+          "jobs",
+          "open_teams",
+          "log_entries",
+          "profile_slug"
+        ],
+        "title": "JuniorHome"
+      },
+      "LevelIn": {
+        "properties": {
+          "level": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Level"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "reason"
+        ],
+        "title": "LevelIn"
+      },
+      "LogEntryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "credential": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Credential"
+          },
+          "signature_b64": {
+            "type": "string",
+            "title": "Signature B64"
+          },
+          "key_id": {
+            "type": "string",
+            "title": "Key Id"
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issued At"
+          },
+          "valid": {
+            "type": "boolean",
+            "title": "Valid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "credential",
+          "signature_b64",
+          "key_id",
+          "issued_at",
+          "valid"
+        ],
+        "title": "LogEntryOut"
+      },
+      "LogbookOut": {
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "teams": {
+            "items": {
+              "$ref": "#/components/schemas/PodOut"
+            },
+            "type": "array",
+            "title": "Teams"
+          },
+          "levels": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Levels"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/LogEntryOut"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "display_name",
+          "teams",
+          "levels",
+          "entries"
+        ],
+        "title": "LogbookOut"
+      },
+      "LoginIn": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginIn"
+      },
+      "MeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "anchor",
+              "junior",
+              "client"
+            ],
+            "title": "Role"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          },
+          "profile_slug": {
+            "type": "string",
+            "title": "Profile Slug"
+          },
+          "ai_helper": {
+            "type": "boolean",
+            "title": "Ai Helper"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "display_name",
+          "headline",
+          "country",
+          "profile_slug",
+          "ai_helper"
+        ],
+        "title": "MeOut"
+      },
+      "MemberOut": {
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/PersonOut"
+          },
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/Evidence"
+          },
+          "open_jobs": {
+            "type": "integer",
+            "title": "Open Jobs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person",
+          "level",
+          "evidence",
+          "open_jobs"
+        ],
+        "title": "MemberOut"
+      },
+      "MoneySplit": {
+        "properties": {
+          "junior": {
+            "type": "integer",
+            "title": "Junior"
+          },
+          "anchor": {
+            "type": "integer",
+            "title": "Anchor"
+          },
+          "platform": {
+            "type": "integer",
+            "title": "Platform"
+          }
+        },
+        "type": "object",
+        "required": [
+          "junior",
+          "anchor",
+          "platform"
+        ],
+        "title": "MoneySplit"
+      },
+      "NoteIn": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "NoteIn"
+      },
+      "NoteOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "added",
+              "send_back",
+              "seed"
+            ],
+            "title": "Source"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "text",
+          "source",
+          "created_at"
+        ],
+        "title": "NoteOut"
+      },
+      "NotificationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "ref": {
+            "type": "string",
+            "title": "Ref"
+          },
+          "read": {
+            "type": "boolean",
+            "title": "Read"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "ref",
+          "read",
+          "created_at"
+        ],
+        "title": "NotificationOut"
+      },
+      "OpenTeam": {
+        "properties": {
+          "team": {
+            "$ref": "#/components/schemas/PodOut"
+          },
+          "my_request": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "waiting",
+                  "accepted",
+                  "declined"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "My Request"
+          }
+        },
+        "type": "object",
+        "required": [
+          "team",
+          "my_request"
+        ],
+        "title": "OpenTeam"
+      },
+      "PendingChange": {
+        "properties": {
+          "deadline_days": {
+            "type": "integer",
+            "title": "Deadline Days"
+          },
+          "budget_minor": {
+            "type": "integer",
+            "title": "Budget Minor"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deadline_days",
+          "budget_minor",
+          "note"
+        ],
+        "title": "PendingChange"
+      },
+      "PersonOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "headline",
+          "country"
+        ],
+        "title": "PersonOut"
+      },
+      "PodOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "skill": {
+            "type": "string",
+            "title": "Skill"
+          },
+          "about": {
+            "type": "string",
+            "title": "About"
+          },
+          "seats_open": {
+            "type": "integer",
+            "title": "Seats Open"
+          },
+          "test_task": {
+            "type": "string",
+            "title": "Test Task"
+          },
+          "anchor": {
+            "$ref": "#/components/schemas/PersonOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "skill",
+          "about",
+          "seats_open",
+          "test_task",
+          "anchor"
+        ],
+        "title": "PodOut"
+      },
+      "Problem": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Index"
+          },
+          "words": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Words"
+          },
+          "minimum": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "code"
+        ],
+        "title": "Problem"
+      },
+      "ProfileIn": {
+        "properties": {
+          "about": {
+            "type": "string",
+            "maxLength": 600,
+            "title": "About",
+            "default": ""
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "minItems": 1,
+            "title": "Skills"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Languages"
+          },
+          "tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Tools"
+          },
+          "samples": {
+            "items": {
+              "$ref": "#/components/schemas/Sample"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Samples"
+          },
+          "hours_per_week": {
+            "type": "integer",
+            "maximum": 60.0,
+            "minimum": 1.0,
+            "title": "Hours Per Week",
+            "default": 10
+          },
+          "education": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Education",
+            "default": ""
+          },
+          "district": {
+            "type": "string",
+            "maxLength": 60,
+            "title": "District",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "skills"
+        ],
+        "title": "ProfileIn"
+      },
+      "ProfileOut": {
+        "properties": {
+          "about": {
+            "type": "string",
+            "maxLength": 600,
+            "title": "About",
+            "default": ""
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "minItems": 1,
+            "title": "Skills"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Languages"
+          },
+          "tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Tools"
+          },
+          "samples": {
+            "items": {
+              "$ref": "#/components/schemas/Sample"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Samples"
+          },
+          "hours_per_week": {
+            "type": "integer",
+            "maximum": 60.0,
+            "minimum": 1.0,
+            "title": "Hours Per Week",
+            "default": 10
+          },
+          "education": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Education",
+            "default": ""
+          },
+          "district": {
+            "type": "string",
+            "maxLength": 60,
+            "title": "District",
+            "default": ""
+          },
+          "complete": {
+            "type": "boolean",
+            "title": "Complete"
+          }
+        },
+        "type": "object",
+        "required": [
+          "skills",
+          "complete"
+        ],
+        "title": "ProfileOut"
+      },
+      "Reference": {
+        "properties": {
+          "link": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Link"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Note",
+            "default": ""
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "like",
+              "not_like"
+            ],
+            "title": "Kind",
+            "default": "like"
+          }
+        },
+        "type": "object",
+        "required": [
+          "link"
+        ],
+        "title": "Reference"
+      },
+      "RefreshIn": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshIn"
+      },
+      "RegisterIn": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "anchor",
+              "junior",
+              "client"
+            ],
+            "title": "Role"
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "Display Name"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 5,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 8,
+            "title": "Password"
+          },
+          "headline": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Headline",
+            "default": ""
+          },
+          "country": {
+            "type": "string",
+            "maxLength": 60,
+            "title": "Country",
+            "default": ""
+          },
+          "invite_code": {
+            "type": "string",
+            "title": "Invite Code",
+            "default": ""
+          },
+          "team_name": {
+            "type": "string",
+            "title": "Team Name",
+            "default": ""
+          },
+          "team_skill": {
+            "type": "string",
+            "title": "Team Skill",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "display_name",
+          "email",
+          "password"
+        ],
+        "title": "RegisterIn"
+      },
+      "Sample": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "link": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 8,
+            "title": "Link"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "link"
+        ],
+        "title": "Sample"
+      },
+      "SampleIdentity": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "anchor",
+              "junior",
+              "client"
+            ],
+            "title": "Role"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "display_name",
+          "role",
+          "headline"
+        ],
+        "title": "SampleIdentity"
+      },
+      "SampleLoginIn": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "SampleLoginIn"
+      },
+      "SeatsIn": {
+        "properties": {
+          "seats_open": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Seats Open"
+          },
+          "test_task": {
+            "type": "string",
+            "maxLength": 600,
+            "title": "Test Task",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "seats_open"
+        ],
+        "title": "SeatsIn"
+      },
+      "SendBackIn": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "SendBackIn"
+      },
+      "SettingsIn": {
+        "properties": {
+          "ai_helper": {
+            "type": "boolean",
+            "title": "Ai Helper"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ai_helper"
+        ],
+        "title": "SettingsIn"
+      },
+      "SubmissionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "check": {
+            "$ref": "#/components/schemas/FirstCheck"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "waiting",
+              "sent_back",
+              "approved"
+            ],
+            "title": "Status"
+          },
+          "anchor_note": {
+            "type": "string",
+            "title": "Anchor Note"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "job_id",
+          "link",
+          "content",
+          "note",
+          "check",
+          "status",
+          "anchor_note",
+          "created_at",
+          "decided_at"
+        ],
+        "title": "SubmissionOut"
+      },
+      "SubmitIn": {
+        "properties": {
+          "link": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Link",
+            "default": ""
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 20000,
+            "title": "Content",
+            "default": ""
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "SubmitIn"
+      },
+      "TeamOut": {
+        "properties": {
+          "team": {
+            "$ref": "#/components/schemas/PodOut"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/MemberOut"
+            },
+            "type": "array",
+            "title": "Members"
+          },
+          "clients": {
+            "items": {
+              "$ref": "#/components/schemas/PersonOut"
+            },
+            "type": "array",
+            "title": "Clients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "team",
+          "members",
+          "clients"
+        ],
+        "title": "TeamOut"
+      },
+      "Tokens": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token"
+        ],
+        "title": "Tokens"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

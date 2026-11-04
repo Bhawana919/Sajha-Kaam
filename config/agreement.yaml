@@ -1,0 +1,52 @@
+# The job agreement template (like a Europass CV: fixed sections, clear placeholders).
+# No AI: everything here is a form plus simple rules.
+
+# Every job needs these. "done_when" needs at least one item.
+required: [title, skill, deliverables, done_when, deadline_days, budget_minor, revisions]
+
+# Fair minimum budget per job, in US cents. Lower budgets are blocked.
+minimum_budget_minor:
+  video: 2500
+  web: 3000
+  writing: 1500
+  design: 1500
+  assistant: 1000
+
+# Words that make a "done when" item impossible to check. The check suggests making it measurable.
+vague_words: [nice, good, great, professional, modern, clean, pop, catchy, engaging, beautiful, better,
+              perfect, awesome, attractive, quality, fast, appealing, cool, sleek, stunning]
+
+# Extra questions for each skill. "example" is the grey placeholder text.
+skill_fields:
+  video:
+    - {key: length, label: Final length, example: "60–90 seconds", required: true}
+    - {key: format, label: Format and aspect ratio, example: "MP4, 9:16 vertical for Instagram Reels", required: true}
+    - {key: captions, label: Captions, example: "Burned-in English captions", required: false}
+    - {key: music, label: Music, example: "Royalty-free, upbeat; no lyrics", required: false}
+    - {key: source, label: Where the raw footage is, example: "Google Drive folder link", required: true}
+  web:
+    - {key: stack, label: Technology, example: "WordPress, or Next.js + Tailwind", required: true}
+    - {key: repo, label: Repository or site link, example: "https://github.com/your-org/site", required: false}
+    - {key: devices, label: Devices and browsers, example: "Mobile and desktop; Chrome, Safari", required: true}
+    - {key: access, label: How access will be given, example: "Invite to GitHub repo after agreement", required: false}
+  writing:
+    - {key: words, label: Length, example: "800–1000 words", required: true}
+    - {key: audience, label: Who will read it, example: "Café customers in Melbourne, 25–45", required: true}
+    - {key: tone, label: Tone, example: "Warm and simple; short sentences", required: true}
+    - {key: keywords, label: Must include, example: "'Nepali coffee', 'Fitzroy'", required: false}
+  design:
+    - {key: sizes, label: Sizes, example: "1080×1080 and 1080×1920", required: true}
+    - {key: files, label: File types, example: "PNG and editable Canva or Figma file", required: true}
+    - {key: brand, label: Brand colours and fonts, example: "#1F5B4B green, Poppins font; logo attached", required: false}
+  assistant:
+    - {key: tools, label: Tools to use, example: "Google Sheets, Gmail", required: true}
+    - {key: hours, label: Hours per week, example: "5 hours, Monday–Friday", required: true}
+    - {key: access, label: What access is needed, example: "Shared inbox, read only", required: false}
+
+# Suggested "done when" items the client can tap to add (examples, not rules).
+done_when_examples:
+  video: ["Length is between 60 and 90 seconds", "Captions match the spoken words", "Exported as MP4, 9:16"]
+  web: ["Page works on a phone 375px wide", "Contact form sends an email", "Lighthouse score above 80"]
+  writing: ["Between 800 and 1000 words", "Includes the words 'Nepali coffee'", "No spelling mistakes"]
+  design: ["Delivered in 1080×1080 and 1080×1920", "Uses only the brand colours", "Editable source file included"]
+  assistant: ["All 50 contacts entered in the sheet", "Replies sent within 24 hours", "Weekly summary every Friday"]

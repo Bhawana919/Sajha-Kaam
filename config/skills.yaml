@@ -1,0 +1,34 @@
+# Skills a team can be built around. Profiles, teams, jobs and matching all use these ids.
+skills:
+  - id: video
+    en: Video editing
+    ne: भिडियो सम्पादन
+    sample_hint: A 1–2 minute clip you edited (YouTube unlisted or Google Drive link). Please don't show your face or name.
+  - id: web
+    en: Web development
+    ne: वेब विकास
+    sample_hint: A GitHub repository or a live demo link you built.
+  - id: writing
+    en: Copywriting
+    ne: लेखन
+    sample_hint: A Google Doc with 200–500 words you wrote (shared with "anyone with the link").
+  - id: design
+    en: Graphic design
+    ne: ग्राफिक डिजाइन
+    sample_hint: A Google Drive or Behance link with 2–5 designs.
+  - id: assistant
+    en: Virtual assistance
+    ne: भर्चुअल सहायक
+    sample_hint: A short document showing a task you organised (a schedule, a research summary, a cleaned spreadsheet).
+
+# Trust badges per skill (levels 1–5), like pilot and doctor training. Only the Team Leader changes a badge.
+levels:
+  1: {en: Starter, ne: सुरुवाती, means: Learning by helping the Leader}
+  2: {en: Learner, ne: सिकारु, means: Does the work; the Leader checks everything}
+  3: {en: Trusted, ne: भरपर्दो, means: Does the work; the Leader checks some of it}
+  4: {en: Pro, ne: दक्ष, means: Ready to work with clients directly}
+  5: {en: Mentor, ne: मार्गदर्शक, means: Guides new members}
+
+# Languages shown during blind review: only those clients work in. Mother tongues (Newari, Maithili,
+# Sherpa, Tamang...) can reveal ethnicity or region, so they appear only after the Leader decides.
+working_languages: [English, Nepali, Hindi, Japanese, Korean, Chinese, Arabic, French, German, Spanish, Portuguese]
