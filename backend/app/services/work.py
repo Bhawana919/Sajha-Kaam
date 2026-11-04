@@ -181,6 +181,8 @@ def apply_team(session: Session, user: User, skill: str) -> Pod | None:
     """The team an open job would go into if this person applied for it, or None if they may not apply:
     a Team Leader whose team has the skill, or a member who is a Mentor in a team with the skill."""
     if user.role == "anchor":
+        if not user.leader_verified:
+            return None  # only verified Leaders apply for jobs clients post
         pod = session.exec(select(Pod).where(Pod.anchor_id == user.id)).first()
         return pod if pod and pod.skill == skill else None
     if user.role == "junior":

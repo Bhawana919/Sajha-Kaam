@@ -21,7 +21,7 @@ router = APIRouter(tags=["public"])
 
 
 def _logbook(session: Session, slug: str) -> LogbookOut:
-    junior = session.exec(select(User).where(User.profile_slug == slug, User.role == "junior")).first()
+    junior = session.exec(select(User).where(User.profile_slug == slug, User.role.in_(("junior", "anchor")))).first()
     if junior is None:
         raise HTTPException(404, "logbook_not_found")
     teams = [session.get(Pod, m.pod_id) for m in work.memberships(session, junior.id)]

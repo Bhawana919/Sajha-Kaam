@@ -33,6 +33,8 @@ export default function Notifications() {
     else if (JOB_KINDS.includes(n.kind)) router.push(`/job/${n.ref}`);
     else if (n.kind === 'join_request') router.push('/requests');
     else if (n.kind === 'withdrawal_sent') router.push('/wallet');
+    else if (n.kind === 'leader_application') router.push('/review');
+    else if (n.kind === 'leader_approved' || n.kind === 'leader_declined') router.push('/leader');
     else if (n.kind === 'seats_open') router.push('/junior/teams');
     else if (role === 'anchor') router.push('/anchor/team');
     else if (role === 'junior') router.push('/junior/home');

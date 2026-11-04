@@ -15,7 +15,7 @@ from sqlmodel import Session
 
 from app.config import settings
 from app.db import IS_SQLITE, engine, init_db
-from app.routers import anchor, auth, demo, jobs, junior, public, wallet
+from app.routers import anchor, auth, demo, jobs, junior, leader, public, wallet
 from app.seed import seed
 
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +33,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="Sajha Kaam API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
-for r in (auth.router, junior.router, anchor.router, jobs.router, public.router, demo.router, wallet.router):
+for r in (auth.router, junior.router, anchor.router, jobs.router, public.router, demo.router, wallet.router, leader.router):
     app.include_router(r)
 
 

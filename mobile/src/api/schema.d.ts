@@ -1099,6 +1099,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/leader/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Status */
+        get: operations["status_v1_leader_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/leader/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply */
+        post: operations["apply_v1_leader_apply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/review/leaders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Waiting */
+        get: operations["waiting_v1_review_leaders_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/review/leaders/{app_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve */
+        post: operations["approve_v1_review_leaders__app_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/review/leaders/{app_id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline */
+        post: operations["decline_v1_review_leaders__app_id__decline_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1349,6 +1434,11 @@ export interface components {
         DecideIn: {
             /** Accept */
             accept: boolean;
+        };
+        /** DeclineIn */
+        DeclineIn: {
+            /** Reason */
+            reason: string;
         };
         /** DeskOut */
         DeskOut: {
@@ -1657,6 +1747,71 @@ export interface components {
              */
             job_limit: number;
         };
+        /** LeaderApplicationOut */
+        LeaderApplicationOut: {
+            /** Id */
+            id: string;
+            person: components["schemas"]["PersonOut"];
+            /** Skill */
+            skill: string;
+            /** Team Name */
+            team_name: string;
+            /** About */
+            about: string;
+            /** Proof */
+            proof: string[];
+            /** Status */
+            status: string;
+            /** By Record */
+            by_record: boolean;
+            /** Reason */
+            reason: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Signed Jobs
+             * @default 0
+             */
+            signed_jobs: number;
+            /** Top Level */
+            top_level?: number | null;
+        };
+        /** LeaderApplyIn */
+        LeaderApplyIn: {
+            /**
+             * Skill
+             * @default
+             */
+            skill: string;
+            /**
+             * Team Name
+             * @default
+             */
+            team_name: string;
+            /**
+             * About
+             * @default
+             */
+            about: string;
+            /** Proof */
+            proof?: string[];
+        };
+        /** LeaderStatus */
+        LeaderStatus: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "anchor" | "junior" | "client" | "reviewer";
+            /** Verified */
+            verified: boolean;
+            /** Mentor Skills */
+            mentor_skills: string[];
+            application?: components["schemas"]["LeaderApplicationOut"] | null;
+        };
         /** LevelIn */
         LevelIn: {
             /** Level */
@@ -1712,7 +1867,7 @@ export interface components {
              * Role
              * @enum {string}
              */
-            role: "anchor" | "junior" | "client";
+            role: "anchor" | "junior" | "client" | "reviewer";
             /** Display Name */
             display_name: string;
             /** Headline */
@@ -1723,6 +1878,11 @@ export interface components {
             profile_slug: string;
             /** Ai Helper */
             ai_helper: boolean;
+            /**
+             * Leader Verified
+             * @default false
+             */
+            leader_verified: boolean;
         };
         /** MemberEarning */
         MemberEarning: {
@@ -2141,7 +2301,7 @@ export interface components {
              * Role
              * @enum {string}
              */
-            role: "anchor" | "junior" | "client";
+            role: "anchor" | "junior" | "client" | "reviewer";
             /** Headline */
             headline: string;
         };
@@ -4512,6 +4672,173 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WalletOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    status_v1_leader_status_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeaderStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    apply_v1_leader_apply_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LeaderApplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeaderStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    waiting_v1_review_leaders_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeaderApplicationOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_v1_review_leaders__app_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                app_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeaderApplicationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decline_v1_review_leaders__app_id__decline_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                app_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeclineIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeaderApplicationOut"];
                 };
             };
             /** @description Validation Error */

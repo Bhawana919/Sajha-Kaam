@@ -74,6 +74,7 @@ export default function JuniorHome() {
             <Txt variant="small" color={colors.inkSoft}>{t('junior.earnedHeld', { amount: money(earned.held_minor, earned.currency) })}</Txt>
           ) : null}
           {h.teams.length ? <Button kind="secondary" icon="wallet" label={t('wallet.open')} onPress={() => router.push('/wallet')} /> : null}
+          {h.teams.length ? <Button kind="quiet" label={t('leader.cta')} onPress={() => router.push('/leader')} /> : null}
 
           {h.teams.map((team) => {
             const status = h.team_status?.find((s) => s.team_id === team.id);

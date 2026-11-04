@@ -29,6 +29,7 @@ from app.models import (
     JobApplication,
     JoinRequest,
     JuniorProfile,
+    LeaderApplication,
     LevelChange,
     LogEntry,
     Notification,
@@ -46,6 +47,7 @@ from app.services import room, work
 RAJAN_ID, ANUSHA_ID, NIMA_ID = "u-anchor-rajan", "u-anchor-anusha", "u-anchor-nima"
 SITA_ID, BIKASH_ID, PEMBA_ID, ASHA_ID = "u-junior-sita", "u-junior-bikash", "u-junior-pemba", "u-junior-asha"
 MOMO_ID, CAFE_ID, THREADS_ID = "u-client-momo", "u-client-cafe", "u-client-threads"
+REVIEW_ID = "u-review-sajha"
 RAJAN_TEAM, ANUSHA_TEAM, NIMA_TEAM = "team-rajan-social", "team-anusha-video", "team-nima-web"
 SITA_JOB, REVIEW_JOB, OPEN_JOB = "job-momo-captions", "job-momo-website", "job-momo-reel"
 AGREE_JOB = "job-momo-event"
@@ -287,6 +289,7 @@ def reset_demo(session: Session) -> None:
         delete(Invite).where(or_(Invite.anchor_id.in_(demo), Invite.used_by.in_(demo))),
         delete(AnchorNote).where(AnchorNote.anchor_id.in_(demo)),
         delete(Withdrawal).where(Withdrawal.user_id.in_(demo)),
+        delete(LeaderApplication).where(LeaderApplication.user_id.in_(demo)),
         delete(Notification).where(Notification.user_id.in_(demo)),
         delete(JuniorProfile).where(JuniorProfile.user_id.in_(demo)),
         delete(Pod).where(Pod.id.in_(pods)),
@@ -312,7 +315,10 @@ def seed(session: Session) -> None:
     momo = _user(MOMO_ID, "client", "Sunita Basnet", "Himalayan Momo House, Sydney", "Australia", pw)
     cafe = _user(CAFE_ID, "client", "Emma Clarke", "Harbour Café, Melbourne", "Australia", pw)
     threads = _user(THREADS_ID, "client", "Sunil Karki", "Himal Threads, Toronto", "Canada", pw)
-    session.add_all([rajan, anusha, nima, sita, bikash, pemba, asha, momo, cafe, threads])
+    for leader_ in (rajan, anusha, nima):
+        leader_.leader_verified = True  # checked by Sajha Kaam
+    review = _user(REVIEW_ID, "reviewer", "Sajha Kaam Review", "Checks new Team Leaders", "Nepal", pw)
+    session.add_all([rajan, anusha, nima, sita, bikash, pemba, asha, momo, cafe, threads, review])
     session.flush()
 
     session.add_all([

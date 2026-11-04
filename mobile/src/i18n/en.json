@@ -489,14 +489,22 @@
     "decline": "Not this time"
   },
   "review": {
-    "title": "Check the work",
+    "title": "New Team Leaders",
     "by": "From {{name}}",
     "nothing": "Nothing waiting here.",
     "work": "The work",
-    "approve": "Approve and send to client",
+    "approve": "Approve as Team Leader",
     "sendBackNote": "What to change",
     "sendBackHelp": "The member sees this. It's also added to your notes for future checks.",
-    "sendBack": "Ask for changes"
+    "sendBack": "Ask for changes",
+    "help": "Check the proof. Approve, or say what is missing; they see your reason.",
+    "waiting": "Waiting ({{n}})",
+    "jobs_one": "{{count}} verified job",
+    "jobs_other": "{{count}} verified jobs",
+    "reason": "Or decline, with a reason",
+    "reasonEx": "Two more finished jobs first, please.",
+    "decline": "Decline",
+    "none": "Nobody is waiting."
   },
   "notif": {
     "title": "Notifications",
@@ -542,7 +550,10 @@
     "job_join_request": "Someone asked to join your project.",
     "worker_approved": "You are in! Your Leader approved you for a project.",
     "room_message": "New message in a job room.",
-    "withdrawal_sent": "Your withdrawal was sent."
+    "withdrawal_sent": "Your withdrawal was sent.",
+    "leader_application": "Someone asked to be a Team Leader.",
+    "leader_approved": "You are a verified Team Leader now.",
+    "leader_declined": "Your Leader request needs more. See why."
   },
   "apply": {
     "title": "Apply for this job",
@@ -729,5 +740,30 @@
     "notEnough": "That is more than you have.",
     "history": "Withdrawals",
     "statusSent": "Sent"
+  },
+  "leader": {
+    "cta": "Become a Team Leader",
+    "title": "Become a Team Leader",
+    "help": "A Mentor's record makes you a Leader at once. Not a Mentor yet? Send proof of your work and Sajha Kaam checks it.",
+    "verifyTitle": "Get verified",
+    "verifyHelp": "Verified Leaders can apply for jobs clients post. Send proof of your work; Sajha Kaam checks it.",
+    "verifyCard": "Apply for jobs clients post",
+    "skill": "Your skill",
+    "byRecord": "You are a Mentor in {{skill}}. Your record is the proof: you can start your team now.",
+    "team": "Team name",
+    "teamEx": "Pemba's Trek Films",
+    "about": "Your experience",
+    "aboutEx": "Five years editing videos for travel companies in Kathmandu.",
+    "proof": "Proof link {{n}}",
+    "proofNeeded": "Add at least one link to your work.",
+    "start": "Start my team",
+    "send": "Send for review",
+    "waiting": "Waiting for Sajha Kaam",
+    "waitingLine": "We are checking {{team}}. You will get a notification.",
+    "declined": "Not yet",
+    "verified": "You are a verified Team Leader",
+    "verifiedLine": "Bring clients with an invite link, and apply for jobs clients post.",
+    "goDesk": "Open my desk",
+    "verifiedTag": "Verified Leader"
   }
 }

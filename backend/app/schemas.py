@@ -6,7 +6,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-Role = Literal["anchor", "junior", "client"]
+Role = Literal["anchor", "junior", "client", "reviewer"]
+SignUpRole = Literal["anchor", "junior", "client"]
 JobState = Literal["draft", "with_client", "with_anchor", "open", "agreed", "assigned", "working", "submitted",
                    "sent_back", "anchor_approved", "client_accepted"]
 
@@ -36,7 +37,7 @@ class LoginIn(BaseModel):
 
 
 class RegisterIn(BaseModel):
-    role: Role
+    role: SignUpRole  # reviewers are Sajha Kaam staff, never a sign-up
     display_name: str = Field(min_length=2, max_length=80)
     email: str = Field(min_length=5, max_length=200)
     password: str = Field(min_length=8, max_length=200)
@@ -59,6 +60,7 @@ class MeOut(BaseModel):
     country: str
     profile_slug: str
     ai_helper: bool
+    leader_verified: bool = False
 
 
 class SettingsIn(BaseModel):
@@ -495,6 +497,39 @@ class MemberEarning(BaseModel):
     currency: str
     amount_minor: int  # the member's 75% of their accepted jobs
     jobs: int
+
+
+class LeaderApplyIn(BaseModel):
+    skill: str = ""
+    team_name: str = Field(default="", max_length=80)
+    about: str = Field(default="", max_length=500)
+    proof: list[str] = Field(default_factory=list, max_length=5)
+
+
+class DeclineIn(BaseModel):
+    reason: str = Field(min_length=5, max_length=300)
+
+
+class LeaderApplicationOut(BaseModel):
+    id: str
+    person: PersonOut
+    skill: str
+    team_name: str
+    about: str
+    proof: list[str]
+    status: str
+    by_record: bool
+    reason: str
+    created_at: datetime
+    signed_jobs: int = 0  # verified jobs on their Work Record
+    top_level: int | None = None  # their highest badge as a member
+
+
+class LeaderStatus(BaseModel):
+    role: Role
+    verified: bool
+    mentor_skills: list[str]  # skills where the record makes them a Leader at once
+    application: LeaderApplicationOut | None = None
 
 
 class WalletBalance(BaseModel):

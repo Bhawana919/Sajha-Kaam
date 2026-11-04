@@ -137,6 +137,7 @@ function Choose({ d }: { d: JobDetail }) {
         <Panel key={a.id} style={{ gap: space.sm }}>
           <Txt variant="h3">{a.applicant.display_name}</Txt>
           <Txt variant="small" color={colors.inkSoft}>
+            {a.role === 'anchor' ? `✓ ${t('leader.verifiedTag')} · ` : ''}
             {t(a.role === 'anchor' ? 'apply.leader' : 'apply.mentor', { team: a.team_name })}
             {a.applicant.headline ? ` · ${a.applicant.headline}` : ''}
           </Txt>

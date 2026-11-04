@@ -46,4 +46,6 @@ export type Template = {
 };
 export type Room = S['RoomOut'];
 export type Wallet = S['WalletOut'];
+export type LeaderStatus = S['LeaderStatus'];
+export type LeaderApplication = S['LeaderApplicationOut'];
 export type RoomTask = S['RoomTaskOut'];

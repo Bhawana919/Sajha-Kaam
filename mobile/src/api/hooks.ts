@@ -6,7 +6,7 @@ import { useSession } from '@/state/session';
 import { api } from './client';
 import type {
   AnchorJobIn, BlindRequest, CheckOut, ClientHome, Desk, JobDetail, JobIn, JoinIn, JuniorHome, LogEntry, Me, Note, Notification, Room,
-  OpenTeam, Profile, ProfileIn, RegisterIn, SampleIdentity, TeamView, Template, Tokens, Wallet,
+  OpenTeam, Profile, ProfileIn, RegisterIn, SampleIdentity, TeamView, Template, Tokens, Wallet, LeaderStatus, LeaderApplication,
 } from './types';
 
 const signedIn = () => !!useSession.getState().tokens;
@@ -237,6 +237,29 @@ export function useRoomActions(jobId: string) {
 export const useUploads = () =>
   useQuery({ queryKey: ['uploads'], staleTime: Infinity,
     queryFn: () => api<{ video: boolean; max_seconds: number; max_mb: number }>('/v1/uploads', { auth: false }) });
+
+// ---------- verified Leaders ----------
+export const useLeaderStatus = () =>
+  useQuery({ queryKey: ['leader'], queryFn: () => api<LeaderStatus>('/v1/leader/status'), enabled: signedIn(), refetchInterval: LIVE + 1000 });
+export function useLeaderApply() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (b: { skill?: string; team_name?: string; about?: string; proof?: string[] }) =>
+      api<LeaderStatus>('/v1/leader/apply', { method: 'POST', body: b }),
+    onSuccess: (s) => { qc.setQueryData(['leader'], s); qc.invalidateQueries(); },
+  });
+}
+export const useLeaderQueue = () =>
+  useQuery({ queryKey: ['review'], queryFn: () => api<LeaderApplication[]>('/v1/review/leaders'), enabled: signedIn(), refetchInterval: LIVE + 1000 });
+export function useDecideLeader() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { id: string; approve: boolean; reason?: string }) =>
+      api<LeaderApplication>(`/v1/review/leaders/${v.id}/${v.approve ? 'approve' : 'decline'}`,
+        { method: 'POST', body: v.approve ? undefined : { reason: v.reason } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['review'] }),
+  });
+}
 
 // ---------- wallet (demo withdrawals) ----------
 export const useWallet = () =>

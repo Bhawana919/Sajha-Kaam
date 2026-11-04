@@ -59,6 +59,10 @@ export default function Desk() {
             { value: money(usd?.held_minor ?? 0, usd?.currency ?? 'USD'), label: t('desk.statHeld') },
           ]} />
           <Button kind="secondary" icon="wallet" label={t('wallet.open')} onPress={() => router.push('/wallet')} />
+          {me?.leader_verified === false ? (
+            <ActionCard icon="stamp" title={t('leader.verifyTitle')} line={t('leader.verifyCard')} cta={t('common.open')}
+              onPress={() => router.push('/leader')} />
+          ) : null}
 
           {d.applied_jobs?.length ? (
             <Section title={t('apply.appliedTitle')}>

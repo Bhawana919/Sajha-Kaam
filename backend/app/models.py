@@ -49,6 +49,7 @@ class User(SQLModel, table=True):
     country: str = ""
     profile_slug: str = Field(default_factory=new_slug, index=True, unique=True)
     ai_helper: bool = False  # Anchor's choice to use an external AI for first checks (off by default)
+    leader_verified: bool = False  # a Team Leader Sajha Kaam has checked: may apply for jobs clients post
     created_at: datetime = Field(default_factory=utcnow)
 
 
@@ -207,6 +208,23 @@ class RoomFile(SQLModel, table=True):
     link: str
     added_by: str = Field(foreign_key="users.id")
     created_at: datetime = Field(default_factory=utcnow)
+
+
+class LeaderApplication(SQLModel, table=True):
+    """Asking to lead a team (a member) or to be verified (a Leader). A Mentor's record approves it at once."""
+
+    __tablename__ = "leader_applications"
+    id: str = Field(default_factory=new_id, primary_key=True)
+    user_id: str = Field(foreign_key="users.id", index=True)
+    skill: str
+    team_name: str
+    about: str = ""
+    proof: list = _json(list)  # https links: past work, LinkedIn, a client's reference
+    status: str = "pending"  # pending | approved | declined
+    by_record: bool = False  # approved automatically by a Mentor record
+    reason: str = ""  # why it was declined
+    created_at: datetime = Field(default_factory=utcnow)
+    decided_at: datetime | None = None
 
 
 class Withdrawal(SQLModel, table=True):

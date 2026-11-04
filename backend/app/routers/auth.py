@@ -13,7 +13,7 @@ from app.schemas import LoginIn, MeOut, RefreshIn, RegisterIn, SampleIdentity, S
 from app.services import agreement, work
 
 router = APIRouter(prefix="/v1", tags=["auth"])
-ROLE_ORDER = {"anchor": 0, "junior": 1, "client": 2}
+ROLE_ORDER = {"anchor": 0, "junior": 1, "client": 2, "reviewer": 3}
 DEMO_DOMAIN = "@demo.sajhakaam"
 
 # Wrong passwords: at most 5 tries per email in 10 minutes, then wait. Kept in memory: one server.
@@ -30,7 +30,8 @@ def _recent_failures(email: str) -> list[float]:
 
 def me_out(u: User) -> MeOut:
     return MeOut(id=u.id, role=u.role, display_name=u.display_name, headline=u.headline, country=u.country,
-                 profile_slug=u.profile_slug, ai_helper=u.ai_helper)
+                 profile_slug=u.profile_slug, ai_helper=u.ai_helper,
+                 leader_verified=u.leader_verified)
 
 
 @router.get("/auth/samples", response_model=list[SampleIdentity])

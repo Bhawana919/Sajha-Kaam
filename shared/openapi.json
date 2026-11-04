@@ -3623,6 +3623,293 @@
         }
       }
     },
+    "/v1/leader/status": {
+      "get": {
+        "tags": [
+          "leader"
+        ],
+        "summary": "Status",
+        "operationId": "status_v1_leader_status_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaderStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/leader/apply": {
+      "post": {
+        "tags": [
+          "leader"
+        ],
+        "summary": "Apply",
+        "operationId": "apply_v1_leader_apply_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderApplyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaderStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review/leaders": {
+      "get": {
+        "tags": [
+          "leader"
+        ],
+        "summary": "Waiting",
+        "operationId": "waiting_v1_review_leaders_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LeaderApplicationOut"
+                  },
+                  "title": "Response Waiting V1 Review Leaders Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review/leaders/{app_id}/approve": {
+      "post": {
+        "tags": [
+          "leader"
+        ],
+        "summary": "Approve",
+        "operationId": "approve_v1_review_leaders__app_id__approve_post",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaderApplicationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review/leaders/{app_id}/decline": {
+      "post": {
+        "tags": [
+          "leader"
+        ],
+        "summary": "Decline",
+        "operationId": "decline_v1_review_leaders__app_id__decline_post",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeclineIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaderApplicationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -4174,6 +4461,21 @@
           "accept"
         ],
         "title": "DecideIn"
+      },
+      "DeclineIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "DeclineIn"
       },
       "DeskOut": {
         "properties": {
@@ -5043,6 +5345,156 @@
         ],
         "title": "JuniorHome"
       },
+      "LeaderApplicationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person": {
+            "$ref": "#/components/schemas/PersonOut"
+          },
+          "skill": {
+            "type": "string",
+            "title": "Skill"
+          },
+          "team_name": {
+            "type": "string",
+            "title": "Team Name"
+          },
+          "about": {
+            "type": "string",
+            "title": "About"
+          },
+          "proof": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Proof"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "by_record": {
+            "type": "boolean",
+            "title": "By Record"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "signed_jobs": {
+            "type": "integer",
+            "title": "Signed Jobs",
+            "default": 0
+          },
+          "top_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person",
+          "skill",
+          "team_name",
+          "about",
+          "proof",
+          "status",
+          "by_record",
+          "reason",
+          "created_at"
+        ],
+        "title": "LeaderApplicationOut"
+      },
+      "LeaderApplyIn": {
+        "properties": {
+          "skill": {
+            "type": "string",
+            "title": "Skill",
+            "default": ""
+          },
+          "team_name": {
+            "type": "string",
+            "maxLength": 80,
+            "title": "Team Name",
+            "default": ""
+          },
+          "about": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "About",
+            "default": ""
+          },
+          "proof": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Proof"
+          }
+        },
+        "type": "object",
+        "title": "LeaderApplyIn"
+      },
+      "LeaderStatus": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "anchor",
+              "junior",
+              "client",
+              "reviewer"
+            ],
+            "title": "Role"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified"
+          },
+          "mentor_skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Mentor Skills"
+          },
+          "application": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LeaderApplicationOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "verified",
+          "mentor_skills"
+        ],
+        "title": "LeaderStatus"
+      },
       "LevelIn": {
         "properties": {
           "level": {
@@ -5171,7 +5623,8 @@
             "enum": [
               "anchor",
               "junior",
-              "client"
+              "client",
+              "reviewer"
             ],
             "title": "Role"
           },
@@ -5194,6 +5647,11 @@
           "ai_helper": {
             "type": "boolean",
             "title": "Ai Helper"
+          },
+          "leader_verified": {
+            "type": "boolean",
+            "title": "Leader Verified",
+            "default": false
           }
         },
         "type": "object",
@@ -6241,7 +6699,8 @@
             "enum": [
               "anchor",
               "junior",
-              "client"
+              "client",
+              "reviewer"
             ],
             "title": "Role"
           },
