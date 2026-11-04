@@ -479,7 +479,8 @@ class DeskOut(BaseModel):
     waiting_review: list[JobDetail]
     agreements: list[JobOut]  # not agreed yet: drafts, waiting for the client, sent by a client
     to_assign: list[JobOut]
-    open_jobs: list[JobOut]  # posted by clients for this skill, client hasn't chosen yet
+    open_jobs: list[JobOut]  # posted by clients for this skill, not applied for yet
+    applied_jobs: list[JobOut] = Field(default_factory=list)  # applied for, waiting for the client to choose
     join_requests: int
     with_clients: int
     deadlines: list[JobOut] = Field(default_factory=list)  # active jobs, soonest due first
@@ -498,6 +499,7 @@ class JuniorHome(BaseModel):
     log_entries: int
     profile_slug: str
     open_jobs: list[JobOut] = Field(default_factory=list)  # Mentors only: client jobs they may apply for
+    applied_jobs: list[JobOut] = Field(default_factory=list)  # applied for, waiting for the client
     earnings: list[MyMoney] = Field(default_factory=list)
     team_status: list[MyTeamStatus] = Field(default_factory=list)
     active_jobs: int = 0  # jobs in hand now

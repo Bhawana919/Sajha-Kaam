@@ -56,6 +56,7 @@ def desk(user: User = Depends(anchor_only), session: Session = Depends(get_sessi
                    open_jobs=[job_out(session, j) for j in open_jobs], join_requests=requests, with_clients=clients,
                    deadlines=[job_out(session, j) for j in active], money=[TeamMoney(**t) for t in totals],
                    supervising=work.leader_active(session, pod.id), supervise_limit=work.leader_limit(),
+                   applied_jobs=[job_out(session, j) for j in work.open_jobs_for(session, user, applied=True)],
                    member_earnings=[MemberEarning(person=person(session.get(User, m["junior_id"])), currency=m["currency"],
                                                   amount_minor=m["amount_minor"], jobs=m["jobs"]) for m in members])
 

@@ -110,10 +110,11 @@ def apply_team(session: Session, user: User, skill: str) -> Pod | None:
     return None
 
 
-def open_jobs_for(session: Session, user: User) -> list[Job]:
-    """Open client jobs this person may apply for."""
+def open_jobs_for(session: Session, user: User, applied: bool = False) -> list[Job]:
+    """Open client jobs this person may apply for (applied=False), or has applied for and waits on (True)."""
     jobs = session.exec(select(Job).where(Job.state == "open").order_by(Job.created_at)).all()
-    return [j for j in jobs if apply_team(session, user, j.skill) is not None]
+    return [j for j in jobs if apply_team(session, user, j.skill) is not None
+            and (my_application(session, user, j) is not None) == applied]
 
 
 def latest_submission(session: Session, job_id: str) -> Submission | None:

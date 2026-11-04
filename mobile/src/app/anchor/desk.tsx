@@ -59,6 +59,12 @@ export default function Desk() {
             { value: money(usd?.held_minor ?? 0, usd?.currency ?? 'USD'), label: t('desk.statHeld') },
           ]} />
 
+          {d.applied_jobs?.length ? (
+            <Section title={t('apply.appliedTitle')}>
+              {d.applied_jobs.map((j) => <JobCard key={j.id} job={j} />)}
+            </Section>
+          ) : null}
+
           <Section title={t('desk.inProgress')} help={t('desk.deadlinesHelp')}>
             {d.deadlines?.length ? d.deadlines.map((j) => <JobCard key={j.id} job={j} />)
               : <Txt color={colors.inkSoft}>{t('desk.nothingInProgress')}</Txt>}

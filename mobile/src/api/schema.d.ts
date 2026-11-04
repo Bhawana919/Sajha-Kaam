@@ -1233,6 +1233,8 @@ export interface components {
             to_assign: components["schemas"]["JobOut"][];
             /** Open Jobs */
             open_jobs: components["schemas"]["JobOut"][];
+            /** Applied Jobs */
+            applied_jobs?: components["schemas"]["JobOut"][];
             /** Join Requests */
             join_requests: number;
             /** With Clients */
@@ -1481,6 +1483,8 @@ export interface components {
             profile_slug: string;
             /** Open Jobs */
             open_jobs?: components["schemas"]["JobOut"][];
+            /** Applied Jobs */
+            applied_jobs?: components["schemas"]["JobOut"][];
             /** Earnings */
             earnings?: components["schemas"]["MyMoney"][];
             /** Team Status */

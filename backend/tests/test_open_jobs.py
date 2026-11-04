@@ -100,3 +100,16 @@ def test_mentor_must_add_a_video_from_a_video_site(client):
     ok = client.post(f"/v1/jobs/{OPEN_JOB}/apply", json={"video_link": "https://drive.google.com/file/d/abc/view"},
                      headers=pemba)
     assert ok.status_code == 201
+
+
+def test_applied_jobs_move_from_apply_to_waiting(client):
+    pemba = auth(client, PEMBA_ID)
+    assert [j["id"] for j in client.get("/v1/junior/home", headers=pemba).json()["open_jobs"]] == [OPEN_JOB]
+    client.post(f"/v1/jobs/{OPEN_JOB}/apply", json=VIDEO, headers=pemba)
+    home = client.get("/v1/junior/home", headers=pemba).json()
+    assert home["open_jobs"] == [] and [j["id"] for j in home["applied_jobs"]] == [OPEN_JOB]
+
+
+def test_the_bell_starts_quiet_after_a_reset(client):
+    for who in (PEMBA_ID, RAJAN_ID, MOMO_ID):
+        assert not [n for n in client.get("/v1/notifications", headers=auth(client, who)).json() if not n["read"]]

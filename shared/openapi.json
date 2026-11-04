@@ -3776,6 +3776,13 @@
             "type": "array",
             "title": "Open Jobs"
           },
+          "applied_jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Applied Jobs"
+          },
           "join_requests": {
             "type": "integer",
             "title": "Join Requests"
@@ -4464,6 +4471,13 @@
             },
             "type": "array",
             "title": "Open Jobs"
+          },
+          "applied_jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobOut"
+            },
+            "type": "array",
+            "title": "Applied Jobs"
           },
           "earnings": {
             "items": {

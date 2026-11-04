@@ -564,7 +564,8 @@
     "videoHelp": "Up to 2 minutes: who you are and one piece of work you're proud of. Upload it to YouTube as “Unlisted” or to Google Drive shared with “anyone with the link”, then paste the link.",
     "videoRequired": "Add your video link first.",
     "videoNotSupported": "Use a https link from YouTube, Google Drive, Vimeo or Loom.",
-    "watch": "Watch their video"
+    "watch": "Watch their video",
+    "appliedTitle": "Applied · waiting for the client"
   },
   "pay": {
     "title": "Pay for this job",

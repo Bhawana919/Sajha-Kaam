@@ -20,7 +20,7 @@ from sqlmodel import Session, select
 
 from app.auth import hash_password
 from app.config import load_yaml
-from app.models import AnchorClient, AnchorNote, JoinRequest, JuniorProfile, Pod, PodMember, User
+from app.models import AnchorClient, AnchorNote, JoinRequest, JuniorProfile, Notification, Pod, PodMember, User
 from app.services import room, work
 
 RAJAN_ID, ANUSHA_ID, NIMA_ID = "u-anchor-rajan", "u-anchor-anusha", "u-anchor-nima"
@@ -339,3 +339,9 @@ def seed(session: Session) -> None:
 
     # 2. Sunita posted the opening reel to everyone: Anusha (Team Leader) and Pemba (Mentor) can apply.
     work.create_job(session, momo, dict(JOB_MOMO_REEL), None, job_id=OPEN_JOB)
+
+    # The history above is "already seen": the bell starts quiet, so it lights up only for the live demo.
+    for n in session.exec(select(Notification)).all():
+        n.read = True
+        session.add(n)
+    session.commit()

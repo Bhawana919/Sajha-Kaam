@@ -53,6 +53,12 @@ export default function JuniorHome() {
             ]}
           </DoNow>
 
+          {h.applied_jobs?.length ? (
+            <Section title={t('apply.appliedTitle')}>
+              {h.applied_jobs.map((j) => <JobCard key={j.id} job={j} mine />)}
+            </Section>
+          ) : null}
+
           {h.teams.length ? (
             <Stats items={[
               { value: '★'.repeat(top || 1), label: badge(top || 1).replace(/^★+ /, '') },
