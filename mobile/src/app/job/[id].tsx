@@ -11,10 +11,11 @@ import {
 import type { JobDetail } from '@/api/types';
 import { Checkbox, Field, useErrorText } from '@/components/forms';
 import { CheckView, LevelTag, SplitRows, StateTag, useBadge, useClientName, useSkillName } from '@/components/guthi';
+import { Room } from '@/components/Room';
 import { Screen } from '@/components/Screen';
 import { VideoUpload } from '@/components/VideoUpload';
 import { Txt } from '@/components/Txt';
-import { Bullet, Button, Chip, Panel, Row, Section, StateView, Tag } from '@/components/ui';
+import { Bullet, Button, Chip, HelpLine, Panel, Row, Section, StateView, Tabs, Tag } from '@/components/ui';
 import { useT } from '@/i18n';
 import { money } from '@/lib/format';
 import { colors, space } from '@/theme';
@@ -103,7 +104,7 @@ function Apply({ d, leaderName }: { d: JobDetail; leaderName?: string }) {
       {mentor && uploads?.video ? (
         <View style={{ gap: space.sm }}>
           <Txt variant="h3">{t('upload.title')}</Txt>
-          <Txt variant="small" color={colors.inkSoft}>{t('upload.help')}</Txt>
+          <HelpLine text={t('upload.help')} />
           <VideoUpload limits={uploads} value={video} onUploaded={setVideo} />
         </View>
       ) : null}
@@ -116,7 +117,8 @@ function Apply({ d, leaderName }: { d: JobDetail; leaderName?: string }) {
         onPress={() => apply.mutate({ id: d.job.id, note, video_link: video })} />
       {apply.error ? (
         <Txt color={colors.brick}>{errorText(apply.error, { video_required: t('apply.videoRequired'),
-          video_link_not_supported: t('apply.videoNotSupported') })}</Txt>
+          video_link_not_supported: t('apply.videoNotSupported'), member_full: t('limits.memberFull'),
+          leader_full: t('limits.leaderFull') })}</Txt>
       ) : null}
     </Section>
   );
@@ -155,7 +157,7 @@ function Choose({ d }: { d: JobDetail }) {
       {waiting.some((a) => a.role === 'junior') ? (
         <Txt variant="small" color={colors.inkSoft}>{t('apply.mentorChecked')}</Txt>
       ) : null}
-      {choose.error ? <Txt color={colors.brick}>{errorText(choose.error, { no_longer_mentor: t('apply.noLongerMentor') })}</Txt> : null}
+      {choose.error ? <Txt color={colors.brick}>{errorText(choose.error, { no_longer_mentor: t('apply.noLongerMentor'), member_full: t('limits.memberFull'), leader_full: t('limits.leaderFull') })}</Txt> : null}
     </Section>
   );
 }
@@ -213,7 +215,7 @@ function AnchorActions({ d }: { d: JobDetail }) {
           ))}
           <Button label={t('job.assign')} disabled={!junior || junior === j.junior?.id} busy={assign.isPending}
             onPress={() => junior && assign.mutate({ id: j.id, junior_id: junior })} />
-          {assign.error ? <Txt color={colors.brick}>{errorText(assign.error, { beginner_limit: t('badge.beginnerLimit') })}</Txt> : null}
+          {assign.error ? <Txt color={colors.brick}>{errorText(assign.error, { beginner_limit: t('badge.beginnerLimit'), member_full: t('limits.memberFull'), leader_full: t('limits.leaderFull') })}</Txt> : null}
         </Section>
         {change}
       </>
@@ -246,7 +248,7 @@ function Brief({ d }: { d: JobDetail }) {
         <Row label={t('brief.yourShare')} value={money(j.split.junior, j.currency)} />
         <Row label={t('brief.level')} value={badge(j.supervision_level)} />
       </Panel>
-      <Txt variant="small" color={colors.inkSoft}>{t('brief.readBelow')}</Txt>
+      <HelpLine text={t('brief.readBelow')} />
       <Button label={t('brief.accept')} busy={answer.isPending} onPress={() => answer.mutate({ id: j.id, accept: true })} />
       <Button kind="quiet" label={t('brief.decline')} onPress={() => answer.mutate({ id: j.id, accept: false })} />
       {answer.error ? <Txt color={colors.brick}>{errorText(answer.error)}</Txt> : null}
@@ -289,8 +291,23 @@ function JuniorActions({ d }: { d: JobDetail }) {
       ) : null}
       {j.state === 'sent_back' && last ? <CheckView check={last.check} /> : null}
       <Section title={t('job.submitTitle')} help={t('job.submitHelp')}>
-        <Field label={t('job.link')} help={t('job.linkHelp')} value={link} onChangeText={setLink} autoCapitalize="none" placeholder="https://" />
-        <Field label={t('job.paste')} help={t('job.pasteHelp')} value={content} onChangeText={setContent} multiline />
+        <View style={{ gap: 4 }}>
+          <Txt variant="label">{t('job.finishedWhen')}</Txt>
+          {j.done_when.map((x) => <Bullet key={x} mark="☐">{x}</Bullet>)}
+        </View>
+        {/* Words are pasted (captions, posts); videos, designs and websites are links. */}
+        {j.skill === 'writing' ? (
+          <>
+            <Field label={t('job.pasteWork')} help={t('job.pasteHelp')} value={content} onChangeText={setContent} multiline
+              style={{ minHeight: 160 }} />
+            <Field label={t('job.orLink')} help={t('job.linkHelp')} value={link} onChangeText={setLink} autoCapitalize="none" placeholder="https://" />
+          </>
+        ) : (
+          <>
+            <Field label={t('job.link')} help={t('job.linkHelp')} value={link} onChangeText={setLink} autoCapitalize="none" placeholder="https://" />
+            <Field label={t('job.orPaste')} help={t('job.pasteHelp')} value={content} onChangeText={setContent} multiline />
+          </>
+        )}
         <Field label={t('job.note')} value={note} onChangeText={setNote} multiline />
         <Button label={t('job.submit')} disabled={!link.trim() && !content.trim()} busy={submit.isPending}
           onPress={() => submit.mutate({ id: j.id, link, content, note }, { onSuccess: () => { setLink(''); setContent(''); setNote(''); } })} />
@@ -311,7 +328,7 @@ function ClientAgree({ d }: { d: JobDetail }) {
   return (
     <Section title={t('agree.reviewTitle')} help={t('agree.reviewHelp', { name: j.anchor?.display_name ?? '' })}>
       <Button label={t('agree.agree')} busy={agree.isPending} onPress={() => agree.mutate(j.id)} />
-      <Txt variant="small" color={colors.inkSoft}>{t('agree.agreeMeans')}</Txt>
+      <HelpLine text={t('agree.agreeMeans')} />
       <Field label={t('agree.changesLabel')} placeholder={t('agree.changesEx')} value={note} onChangeText={setNote} multiline />
       <Button kind="secondary" label={t('agree.askChanges')} disabled={note.trim().length < 3} busy={changes.isPending}
         onPress={() => changes.mutate({ id: j.id, note }, { onSuccess: () => setNote('') })} />
@@ -399,7 +416,7 @@ function ClientActions({ d }: { d: JobDetail }) {
         {approved?.content ? <Panel><Txt variant="small" selectable>{approved.content}</Txt></Panel> : null}
         {approved?.note ? <Txt>“{approved.note}”</Txt> : null}
         <Checkbox label={t('job.showName')} checked={show} onChange={setShow} />
-        <Txt variant="small" color={colors.inkSoft}>{t('job.showNameHelp')}</Txt>
+        <HelpLine text={t('job.showNameHelp')} />
         {j.payment === 'unpaid' ? <Txt variant="small" color={colors.warnInk}>{t('pay.payFirst')}</Txt> : null}
         <Button label={t('job.accept')} disabled={j.payment === 'unpaid'} busy={accept.isPending}
           onPress={() => accept.mutate({ id: j.id, show_client: show })} />
@@ -410,43 +427,52 @@ function ClientActions({ d }: { d: JobDetail }) {
 }
 
 export default function JobScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, tab: startTab } = useLocalSearchParams<{ id: string; tab?: string }>();
   const { t } = useT();
   const q = useJob(id);
   const role = useMe().data?.role;
   const skill = useSkillName();
   const clientName = useClientName();
+  const [tab, setTab] = useState<'do' | 'room' | 'details' | 'history'>(startTab === 'room' ? 'room' : 'do');
   const d = q.data;
+  const history = role !== 'client' ? d?.submissions ?? [] : [];
   return (
     <Screen back title={d?.job.title}>
       {q.isLoading ? <StateView state="loading" /> : null}
       {q.error ? <StateView state="error" onRetry={() => q.refetch()} /> : null}
       {d ? (
         <>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.md }}>
             <StateTag state={d.job.state} />
-            <Tag label={skill(d.job.skill)} />
+            <Txt variant="h3">{money(d.job.budget_minor, d.job.currency)}</Txt>
             {d.job.supervision_level ? <LevelTag level={d.job.supervision_level} /> : null}
           </View>
-          <Txt color={colors.inkSoft}>
-            {t('job.people', { client: clientName(d.job),
+          <Txt variant="small" color={colors.inkSoft}>
+            {t('job.peopleShort', { client: clientName(d.job), skill: skill(d.job.skill),
               anchor: d.job.anchor?.display_name ?? t('job.noAnchorYet'), junior: d.job.junior?.display_name ?? '—' })}
           </Txt>
-          {role === 'anchor' ? <AnchorActions d={d} /> : null}
-          {role === 'junior' ? <JuniorActions d={d} /> : null}
-          {role === 'client' ? <ClientActions d={d} /> : null}
-          <Agreement d={d} />
-          {role !== 'client' && d.submissions.length ? (
-            <Section title={t('job.history')}>
-              {d.submissions.map((s) => (
-                <Panel key={s.id}>
-                  <Tag tone={s.status === 'approved' ? 'sage' : s.status === 'sent_back' ? 'brick' : 'clay'} label={t(`job.sub_${s.status}`)} />
-                  <Txt variant="small" color={colors.inkSoft}>{new Date(s.created_at).toLocaleString()}</Txt>
-                  {s.anchor_note ? <Txt>“{s.anchor_note}”</Txt> : null}
-                </Panel>
-              ))}
-            </Section>
+          <Tabs value={tab} onChange={setTab} items={[
+            { key: 'do', label: t('job.tabDo') },
+            ...(d.job.agreed_at && d.job.state !== 'open' ? [{ key: 'room' as const, label: t('job.tabRoom') }] : []),
+            { key: 'details', label: t('job.tabDetails') },
+            ...(history.length ? [{ key: 'history' as const, label: t('job.tabHistory'), count: history.length }] : []),
+          ]} />
+          {tab === 'do' ? (
+            <>
+              {role === 'anchor' ? <AnchorActions d={d} /> : null}
+              {role === 'junior' ? <JuniorActions d={d} /> : null}
+              {role === 'client' ? <ClientActions d={d} /> : null}
+            </>
           ) : null}
+          {tab === 'room' ? <Room job={d.job} /> : null}
+          {tab === 'details' ? <Agreement d={d} /> : null}
+          {tab === 'history' ? history.map((s) => (
+            <Panel key={s.id}>
+              <Tag tone={s.status === 'approved' ? 'sage' : s.status === 'sent_back' ? 'brick' : 'clay'} label={t(`job.sub_${s.status}`)} />
+              <Txt variant="small" color={colors.inkSoft}>{new Date(s.created_at).toLocaleString()}</Txt>
+              {s.anchor_note ? <Txt>“{s.anchor_note}”</Txt> : null}
+            </Panel>
+          )) : null}
         </>
       ) : null}
     </Screen>

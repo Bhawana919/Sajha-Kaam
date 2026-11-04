@@ -5,7 +5,7 @@ import { useSession } from '@/state/session';
 
 import { api } from './client';
 import type {
-  AnchorJobIn, BlindRequest, CheckOut, ClientHome, Desk, JobDetail, JobIn, JoinIn, JuniorHome, LogEntry, Me, Note, Notification,
+  AnchorJobIn, BlindRequest, CheckOut, ClientHome, Desk, JobDetail, JobIn, JoinIn, JuniorHome, LogEntry, Me, Note, Notification, Room,
   OpenTeam, Profile, ProfileIn, RegisterIn, SampleIdentity, TeamView, Template, Tokens,
 } from './types';
 
@@ -197,6 +197,25 @@ export const useCheckAgreement = () =>
 export const usePostJob = () => useAction((j: JobIn) => api<{ id: string }>('/v1/jobs', { method: 'POST', body: j }));
 /** Agree to an agreement: the client to one their Anchor wrote, or the Anchor to one their client sent. */
 export const useAgree = () => useAction((id: string) => api(`/v1/jobs/${id}/agree`, { method: 'POST' }));
+// ---------- the job room ----------
+export const useRoom = (jobId: string, enabled = true) =>
+  useQuery({ queryKey: ['room', jobId], queryFn: () => api<Room>(`/v1/jobs/${jobId}/room`), enabled: signedIn() && enabled });
+
+export function useRoomActions(jobId: string) {
+  const qc = useQueryClient();
+  const done = (room: Room) => qc.setQueryData(['room', jobId], room);
+  const base = `/v1/jobs/${jobId}/room`;
+  return {
+    addTask: useMutation({ mutationFn: (b: { title: string; due_date: string }) => api<Room>(`${base}/tasks`, { method: 'POST', body: b }),
+      onSuccess: done }),
+    setDone: useMutation({ mutationFn: (v: { id: string; done: boolean }) =>
+      api<Room>(`${base}/tasks/${v.id}`, { method: 'PATCH', body: { done: v.done } }), onSuccess: done }),
+    removeTask: useMutation({ mutationFn: (id: string) => api<Room>(`${base}/tasks/${id}`, { method: 'DELETE' }), onSuccess: done }),
+    addFile: useMutation({ mutationFn: (b: { label: string; link: string }) => api<Room>(`${base}/files`, { method: 'POST', body: b }),
+      onSuccess: done }),
+  };
+}
+
 /** Whether the server can sign video uploads (Cloudinary set up), and the limits. */
 export const useUploads = () =>
   useQuery({ queryKey: ['uploads'], staleTime: Infinity,

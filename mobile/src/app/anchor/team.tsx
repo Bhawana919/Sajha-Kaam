@@ -1,10 +1,10 @@
-// The team: members with their level and the facts behind it, open seats, clients and invites,
-// and client invites.
+// The team: each member in a few words (badge, jobs in hand, recent jobs, earned, next badge),
+// open spots one tap away, clients and invites.
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Share, View } from 'react-native';
 
-import { useInvite, useSeats, useTeam } from '@/api/hooks';
+import { useDesk, useInvite, useSeats, useTeam } from '@/api/hooks';
 import type { Team } from '@/api/types';
 import { Field, useErrorText } from '@/components/forms';
 import { BadgeChangeLine, BadgeProgress, Bell, LevelTag, useSkillName } from '@/components/guthi';
@@ -12,6 +12,7 @@ import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { Button, Panel, Section, StateView } from '@/components/ui';
 import { useT } from '@/i18n';
+import { money } from '@/lib/format';
 import { colors, space } from '@/theme';
 
 /** Open seats and the test task, starting from what's saved. */
@@ -38,35 +39,48 @@ function SeatsForm({ team }: { team: Team }) {
 export default function TeamScreen() {
   const { t, digits } = useT();
   const q = useTeam();
+  const desk = useDesk().data;
   const invite = useInvite();
   const skill = useSkillName();
   const errorText = useErrorText();
+  const [seatsOpen, setSeatsOpen] = useState(false);
   const team = q.data?.team;
+  const earned = (id: string) => desk?.member_earnings?.find((e) => e.person.id === id);
 
   return (
     <Screen title={team?.name ?? t('tabs.team')} right={<Bell />}>
       {q.isLoading ? <StateView state="loading" /> : null}
       {q.data && team ? (
         <>
-          <Txt color={colors.inkSoft}>{skill(team.skill)}</Txt>
+          <Txt color={colors.inkSoft}>
+            {skill(team.skill)} · {t('team.supervising', { n: digits(desk?.supervising ?? 0), max: digits(desk?.supervise_limit ?? 8) })}
+          </Txt>
           <Section title={t('team.members')} help={t('team.membersHelp')}>
-            {q.data.members.length ? q.data.members.map((m) => (
-              <Panel key={m.person.id}>
-                <Txt variant="h3">{m.person.display_name}</Txt>
-                <LevelTag level={m.level} />
-                <Txt variant="small" color={colors.inkSoft}>
-                  {t('team.evidence', { jobs: digits(m.evidence.signed_jobs), streak: digits(m.evidence.first_try_streak),
-                    back: digits(m.evidence.sent_back_total) })}
-                </Txt>
-                <Txt variant="small">{t('team.jobs30', { count: m.jobs_30d ?? 0 })}</Txt>
-                {m.progress ? <BadgeProgress p={m.progress} /> : null}
-                <BadgeChangeLine c={m.last_change} />
-                <Button kind="quiet" label={t('team.changeLevel')} onPress={() => router.push(`/level/${m.person.id}`)} />
-              </Panel>
-            )) : <Txt color={colors.inkSoft}>{t('team.noMembers')}</Txt>}
+            {q.data.members.length ? q.data.members.map((m) => {
+              const e = earned(m.person.id);
+              return (
+                <Panel key={m.person.id} style={{ gap: space.sm }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+                    <Txt variant="h3" style={{ flex: 1 }}>{m.person.display_name}</Txt>
+                    <LevelTag level={m.level} />
+                  </View>
+                  <Txt variant="small" color={colors.inkSoft}>
+                    {t('team.memberLine', { active: digits(m.active_jobs ?? 0), limit: digits(m.job_limit ?? 1),
+                      recent: digits(m.jobs_30d ?? 0), earned: e ? money(e.amount_minor, e.currency) : money(0, 'USD') })}
+                  </Txt>
+                  {m.progress ? <BadgeProgress p={m.progress} /> : null}
+                  <BadgeChangeLine c={m.last_change} />
+                  <Button kind="quiet" label={t('team.changeLevel')} onPress={() => router.push(`/level/${m.person.id}`)} />
+                </Panel>
+              );
+            }) : <Txt color={colors.inkSoft}>{t('team.noMembers')}</Txt>}
           </Section>
 
-          <SeatsForm team={team} />
+          <Panel style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Txt style={{ flex: 1 }}>{t('team.openSpots', { count: team.seats_open })}</Txt>
+            <Button kind="quiet" label={seatsOpen ? t('common.close') : t('team.change')} onPress={() => setSeatsOpen(!seatsOpen)} />
+          </Panel>
+          {seatsOpen ? <SeatsForm team={team} /> : null}
 
           <Section title={t('team.clients')} help={t('team.clientsHelp')}>
             {q.data.clients.map((c) => <Txt key={c.id}>• {c.headline || c.display_name}</Txt>)}

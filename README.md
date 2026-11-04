@@ -16,7 +16,7 @@ Badges, from new to experienced: ★ Starter · ★★ Learner · ★★★ Trus
 
 | Folder | What it is |
 |---|---|
-| `backend` | API: FastAPI + SQLite. 46 automated tests. |
+| `backend` | API: FastAPI + SQLite. 52 automated tests. |
 | `mobile` | App: Expo (phone and web browser), English and Nepali. |
 | `config` | Skills, badges, the job agreement template, fair minimum budgets. |
 | `shared` | The API contract the app's types are generated from. |
@@ -138,7 +138,22 @@ Fresh sample data at any time: `curl.exe -X POST http://localhost:8000/demo/rese
    (badges, verified jobs, video), chooses Pemba and pays. Pemba gets 80%; Anusha still checks his work.
 5. **The website, from scratch.** **Sunita** opens "A one-page website for our Parramatta branch",
    taps **Open the work** (a real page, served at `/samples/momo-house`) and accepts it.
-6. **Fair by design.** **Rajan → Team**: badges go up by the rules, what each member needs next, and how
+6. **The job room.** Once the agreement is final, each job gets a **Room** tab: the deadline, a task list
+(it starts from the agreement's deliverables; the member and the Team Leader add, tick and date tasks)
+and files (links, photos and videos). The client follows the tasks and the deadline; drafts stay between
+the member and the Leader, and the client sees the work once the Leader approves it.
+
+**Work limits.** Nobody can promise more than they can do well:
+
+| Who | Limit |
+|---|---|
+| Member, jobs in hand at once | ★ 1 · ★★ 2 · ★★★ 2 · ★★★★ 3 · ★★★★★ 3, and at most one per 10 hours a week they said they have |
+| Team Leader, jobs supervised at once | 8 (at most 2 of them by Starters) |
+| Team size | 8 members |
+
+Screens show it as "1/2 jobs in hand" and "supervising 1 of 8". The numbers are in [config/guthi.yaml](config/guthi.yaml).
+
+**Fair by design.** **Rajan → Team**: badges go up by the rules, what each member needs next, and how
    jobs were shared. Tap **नेपाली** to show the whole app in Nepali.
 
 ## How the main parts work

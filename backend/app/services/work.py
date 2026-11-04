@@ -129,8 +129,57 @@ def notes_of(session: Session, anchor_id: str) -> list[str]:
 
 # ---------- teams and joining ----------
 
+# ---------- work limits ----------
+# Nobody can promise more work than they can do well: a member holds a few jobs at once (by badge and the
+# hours they said they have), a Team Leader supervises a few at once, and a team has a few members.
+
+IN_HAND = ("assigned", "working", "submitted", "sent_back")
+
+
+def _cap() -> dict:
+    return load_yaml("guthi.yaml")["capacity"]
+
+
+def member_limit(session: Session, junior_id: str, level: int) -> int:
+    cap = _cap()
+    profile = session.get(JuniorProfile, junior_id)
+    by_hours = max(1, (profile.hours_per_week if profile else 10) // cap["hours_per_job"])
+    return min(cap["member_by_level"][level], by_hours)
+
+
+def member_active(session: Session, junior_id: str) -> int:
+    """Jobs the member has in hand right now, in any team."""
+    return len(session.exec(select(Job).where(Job.junior_id == junior_id, Job.state.in_(IN_HAND))).all())
+
+
+def leader_active(session: Session, pod_id: str) -> int:
+    """Jobs the Team Leader is supervising right now (all members together)."""
+    return len(session.exec(select(Job).where(Job.pod_id == pod_id, Job.state.in_(IN_HAND))).all())
+
+
+def leader_limit() -> int:
+    return _cap()["leader_supervises"]
+
+
+def team_size(session: Session, pod_id: str) -> int:
+    return len(session.exec(select(PodMember).where(PodMember.pod_id == pod_id)).all())
+
+
+def _check_member_room(session: Session, junior_id: str, level: int, job: Job) -> None:
+    held = member_active(session, junior_id) - (1 if job.junior_id == junior_id and job.state in IN_HAND else 0)
+    if held >= member_limit(session, junior_id, level):
+        raise HTTPException(409, "member_full")
+
+
+def _check_leader_room(session: Session, pod_id: str, job: Job) -> None:
+    held = leader_active(session, pod_id) - (1 if job.pod_id == pod_id and job.state in IN_HAND else 0)
+    if held >= leader_limit():
+        raise HTTPException(409, "leader_full")
+
+
 def set_seats(session: Session, anchor: User, seats_open: int, test_task: str) -> Pod:
     pod = pod_of_anchor(session, anchor.id)
+    seats_open = min(seats_open, max(0, _cap()["team_members"] - team_size(session, pod.id)))
     opening = pod.seats_open == 0 and seats_open > 0
     pod.seats_open, pod.test_task = seats_open, test_task.strip()
     session.add(pod)
@@ -198,6 +247,8 @@ def decide_request(session: Session, anchor: User, request_id: str, accept: bool
         raise HTTPException(409, "already_decided")
     if accept and pod.seats_open <= 0:
         raise HTTPException(409, "no_seats_left")
+    if accept and team_size(session, pod.id) >= _cap()["team_members"]:
+        raise HTTPException(409, "team_full")
     req.status, req.decided_at = ("accepted" if accept else "declined"), utcnow()
     if accept:
         # A new member starts at the level their record in this skill already earned (often Starter).
@@ -510,6 +561,10 @@ def apply_for_job(session: Session, user: User, job: Job, note: str, video_link:
     if session.exec(select(JobApplication).where(JobApplication.job_id == job.id,
                                                  JobApplication.applicant_id == user.id)).first():
         raise HTTPException(409, "already_applied")
+    # Only apply for work you have room for: the Leader's supervision, and a Mentor's own hands.
+    _check_leader_room(session, pod.id, job)
+    if user.role == "junior":
+        _check_member_room(session, user.id, session.get(PodMember, (pod.id, user.id)).level, job)
     video_link = video_link.strip()
     if user.role == "junior" and not video_link:
         raise HTTPException(422, "video_required")
@@ -548,6 +603,9 @@ def choose_applicant(session: Session, client: User, job: Job, application_id: s
     member = session.get(PodMember, (pod.id, applicant.id)) if applicant.role == "junior" else None
     if applicant.role == "junior" and (member is None or member.level != notify.MENTOR):
         raise HTTPException(409, "no_longer_mentor")  # the badge changed after applying
+    if member is not None:
+        _check_member_room(session, applicant.id, member.level, job)
+        _check_leader_room(session, pod.id, job)
     now = utcnow()
     job.pod_id, job.state, job.agreed_at = pod.id, "agreed", now
     if member is not None:
@@ -622,6 +680,8 @@ def assign(session: Session, anchor: User, job: Job, junior_id: str) -> Job:
     member = session.get(PodMember, (pod.id, junior_id))
     if member is None:
         raise HTTPException(422, "not_in_team")
+    _check_member_room(session, junior_id, member.level, job)
+    _check_leader_room(session, pod.id, job)
     if member.level == 1 and job.junior_id != junior_id:
         # Like an instructor's limit of student pilots: a Leader supervises only a few Starters at once.
         starters = session.exec(select(Job).where(Job.pod_id == pod.id, Job.supervision_level == 1,

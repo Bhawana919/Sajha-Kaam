@@ -6,7 +6,7 @@ import { useErrorText } from '@/components/forms';
 import { useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
-import { Button, Panel, Row, StateView } from '@/components/ui';
+import { Button, HelpLine, Panel, Row, StateView } from '@/components/ui';
 import { useT } from '@/i18n';
 import { colors, space } from '@/theme';
 
@@ -19,12 +19,12 @@ export default function Requests() {
   const errorText = useErrorText();
   return (
     <Screen title={t('requests.title')} back>
-      <Txt color={colors.inkSoft}>{t('requests.help')}</Txt>
+      <HelpLine text={t('requests.help')} />
       {team ? <Txt variant="label">{t('requests.seatsLeft', { n: digits(team.seats_open) })}</Txt> : null}
       {team?.test_task ? <Panel tone="honey"><Txt variant="label">{t('team.testTask')}</Txt><Txt>{team.test_task}</Txt></Panel> : null}
       {q.isLoading ? <StateView state="loading" /> : null}
       {q.data && !q.data.length ? <StateView state="empty" message={t('requests.empty')} /> : null}
-      {decide.error ? <Txt color={colors.brick}>{errorText(decide.error, { no_seats_left: t('requests.noSeats') })}</Txt> : null}
+      {decide.error ? <Txt color={colors.brick}>{errorText(decide.error, { no_seats_left: t('requests.noSeats'), team_full: t('limits.teamFull') })}</Txt> : null}
       {q.data?.map((r) => (
         <Panel key={r.id}>
           <Txt variant="h2">{t('requests.applicant', { label: r.label })}</Txt>
@@ -48,7 +48,7 @@ export default function Requests() {
           </View>
         </Panel>
       ))}
-      <Txt variant="small" color={colors.inkSoft}>{t('requests.blindNote')}</Txt>
+      <HelpLine text={t('requests.blindNote')} />
     </Screen>
   );
 }

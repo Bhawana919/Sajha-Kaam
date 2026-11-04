@@ -16,7 +16,13 @@
     "signOut": "Sign out",
     "sampleData": "Sample data. All people, jobs and payments are fictional.",
     "demoShort": "DEMO",
-    "offline": "You are offline. Try again when you are connected."
+    "offline": "You are offline. Try again when you are connected.",
+    "doNow": "Do now",
+    "moreInfo": "More information",
+    "more": "More",
+    "less": "Less",
+    "close": "Close",
+    "howItWorks": "How this works"
   },
   "lang": {
     "switchA11y": "Change language. Current language: English."
@@ -33,7 +39,8 @@
     "how2": "Young Nepalis do the work. The Leader checks it before the client sees it.",
     "how3": "Every finished job is added to a verified Work Record, and trust grows badge by badge.",
     "samplesTitle": "Try it as someone",
-    "samplesHelp": "Demo people, one tap each. Password for all: kaam-demo"
+    "samplesHelp": "Demo people, one tap each. Password for all: kaam-demo",
+    "morePeople": "More people ({{count}})"
   },
   "role": {
     "anchor": "Team Leader (Nepali abroad)",
@@ -166,7 +173,16 @@
     "sub_sent_back": "Changes asked",
     "sub_approved": "Approved",
     "splitBadge": "Shared by the member's badge: {{badge}}",
-    "splitPending": "The member's share depends on their badge: from 50% (★ Starter) to 80% (★★★★★ Mentor). Sajha Kaam takes 15%; the rest goes to the Leader who checks the work."
+    "splitPending": "The member's share depends on their badge: from 50% (★ Starter) to 80% (★★★★★ Mentor). Sajha Kaam takes 15%; the rest goes to the Leader who checks the work.",
+    "peopleShort": "{{skill}} · {{client}} · Leader: {{anchor}} · By: {{junior}}",
+    "tabDo": "Do",
+    "tabDetails": "Details",
+    "tabHistory": "History",
+    "finishedWhen": "Finished when",
+    "pasteWork": "Paste your work here",
+    "orLink": "Or a link (Google Doc)",
+    "orPaste": "Or paste text",
+    "tabRoom": "Room"
   },
   "desk": {
     "title": "Today",
@@ -196,7 +212,24 @@
     "byMember": "Each member's 75%",
     "memberJobs_one": "{{count}} job",
     "memberJobs_other": "{{count}} jobs",
-    "noMoney": "Nothing paid out yet."
+    "noMoney": "Nothing paid out yet.",
+    "hi": "Hi, {{name}}",
+    "allClear": "Nothing needs you right now.",
+    "doCheck": "Check {{name}}'s work",
+    "ctaCheck": "Check",
+    "doChanges": "{{client}} asked for changes",
+    "doAgree": "{{client}} sent you a job",
+    "doAssign": "Give this job to a member",
+    "ctaChoose": "Choose",
+    "doRequests_one": "{{count}} person wants to join",
+    "doRequests_other": "{{count}} people want to join",
+    "doApply": "New client job you can apply for",
+    "statSupervising": "jobs you supervise",
+    "statYourShare": "your share",
+    "statHeld": "waiting for clients",
+    "inProgress": "In progress",
+    "nothingInProgress": "No jobs in progress.",
+    "waitingClients": "Waiting for clients"
   },
   "team": {
     "members": "Team members",
@@ -217,7 +250,12 @@
     "inviteHow": "The client opens Sajha Kaam, taps Create account, chooses Client and enters this code.",
     "inviteMessage": "Join my team {{team}} on Sajha Kaam to post your jobs. Sign up as a client with invite code {{code}}.",
     "jobs30_one": "{{count}} job in the last 30 days",
-    "jobs30_other": "{{count}} jobs in the last 30 days"
+    "jobs30_other": "{{count}} jobs in the last 30 days",
+    "supervising": "supervising {{n}} of {{max}} jobs",
+    "memberLine": "{{active}}/{{limit}} jobs in hand · {{recent}} in the last 30 days · earned {{earned}}",
+    "openSpots_one": "{{count}} open spot",
+    "openSpots_other": "{{count}} open spots",
+    "change": "Change"
   },
   "notes": {
     "title": "My notes",
@@ -256,7 +294,19 @@
     "openJobs": "Client jobs for Mentors",
     "openJobsHelp": "As a ★★★★★ Mentor you can apply for jobs clients post. Your Leader still checks the work.",
     "earned": "You've earned (demo)",
-    "earnedHeld": "{{amount}} more when clients accept your work"
+    "earnedHeld": "{{amount}} more when clients accept your work",
+    "allClear": "Nothing to do right now. Your Leader will send you a job.",
+    "do_assigned": "New job offer from {{name}}",
+    "do_sent_back": "{{name}} asked for changes",
+    "do_working": "Send your work",
+    "ctaRead": "Read",
+    "ctaFix": "Fix",
+    "ctaSend": "Send",
+    "doApply": "Client job for Mentors: apply",
+    "statEarned": "earned (demo)",
+    "statJobs": "jobs in hand",
+    "leader": "Leader: {{name}}",
+    "seeAll": "See all {{count}} in your Work Record"
   },
   "teams": {
     "title": "Find a team",
@@ -321,7 +371,18 @@
     "toAgree": "Needs your answer",
     "toAgreeHelp": "Agreements and changes from your Leader.",
     "toChoose": "Choose who does it",
-    "toChooseHelp": "People applied for jobs you posted."
+    "toChooseHelp": "People applied for jobs you posted.",
+    "allClear": "Nothing needs your answer right now.",
+    "doAccept": "Your work is ready",
+    "ctaSee": "See it",
+    "doChoose": "People applied: choose one",
+    "ctaChoose": "Choose",
+    "doChange": "A change to approve",
+    "doAgree": "Read and agree",
+    "doPay": "Pay {{amount}} (demo)",
+    "ctaPay": "Pay",
+    "nothingInProgress": "Nothing in progress.",
+    "postNew": "Post a new job"
   },
   "post": {
     "title": "Post a job",
@@ -422,7 +483,7 @@
     "doneWhen": "“Finished when” points",
     "yourShare": "Your share",
     "level": "Badge",
-    "readBelow": "The full details are in the agreement below.",
+    "readBelow": "All the details are in the Details tab.",
     "accept": "I accept",
     "decline": "Not this time"
   },
@@ -473,7 +534,8 @@
     "payment_held": "A client paid for a job. It's held until they accept the work.",
     "level_up": "Your badge went up! See what's next.",
     "member_level_up": "A team member's badge went up by the rules.",
-    "promotion_paused": "Your Leader paused your next promotion. See the reason."
+    "promotion_paused": "Your Leader paused your next promotion. See the reason.",
+    "room_file": "A new file was shared in a job room."
   },
   "apply": {
     "title": "Apply for this job",
@@ -553,5 +615,36 @@
     "sharingHelp": "Everyone in the team sees this.",
     "beginnerLimit": "You already supervise 2 jobs by Starters. Finish one first, or give this job to a more experienced member.",
     "alreadyPaused": "A promotion is already paused for this member."
+  },
+  "limits": {
+    "memberFull": "This member already has as many jobs as their badge and hours allow. Choose someone else or wait.",
+    "leaderFull": "You already supervise 8 jobs. Finish one before taking more.",
+    "teamFull": "The team is full (8 members)."
+  },
+  "room": {
+    "deadline": "Deadline",
+    "progress": "{{done}} of {{total}} tasks done",
+    "tasks": "Tasks",
+    "tasksHelp": "The first tasks come from the agreement. The member and the Leader add, tick and date them; the client can follow along.",
+    "dueOn": "Due {{date}}",
+    "newTask": "New task",
+    "newTaskEx": "Ask Sunita for the menu photos",
+    "noDate": "No date",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "in3": "In 3 days",
+    "addTask": "Add task",
+    "files": "Files",
+    "filesHelp": "Drafts, photos and links for this job. Only the member and the Leader see them; the client sees the work once the Leader approves it.",
+    "noFiles": "No files yet.",
+    "upload": "Upload a photo or video",
+    "uploadedFile": "Uploaded file",
+    "linkLabel": "What is it?",
+    "linkLabelEx": "Caption draft",
+    "link": "Link",
+    "addLink": "Add link",
+    "httpsOnly": "Use a link that starts with https://",
+    "clientNote": "You can follow the tasks and the deadline here. Drafts stay with the team; you'll see the work when the Leader approves it.",
+    "addFile": "Add a file"
   }
 }

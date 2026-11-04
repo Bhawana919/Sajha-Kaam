@@ -14,14 +14,14 @@ first-time jobs, Pemba 20 first-time, on-time videos over five months. Asha has 
 team. All accounts use the demo password.
 """
 
-from datetime import timedelta
+from datetime import date, timedelta
 
 from sqlmodel import Session, select
 
 from app.auth import hash_password
 from app.config import load_yaml
 from app.models import AnchorClient, AnchorNote, JoinRequest, JuniorProfile, Pod, PodMember, User
-from app.services import work
+from app.services import room, work
 
 RAJAN_ID, ANUSHA_ID, NIMA_ID = "u-anchor-rajan", "u-anchor-anusha", "u-anchor-nima"
 SITA_ID, BIKASH_ID, PEMBA_ID, ASHA_ID = "u-junior-sita", "u-junior-bikash", "u-junior-pemba", "u-junior-asha"
@@ -307,7 +307,15 @@ def seed(session: Session) -> None:
         _finished(session, anusha, threads, pemba, spec, link, days_ago=150 - i * 7)
 
     # 1. The live demo: Sita writes Sunita's opening-week captions (agreed and paid; she has accepted).
-    _agreed_and_started(session, rajan, momo, sita, JOB_MOMO_CAPTIONS, job_id=SITA_JOB)
+    captions = _agreed_and_started(session, rajan, momo, sita, JOB_MOMO_CAPTIONS, job_id=SITA_JOB)
+    # Its room: the tasks they keep together, and the photos Rajan shared from Sunita.
+    room.tasks(session, captions)
+    first = room.add_task(session, sita, captions, "Read Sunita's menu and the opening offer", "")
+    room.update_task(session, sita, captions, first.id, done=True, title=None, due_date=None)
+    room.add_task(session, sita, captions, "Write the five English captions", str(date.today() + timedelta(days=1)))
+    room.add_task(session, rajan, captions, "Add one Nepali line to each caption", str(date.today() + timedelta(days=2)))
+    room.add_file(session, rajan, captions, "Photos of the new branch (from Sunita)",
+                  "https://drive.google.com/drive/folders/momo-house-parramatta-photos")
 
     # 3. Bikash built the website from scratch; Nima approved it; it waits for Sunita to accept.
     site = _agreed_and_started(session, nima, momo, bikash, JOB_MOMO_WEBSITE, job_id=REVIEW_JOB)
@@ -316,6 +324,12 @@ def seed(session: Session) -> None:
     session.add(sub)
     session.commit()
     work.approve(session, nima, sub.id)
+    for task in room.tasks(session, site):
+        room.update_task(session, bikash, site, task.id, done=True, title=None, due_date=None)
+    for title in ("Menu with prices", "Opening hours and map", "Test on a phone 375px wide"):
+        t = room.add_task(session, bikash, site, title, "")
+        room.update_task(session, bikash, site, t.id, done=True, title=None, due_date=None)
+    room.add_file(session, bikash, site, "First draft of the homepage", "https://www.figma.com/file/momo-house-draft")
     site.agreed_at = site.agreed_at - timedelta(days=5)  # agreed last week; due in 2 days
     session.add(site)
     session.commit()

@@ -9,7 +9,7 @@ import { Bell } from '@/components/guthi';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
-import { Button, Panel, StateView, Tag } from '@/components/ui';
+import { Button, HelpLine, Panel, StateView, Tag } from '@/components/ui';
 import { useT } from '@/i18n';
 import { colors, space, touchMin } from '@/theme';
 
@@ -20,7 +20,7 @@ export default function Notes() {
   const [text, setText] = useState('');
   return (
     <Screen title={t('notes.title')} right={<Bell />}>
-      <Txt color={colors.inkSoft}>{t('notes.help')}</Txt>
+      <HelpLine text={t('notes.help')} />
       <Field label={t('notes.add')} placeholder={t('notes.addEx')} value={text} onChangeText={setText} multiline />
       <Button label={t('common.save')} disabled={text.trim().length < 3} busy={add.isPending}
         onPress={() => add.mutate(text, { onSuccess: () => setText('') })} />

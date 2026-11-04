@@ -669,6 +669,95 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/uploads/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * File Upload
+         * @description A signature for one upload to the job room (images, videos or a PDF).
+         */
+        post: operations["file_upload_v1_uploads_file_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/room": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Room */
+        get: operations["get_room_v1_jobs__job_id__room_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/room/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Task */
+        post: operations["add_task_v1_jobs__job_id__room_tasks_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/room/tasks/{task_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Task */
+        delete: operations["delete_task_v1_jobs__job_id__room_tasks__task_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Task */
+        patch: operations["update_task_v1_jobs__job_id__room_tasks__task_id__patch"];
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/room/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add File */
+        post: operations["add_file_v1_jobs__job_id__room_files_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/jobs/{job_id}/choose": {
         parameters: {
             query?: never;
@@ -1150,6 +1239,16 @@ export interface components {
             with_clients: number;
             /** Deadlines */
             deadlines?: components["schemas"]["JobOut"][];
+            /**
+             * Supervising
+             * @default 0
+             */
+            supervising: number;
+            /**
+             * Supervise Limit
+             * @default 8
+             */
+            supervise_limit: number;
             /** Money */
             money?: components["schemas"]["TeamMoney"][];
             /** Member Earnings */
@@ -1163,6 +1262,16 @@ export interface components {
             first_try_streak: number;
             /** Sent Back Total */
             sent_back_total: number;
+        };
+        /** FileIn */
+        FileIn: {
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+            /** Link */
+            link: string;
         };
         /** FirstCheck */
         FirstCheck: {
@@ -1376,6 +1485,16 @@ export interface components {
             earnings?: components["schemas"]["MyMoney"][];
             /** Team Status */
             team_status?: components["schemas"]["MyTeamStatus"][];
+            /**
+             * Active Jobs
+             * @default 0
+             */
+            active_jobs: number;
+            /**
+             * Job Limit
+             * @default 1
+             */
+            job_limit: number;
         };
         /** LevelIn */
         LevelIn: {
@@ -1467,6 +1586,16 @@ export interface components {
              * @default 0
              */
             jobs_30d: number;
+            /**
+             * Active Jobs
+             * @default 0
+             */
+            active_jobs: number;
+            /**
+             * Job Limit
+             * @default 1
+             */
+            job_limit: number;
             progress?: components["schemas"]["Progress"] | null;
             last_change?: components["schemas"]["BadgeChange"] | null;
         };
@@ -1749,6 +1878,54 @@ export interface components {
              */
             team_skill: string;
         };
+        /** RoomFileOut */
+        RoomFileOut: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Link */
+            link: string;
+            /** Added By */
+            added_by: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * RoomOut
+         * @description The job's shared room. The client sees tasks and the deadline; files stay between member and Leader.
+         */
+        RoomOut: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "member" | "leader" | "client";
+            /** Can Edit */
+            can_edit: boolean;
+            /** Due At */
+            due_at: string | null;
+            /** Tasks */
+            tasks: components["schemas"]["RoomTaskOut"][];
+            /** Files */
+            files: components["schemas"]["RoomFileOut"][];
+        };
+        /** RoomTaskOut */
+        RoomTaskOut: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Due Date */
+            due_date: string;
+            /** Done */
+            done: boolean;
+            /** Done At */
+            done_at: string | null;
+        };
         /** RuleCheck */
         RuleCheck: {
             /**
@@ -1862,6 +2039,25 @@ export interface components {
              * @default
              */
             note: string;
+        };
+        /** TaskIn */
+        TaskIn: {
+            /** Title */
+            title: string;
+            /**
+             * Due Date
+             * @default
+             */
+            due_date: string;
+        };
+        /** TaskPatch */
+        TaskPatch: {
+            /** Done */
+            done?: boolean | null;
+            /** Title */
+            title?: string | null;
+            /** Due Date */
+            due_date?: string | null;
         };
         /**
          * TeamMoney
@@ -3239,6 +3435,218 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    file_upload_v1_uploads_file_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_room_v1_jobs__job_id__room_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_task_v1_jobs__job_id__room_tasks_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_task_v1_jobs__job_id__room_tasks__task_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_task_v1_jobs__job_id__room_tasks__task_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_file_v1_jobs__job_id__room_files_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FileIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomOut"];
                 };
             };
             /** @description Validation Error */

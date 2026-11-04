@@ -8,7 +8,7 @@ import { Field, useErrorText } from '@/components/forms';
 import { Bell, ListEditor, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
-import { Button, Chip, Section, StateView } from '@/components/ui';
+import { Button, Chip, HelpLine, Section, StateView } from '@/components/ui';
 import { useT } from '@/i18n';
 import { colors, space } from '@/theme';
 
@@ -43,7 +43,7 @@ function ProfileForm({ initial }: { initial: ProfileData }) {
     <Screen title={t('profile.title')} right={<Bell />} footer={
       <Button label={t('common.save')} disabled={!p.skills.length} busy={save.isPending} onPress={() => save.mutate(p)} />
     }>
-      <Txt color={colors.inkSoft}>{t('profile.help')}</Txt>
+      <HelpLine text={t('profile.help')} />
       {!complete && !save.data?.complete ? <Txt variant="small" color={colors.warnInk}>{t('profile.incomplete')}</Txt> : null}
       <Section title={t('profile.skills')} help={t('profile.skillsHelp')}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>

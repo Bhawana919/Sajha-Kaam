@@ -44,3 +44,5 @@ export type Template = {
   skill_fields: Record<string, SkillField[]>;
   done_when_examples: Record<string, string[]>;
 };
+export type Room = S['RoomOut'];
+export type RoomTask = S['RoomTaskOut'];

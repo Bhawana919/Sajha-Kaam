@@ -10,7 +10,7 @@ import { BadgeChangeLine, BadgeProgress, LevelTag } from '@/components/guthi';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
-import { Button, Panel, Section } from '@/components/ui';
+import { Button, HelpLine, Panel, Section } from '@/components/ui';
 import { useT } from '@/i18n';
 import { colors, radius, space } from '@/theme';
 
@@ -31,7 +31,7 @@ export default function Level() {
   return (
     <Screen back title={member.person.display_name}>
       <LevelTag level={member.level} />
-      <Txt color={colors.inkSoft}>{t('levelScreen.help')}</Txt>
+      <HelpLine text={t('levelScreen.help')} />
       <Panel tone="honey" style={{ gap: space.sm }}>
         <Txt variant="small">{t('team.evidence', { jobs: digits(member.evidence.signed_jobs),
           streak: digits(member.evidence.first_try_streak), back: digits(member.evidence.sent_back_total) })}</Txt>

@@ -2,7 +2,19 @@
 always with a reason the member sees; a Leader supervises at most 2 Starter jobs at once; everyone in
 the team sees how jobs were shared."""
 
-from app.seed import ANUSHA_ID, ASHA_ID, BIKASH_ID, MOMO_ID, NIMA_ID, PEMBA_ID, RAJAN_ID, SITA_ID, SITA_JOB, THREADS_ID
+from app.seed import (
+    ANUSHA_ID,
+    ANUSHA_TEAM,
+    ASHA_ID,
+    BIKASH_ID,
+    MOMO_ID,
+    NIMA_ID,
+    PEMBA_ID,
+    RAJAN_ID,
+    SITA_ID,
+    SITA_JOB,
+    THREADS_ID,
+)
 from tests.conftest import GOOD_JOB, auth
 
 VIDEO_JOB = {**GOOD_JOB, "skill": "video", "details": {"length": "30s", "format": "MP4 9:16", "source": "Drive"},
@@ -101,19 +113,65 @@ def test_pause_skips_one_promotion_then_the_next_job_counts(client):
     assert members(client, rajan)["Sita Thapa"]["level"] == 3
 
 
-def test_a_leader_supervises_at_most_two_starter_jobs_at_once(client):
+def _new_starter(client, anusha, name):
+    """A new video member who joins Anusha's team through the real steps (and starts as a Starter)."""
+    reg = {"role": "junior", "display_name": name, "email": f"{name.split()[0].lower()}@new.example",
+           "password": "long-pass-1"}
+    h = {"Authorization": f"Bearer {client.post('/v1/auth/register', json=reg).json()['access_token']}"}
+    client.put("/v1/me/profile", json={"skills": ["video"], "languages": ["Nepali"], "hours_per_week": 20,
+                                       "samples": [{"title": "Reel", "link": "https://youtu.be/abcdefgh"}]}, headers=h)
+    client.post(f"/v1/teams/{ANUSHA_TEAM}/join", json={"sample_link": "https://youtu.be/abcdefgh"}, headers=h)
+    req = next(r for r in client.get("/v1/anchor/requests", headers=anusha).json())
+    client.post(f"/v1/anchor/requests/{req['id']}/decide", json={"accept": True}, headers=anusha)
+    return client.get("/v1/me", headers=h).json()["id"]
+
+
+def _video_job(client, anusha, threads):
+    job = client.post("/v1/anchor/jobs", json={**VIDEO_JOB, "client_id": THREADS_ID}, headers=anusha).json()
+    client.post(f"/v1/jobs/{job['id']}/agree", headers=threads)
+    return job["id"]
+
+
+def test_a_starter_holds_one_job_and_a_leader_supervises_two_starters_at_once(client):
     anusha, threads = auth(client, ANUSHA_ID), auth(client, THREADS_ID)
+    client.put("/v1/anchor/seats", json={"seats_open": 4}, headers=anusha)
     req = client.get("/v1/anchor/requests", headers=anusha).json()[0]
     client.post(f"/v1/anchor/requests/{req['id']}/decide", json={"accept": True}, headers=anusha)
     assert members(client, anusha)["Asha Rai"]["level"] == 1  # new members start where their record is
-    codes = []
-    for _ in range(3):
-        job = client.post("/v1/anchor/jobs", json={**VIDEO_JOB, "client_id": THREADS_ID}, headers=anusha).json()
-        client.post(f"/v1/jobs/{job['id']}/agree", headers=threads)
-        codes.append(client.post(f"/v1/jobs/{job['id']}/assign", json={"junior_id": ASHA_ID}, headers=anusha))
-    assert [c.status_code for c in codes] == [200, 200, 409] and codes[2].json()["detail"] == "beginner_limit"
-    # Experienced members are not limited.
-    assert client.post(f"/v1/jobs/{job['id']}/assign", json={"junior_id": PEMBA_ID}, headers=anusha).status_code == 200
+    first, second = _video_job(client, anusha, threads), _video_job(client, anusha, threads)
+    assert client.post(f"/v1/jobs/{first}/assign", json={"junior_id": ASHA_ID}, headers=anusha).status_code == 200
+    full = client.post(f"/v1/jobs/{second}/assign", json={"junior_id": ASHA_ID}, headers=anusha)
+    assert full.status_code == 409 and full.json()["detail"] == "member_full"  # a Starter holds 1 job at once
+    asha_m = members(client, anusha)["Asha Rai"]
+    assert (asha_m["active_jobs"], asha_m["job_limit"]) == (1, 1)
+
+    dawa = _new_starter(client, anusha, "Dawa Lama")
+    assert client.post(f"/v1/jobs/{second}/assign", json={"junior_id": dawa}, headers=anusha).status_code == 200
+    third = _video_job(client, anusha, threads)
+    karma = _new_starter(client, anusha, "Karma Gurung")
+    limit = client.post(f"/v1/jobs/{third}/assign", json={"junior_id": karma}, headers=anusha)
+    assert limit.status_code == 409 and limit.json()["detail"] == "beginner_limit"  # 2 Starter jobs at once
+    # Experienced members are not limited by that.
+    assert client.post(f"/v1/jobs/{third}/assign", json={"junior_id": PEMBA_ID}, headers=anusha).status_code == 200
+    desk = client.get("/v1/anchor/desk", headers=anusha).json()
+    assert (desk["supervising"], desk["supervise_limit"]) == (3, 8)
+
+
+def test_member_limit_follows_badge_and_weekly_hours(client):
+    home = client.get("/v1/junior/home", headers=auth(client, SITA_ID)).json()
+    assert (home["active_jobs"], home["job_limit"]) == (1, 2)  # ★★ Learner, 20 hours a week
+    pemba = client.get("/v1/junior/home", headers=auth(client, PEMBA_ID)).json()
+    assert pemba["job_limit"] == 1  # ★★★★★ allows 3, but he said 15 hours a week: 1 job at a time
+
+
+def test_a_leader_who_is_full_cannot_take_more(client, monkeypatch):
+    from app.services import work as w
+    monkeypatch.setattr(w, "leader_limit", lambda: 1)
+    rajan, momo = auth(client, RAJAN_ID), auth(client, MOMO_ID)
+    job = new_web_job(client, rajan, momo, SITA_ID)  # Sita's captions already use Rajan's one place
+    assert client.get(f"/v1/jobs/{job}", headers=rajan).json()["job"]["state"] == "agreed"
+    r = client.post(f"/v1/jobs/{job}/assign", json={"junior_id": SITA_ID}, headers=rajan)
+    assert r.status_code == 409 and r.json()["detail"] == "leader_full"
 
 
 def test_everyone_in_the_team_sees_how_jobs_were_shared(client):

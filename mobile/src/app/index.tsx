@@ -1,8 +1,11 @@
-// Welcome: what Sajha Kaam is in three lines, then sign in. In demo mode, one tap on a sample person.
+// Welcome: what Sajha Kaam is in three lines, then sign in. In demo mode, the story's people come
+// first, in the order the demo uses them; everyone else is one tap away.
 import { Redirect, router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useMe, useSampleLogin, useSamples } from '@/api/hooks';
+import type { SampleIdentity } from '@/api/types';
 import { DhakaBand } from '@/components/brand/Dhaka';
 import { useErrorText } from '@/components/forms';
 import { Icon } from '@/components/Icon';
@@ -16,6 +19,10 @@ import { colors, radius, space } from '@/theme';
 
 import { homeFor } from '@/lib/nav';
 
+/** The demo story's cast, in the order the demo script uses them. */
+const STORY = ['u-client-momo', 'u-junior-sita', 'u-anchor-rajan', 'u-junior-pemba', 'u-anchor-anusha', 'u-junior-bikash',
+  'u-anchor-nima'];
+
 export default function Welcome() {
   const { t } = useT();
   const signedIn = useSession((s) => !!s.tokens);
@@ -23,10 +30,25 @@ export default function Welcome() {
   const samples = useSamples();
   const login = useSampleLogin();
   const errorText = useErrorText();
+  const [more, setMore] = useState(false);
   if (signedIn && me.data) return <Redirect href={homeFor(me.data) as never} />;
 
   const go = (id: string) => login.mutate(id, { onSuccess: (m) => router.replace(homeFor(m) as never) });
-  const roles = ['anchor', 'junior', 'client'] as const;
+  const all = samples.data ?? [];
+  const cast = STORY.map((id) => all.find((s) => s.user_id === id)).filter(Boolean) as SampleIdentity[];
+  const others = all.filter((s) => !STORY.includes(s.user_id));
+
+  const person = (s: SampleIdentity) => (
+    <PressScale key={s.user_id} accessibilityRole="button" accessibilityLabel={s.display_name}
+      onPress={() => go(s.user_id)} disabled={login.isPending} style={styles.sample}>
+      <View style={[styles.dot, { backgroundColor: s.role === 'client' ? colors.brick : s.role === 'anchor' ? colors.pine : colors.honey }]} />
+      <View style={{ flex: 1 }}>
+        <Txt variant="h3">{s.display_name}</Txt>
+        <Txt variant="small" color={colors.inkSoft}>{t(`role.${s.role}`)}{s.headline ? ` · ${s.headline}` : ''}</Txt>
+      </View>
+      <Icon name="chevronRight" size={20} color={colors.inkFaint} />
+    </PressScale>
+  );
 
   return (
     <Screen>
@@ -47,30 +69,22 @@ export default function Welcome() {
           </View>
         ))}
       </View>
-      <View style={{ gap: space.sm }}>
-        <Button label={t('auth.signIn')} onPress={() => router.push('/sign-in')} />
-        <Button kind="secondary" label={t('auth.createAccount')} onPress={() => router.push('/sign-up')} />
-      </View>
-      {samples.data?.length ? (
+      {cast.length ? (
         <Section title={t('welcome.samplesTitle')} help={t('welcome.samplesHelp')}>
           {login.error ? <Txt color={colors.brick}>{errorText(login.error)}</Txt> : null}
-          {roles.map((role) => (
-            <View key={role} style={{ gap: space.sm }}>
-              <Txt variant="label" color={colors.inkSoft}>{t(`role.${role}`)}</Txt>
-              {samples.data.filter((s) => s.role === role).map((s) => (
-                <PressScale key={s.user_id} accessibilityRole="button" accessibilityLabel={s.display_name}
-                  onPress={() => go(s.user_id)} disabled={login.isPending} style={styles.sample}>
-                  <View style={{ flex: 1 }}>
-                    <Txt variant="h3">{s.display_name}</Txt>
-                    {s.headline ? <Txt variant="small" color={colors.inkSoft}>{s.headline}</Txt> : null}
-                  </View>
-                  <Icon name="chevronRight" size={20} color={colors.inkFaint} />
-                </PressScale>
-              ))}
-            </View>
-          ))}
+          {cast.map(person)}
+          {others.length ? (
+            <Pressable accessibilityRole="button" onPress={() => setMore(!more)} hitSlop={8}>
+              <Txt variant="label" color={colors.brick}>{more ? t('common.less') : t('welcome.morePeople', { count: others.length })}</Txt>
+            </Pressable>
+          ) : null}
+          {more ? others.map(person) : null}
         </Section>
       ) : null}
+      <View style={{ gap: space.sm }}>
+        <Button kind="secondary" label={t('auth.signIn')} onPress={() => router.push('/sign-in')} />
+        <Button kind="quiet" label={t('auth.createAccount')} onPress={() => router.push('/sign-up')} />
+      </View>
     </Screen>
   );
 }
@@ -80,5 +94,7 @@ const styles = StyleSheet.create({
   brandText: { padding: space.xl, gap: 2 },
   how: { flexDirection: 'row', gap: space.md, alignItems: 'flex-start' },
   num: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.pine, alignItems: 'center', justifyContent: 'center' },
-  sample: { backgroundColor: colors.white, borderRadius: radius.md, padding: space.md, flexDirection: 'row', alignItems: 'center' },
+  sample: { backgroundColor: colors.white, borderRadius: radius.md, padding: space.md, flexDirection: 'row', alignItems: 'center',
+    gap: space.md },
+  dot: { width: 10, height: 10, borderRadius: 5 },
 });

@@ -7,7 +7,7 @@ import { useJuniorHome, useLogbook } from '@/api/hooks';
 import { Bell, useBadge, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
-import { Button, Panel, StateView, Tag } from '@/components/ui';
+import { Button, HelpLine, Panel, StateView, Tag } from '@/components/ui';
 import { useT } from '@/i18n';
 import { colors, space } from '@/theme';
 
@@ -20,7 +20,7 @@ export default function Logbook() {
   const url = slug ? `${PUBLIC_BASE}/p/${slug}` : '';
   return (
     <Screen title={t('logbook.title')} right={<Bell />}>
-      <Txt color={colors.inkSoft}>{t('logbook.help')}</Txt>
+      <HelpLine text={t('logbook.help')} />
       {url ? (
         <Panel style={{ alignItems: 'center' }}>
           <QRCode value={url} size={150} />

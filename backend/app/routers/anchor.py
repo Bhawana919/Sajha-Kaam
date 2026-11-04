@@ -55,6 +55,7 @@ def desk(user: User = Depends(anchor_only), session: Session = Depends(get_sessi
                    to_assign=[job_out(session, j) for j in mine if j.state == "agreed"],
                    open_jobs=[job_out(session, j) for j in open_jobs], join_requests=requests, with_clients=clients,
                    deadlines=[job_out(session, j) for j in active], money=[TeamMoney(**t) for t in totals],
+                   supervising=work.leader_active(session, pod.id), supervise_limit=work.leader_limit(),
                    member_earnings=[MemberEarning(person=person(session.get(User, m["junior_id"])), currency=m["currency"],
                                                   amount_minor=m["amount_minor"], jobs=m["jobs"]) for m in members])
 
@@ -108,6 +109,8 @@ def team(user: User = Depends(anchor_only), session: Session = Depends(get_sessi
         members.append(MemberOut(person=person(session.get(User, m.junior_id)), level=m.level,
                                  evidence=Evidence(**work.evidence(session, pod, m.junior_id)), open_jobs=open_jobs,
                                  jobs_30d=work.jobs_last_30_days(session, pod.id, m.junior_id),
+                                 active_jobs=work.member_active(session, m.junior_id),
+                                 job_limit=work.member_limit(session, m.junior_id, m.level),
                                  progress=progress_out(session, pod, m),
                                  last_change=badge_change(work.last_change(session, pod.id, m.junior_id))))
     clients = [session.get(User, link.client_id) for link in

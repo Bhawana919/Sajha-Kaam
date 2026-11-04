@@ -15,14 +15,20 @@ from app.schemas import (
     CheckOut,
     ChooseIn,
     ClientHome,
+    FileIn,
     JobDetail,
     JobIn,
     JobOut,
     LogEntryOut,
     NotificationOut,
     Problem,
+    RoomFileOut,
+    RoomOut,
+    RoomTaskOut,
+    TaskIn,
+    TaskPatch,
 )
-from app.services import agreement, uploads, work
+from app.services import agreement, room, uploads, work
 from app.services.views import entry_out, job_detail, job_out, person
 
 router = APIRouter(prefix="/v1", tags=["jobs"])
@@ -86,6 +92,59 @@ def video_upload(user: User = Depends(require_role("anchor", "junior"))) -> dict
     if not uploads.enabled():
         raise HTTPException(503, "uploads_off")
     return uploads.video_signature()
+
+
+@router.post("/uploads/file", response_model=dict)
+def file_upload(user: User = Depends(require_role("anchor", "junior"))) -> dict:
+    """A signature for one upload to the job room (images, videos or a PDF)."""
+    if not uploads.enabled():
+        raise HTTPException(503, "uploads_off")
+    return uploads.file_signature()
+
+
+# ---------- the job room: tasks, deadline and files, once the agreement is final ----------
+
+def _room_out(session: Session, user: User, job) -> RoomOut:
+    v = room.view(session, user, job)
+    return RoomOut(role=v["role"], can_edit=v["can_edit"], due_at=work.due_at(job),
+                   tasks=[RoomTaskOut(id=t.id, title=t.title, due_date=t.due_date, done=t.done, done_at=t.done_at)
+                          for t in v["tasks"]],
+                   files=[RoomFileOut(id=f.id, label=f.label, link=f.link, added_by=name, created_at=f.created_at)
+                          for f, name in v["files"]])
+
+
+@router.get("/jobs/{job_id}/room", response_model=RoomOut)
+def get_room(job_id: str, user: User = Depends(any_user), session: Session = Depends(get_session)) -> RoomOut:
+    return _room_out(session, user, work.get_job(session, job_id))
+
+
+@router.post("/jobs/{job_id}/room/tasks", response_model=RoomOut, status_code=201)
+def add_task(job_id: str, body: TaskIn, user: User = Depends(any_user), session: Session = Depends(get_session)) -> RoomOut:
+    job = work.get_job(session, job_id)
+    room.add_task(session, user, job, body.title, body.due_date)
+    return _room_out(session, user, job)
+
+
+@router.patch("/jobs/{job_id}/room/tasks/{task_id}", response_model=RoomOut)
+def update_task(job_id: str, task_id: str, body: TaskPatch, user: User = Depends(any_user),
+                session: Session = Depends(get_session)) -> RoomOut:
+    job = work.get_job(session, job_id)
+    room.update_task(session, user, job, task_id, done=body.done, title=body.title, due_date=body.due_date)
+    return _room_out(session, user, job)
+
+
+@router.delete("/jobs/{job_id}/room/tasks/{task_id}", response_model=RoomOut)
+def delete_task(job_id: str, task_id: str, user: User = Depends(any_user), session: Session = Depends(get_session)) -> RoomOut:
+    job = work.get_job(session, job_id)
+    room.delete_task(session, user, job, task_id)
+    return _room_out(session, user, job)
+
+
+@router.post("/jobs/{job_id}/room/files", response_model=RoomOut, status_code=201)
+def add_file(job_id: str, body: FileIn, user: User = Depends(any_user), session: Session = Depends(get_session)) -> RoomOut:
+    job = work.get_job(session, job_id)
+    room.add_file(session, user, job, body.label, body.link)
+    return _room_out(session, user, job)
 
 
 @router.post("/jobs/{job_id}/choose", response_model=JobDetail)

@@ -4,7 +4,7 @@
 //  - Tag: *text* with a small mark, not a tinted pill (pills everywhere are a template tell).
 //  - Tabs: underline tabs for switching views; Chip only for filters.
 //  - Section: a real title in sentence case, not a small-caps eyebrow.
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
@@ -137,17 +137,100 @@ export function Tabs<T extends string>({ items, value, onChange }: { items: { ke
   );
 }
 
+/** A small ⓘ that shows a short explanation only when tapped, so screens stay quiet. */
+export function InfoToggle({ text, open, onToggle }: { text: string; open: boolean; onToggle: () => void }) {
+  const { t } = useT();
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={t('common.moreInfo')} accessibilityHint={text}
+      accessibilityState={{ expanded: open }} onPress={onToggle} hitSlop={10} style={styles.info}>
+      <Icon name="help" size={18} color={open ? colors.ink : colors.inkFaint} strokeWidth={1.9} />
+    </Pressable>
+  );
+}
+
+/** "ⓘ How this works": one quiet line that opens a screen's explanation only when tapped. */
+export function HelpLine({ text }: { text: string }) {
+  const { t } = useT();
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={{ gap: 4 }}>
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(!open)}
+        hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start' }}>
+        <Icon name="help" size={16} color={colors.inkSoft} strokeWidth={1.9} />
+        <Txt variant="small" color={colors.inkSoft}>{t('common.howItWorks')}</Txt>
+      </Pressable>
+      {open ? <Txt variant="small" color={colors.inkSoft}>{text}</Txt> : null}
+    </View>
+  );
+}
+
+/** A heading for a group. Its explanation hides behind ⓘ. */
 export function Section({ title, help, action, children }: { title: string; help?: string; action?: ReactNode; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
   return (
     <View style={{ gap: space.md }}>
       <View style={{ gap: 2 }}>
         <View style={styles.sectionHead}>
-          <Txt variant="h2" accessibilityRole="header" style={{ flex: 1 }}>{title}</Txt>
+          <Txt variant="h2" accessibilityRole="header" style={{ flexShrink: 1 }}>{title}</Txt>
+          {help ? <InfoToggle text={help} open={open} onToggle={() => setOpen(!open)} /> : null}
+          <View style={{ flex: 1 }} />
           {action}
         </View>
-        {help ? <Txt variant="small" color={colors.inkSoft}>{help}</Txt> : null}
+        {help && open ? <Txt variant="small" color={colors.inkSoft}>{help}</Txt> : null}
       </View>
       {children}
+    </View>
+  );
+}
+
+/** The one thing to do next: an icon, a short line, one button. Leads every home screen. */
+export function ActionCard({ icon, title, line, cta, onPress, strong }: {
+  icon: IconName; title: string; line?: string; cta: string; onPress: () => void; strong?: boolean;
+}) {
+  return (
+    <PressScale accessibilityRole="button" accessibilityLabel={`${title}. ${line ?? ''}`} onPress={onPress}
+      style={[styles.action, strong && { backgroundColor: colors.brick }]}>
+      <View style={[styles.actionIcon, strong && { backgroundColor: 'rgba(255,255,255,0.16)' }]}>
+        <Icon name={icon} size={22} color={strong ? colors.white : colors.brick} strokeWidth={2} />
+      </View>
+      <View style={{ flex: 1, gap: 2 }}>
+        <Txt variant="h3" color={strong ? colors.white : colors.ink}>{title}</Txt>
+        {line ? <Txt variant="small" color={strong ? colors.brickSoft : colors.inkSoft}>{line}</Txt> : null}
+      </View>
+      <View style={[styles.actionCta, strong && { backgroundColor: colors.white }]}>
+        <Txt variant="label" color={strong ? colors.brickDeep : colors.white}>{cta}</Txt>
+      </View>
+    </PressScale>
+  );
+}
+
+/** "Do now": the action cards, or a calm all-clear line when nothing needs this person. */
+export function DoNow({ children, empty }: { children: ReactNode[]; empty: string }) {
+  const { t } = useT();
+  const cards = children.filter(Boolean);
+  return (
+    <View style={{ gap: space.sm }}>
+      <Txt variant="label" color={colors.inkSoft} accessibilityRole="header">{t('common.doNow')}</Txt>
+      {cards.length ? cards : (
+        <View style={[styles.panel, { backgroundColor: colors.white, flexDirection: 'row', alignItems: 'center' }]}>
+          <Icon name="check" size={20} color={colors.green} strokeWidth={2.4} />
+          <Txt color={colors.inkSoft} style={{ flex: 1 }}>{empty}</Txt>
+        </View>
+      )}
+    </View>
+  );
+}
+
+/** Big numbers in a row ("1 of 2 jobs", "$35 earned"): numbers first, few words. */
+export function Stats({ items }: { items: { value: string; label: string; tone?: 'pine' | 'white' }[] }) {
+  return (
+    <View style={styles.stats}>
+      {items.map((it) => (
+        <View key={it.label} style={[styles.stat, it.tone === 'pine' && { backgroundColor: colors.pine }]}>
+          <Txt variant="money" color={it.tone === 'pine' ? colors.white : colors.ink}>{it.value}</Txt>
+          <Txt variant="small" color={it.tone === 'pine' ? colors.pineSoft : colors.inkSoft}>{it.label}</Txt>
+        </View>
+      ))}
     </View>
   );
 }
@@ -274,6 +357,14 @@ const styles = StyleSheet.create({
   tab: { minHeight: touchMin, justifyContent: 'flex-end' },
   tabBar: { height: 3, borderRadius: 2, marginTop: space.sm, backgroundColor: 'transparent' },
   sectionHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  info: { minWidth: 32, minHeight: 32, alignItems: 'center', justifyContent: 'center' },
+  action: { backgroundColor: colors.white, borderRadius: radius.lg, padding: space.md, flexDirection: 'row', alignItems: 'center',
+    gap: space.md },
+  actionIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.brickSoft, alignItems: 'center',
+    justifyContent: 'center' },
+  actionCta: { backgroundColor: colors.brick, borderRadius: radius.pill, paddingHorizontal: space.md, paddingVertical: 8 },
+  stats: { flexDirection: 'row', gap: space.sm },
+  stat: { flex: 1, backgroundColor: colors.white, borderRadius: radius.lg, padding: space.md, gap: 2 },
   kv: { flexDirection: 'row', gap: space.md, paddingVertical: 2 },
   emptyMark: { width: 64, height: 64, borderRadius: 32, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   state: { paddingVertical: space.xxl, paddingHorizontal: space.lg, gap: space.md, alignItems: 'center' },

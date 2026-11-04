@@ -76,29 +76,28 @@ export function useDue() {
 }
 
 /** One job in a list: title, who it's for, state and money. Tapping opens the job. */
-export function JobCard({ job, showClient = true, href }: { job: Job; showClient?: boolean; href?: string }) {
+export function JobCard({ job, showClient = true, mine = false, href }: {
+  job: Job; showClient?: boolean; mine?: boolean; href?: string;
+}) {
   const { t } = useT();
-  const skill = useSkillName();
   const clientName = useClientName();
   const due = useDue()(job);
+  // One line under the title: where it is, who has it (not on your own list), when it's due.
+  const who = mine ? '' : job.junior?.display_name.split(' ')[0] ?? (showClient ? clientName(job) : '');
   return (
     <PressScale accessibilityRole="button" accessibilityLabel={job.title} onPress={() => router.push((href ?? `/job/${job.id}`) as never)}
       style={styles.card}>
       <View style={styles.cardHead}>
-        <Txt variant="h3" style={{ flex: 1 }}>{job.title}</Txt>
-        <Icon name="chevronRight" size={20} color={colors.inkFaint} />
+        <Txt variant="h3" style={{ flex: 1 }} numberOfLines={2}>{job.title}</Txt>
+        <Txt variant="h3">{money(job.budget_minor, job.currency)}</Txt>
       </View>
-      <View style={styles.tags}>
+      <View style={styles.cardLine}>
         <StateTag state={job.state} />
-        <Tag label={skill(job.skill)} />
-        {due ? <Tag tone={due.tone} icon="clock" label={due.label} /> : null}
+        {who ? <Txt variant="small" color={colors.inkSoft}>· {who}</Txt> : null}
+        {due ? <Txt variant="small" color={due.tone === 'brick' ? colors.brick : due.tone === 'honey' ? colors.honeyDeep : colors.inkSoft}>
+          · {due.label}</Txt> : null}
+        {!due && !job.agreed_at ? <Txt variant="small" color={colors.inkSoft}>· {t('job.days', { count: job.deadline_days })}</Txt> : null}
       </View>
-      {showClient ? <Txt variant="small" color={colors.inkSoft}>{clientName(job)}</Txt> : null}
-      <View style={styles.cardFoot}>
-        <Txt variant="small" color={colors.inkSoft}>{due ? '' : t('job.days', { count: job.deadline_days })}</Txt>
-        <Txt variant="label">{money(job.budget_minor, job.currency)}</Txt>
-      </View>
-      {job.junior ? <Txt variant="small" color={colors.inkSoft}>{t('job.doneBy', { name: job.junior.display_name })}</Txt> : null}
     </PressScale>
   );
 }
@@ -128,11 +127,19 @@ export function SplitRows({ job }: { job: Job }) {
 export function BadgeProgress({ p }: { p: Progress }) {
   const { t } = useT();
   const badge = useBadge();
+  const [all, setAll] = useState(false);
   if (!p.next_level) return <Txt variant="small" color={colors.green}>{t('badge.top')}</Txt>;
+  const todo = p.checks.filter((c) => !c.ok);
+  const shown = all ? p.checks : todo.slice(0, 1);
   return (
     <View style={{ gap: 4 }}>
-      <Txt variant="label">{t('badge.next', { badge: badge(p.next_level) })}</Txt>
-      {p.checks.map((c) => (
+      <View style={styles.cardHead}>
+        <Txt variant="label" style={{ flex: 1 }}>{t('badge.next', { badge: badge(p.next_level) })}</Txt>
+        <Pressable accessibilityRole="button" onPress={() => setAll(!all)} hitSlop={8}>
+          <Txt variant="label" color={colors.brick}>{all ? t('common.less') : t('common.more')}</Txt>
+        </Pressable>
+      </View>
+      {shown.map((c) => (
         <View key={c.code} style={styles.item}>
           <Icon name={c.ok ? 'check' : 'clock'} size={16} color={c.ok ? colors.green : colors.inkSoft} strokeWidth={2.2} />
           <Txt variant="small" color={c.ok ? colors.ink : colors.inkSoft} style={{ flex: 1 }}>
@@ -244,8 +251,9 @@ export function Bell() {
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.white, borderRadius: radius.lg, padding: space.lg, gap: space.sm },
-  cardHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  card: { backgroundColor: colors.white, borderRadius: radius.lg, paddingHorizontal: space.lg, paddingVertical: space.md, gap: 6 },
+  cardHead: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
+  cardLine: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
   cardFoot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.md },
   item: { flexDirection: 'row', gap: space.sm, alignItems: 'flex-start' },

@@ -38,7 +38,10 @@ async function lengthOf(asset: ImagePicker.ImagePickerAsset): Promise<number | n
   });
 }
 
-function upload(sig: Signature, asset: ImagePicker.ImagePickerAsset, file: Blob | null,
+export type UploadSignature = Signature;
+
+/** Send one picked file straight to Cloudinary with a server signature, reporting progress. */
+export function upload(sig: Signature, asset: ImagePicker.ImagePickerAsset, file: Blob | null,
   onProgress: (p: number) => void): Promise<{ secure_url: string; duration?: number }> {
   const form = new FormData();
   if (file) form.append('file', file);

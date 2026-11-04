@@ -8,6 +8,7 @@ import { border, colors, fonts, radius, space, touchMin } from '@/theme';
 
 import { Icon } from './Icon';
 import { Txt } from './Txt';
+import { InfoToggle } from './ui';
 
 export function Field({ label, help, error, multiline, style, ...rest }: TextInputProps & {
   label: string;
@@ -16,9 +17,13 @@ export function Field({ label, help, error, multiline, style, ...rest }: TextInp
 }) {
   // Focus is shown by a 2 px ink border (not colour alone, and not the brick used for errors).
   const [focused, setFocused] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   return (
     <View style={{ gap: space.xs }}>
-      <Txt variant="h3" color={colors.ink}>{label}</Txt>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+        <Txt variant="h3" color={colors.ink} style={{ flexShrink: 1 }}>{label}</Txt>
+        {help ? <InfoToggle text={help} open={showHelp} onToggle={() => setShowHelp(!showHelp)} /> : null}
+      </View>
       <TextInput
         accessibilityLabel={label}
         accessibilityHint={help}
@@ -45,7 +50,7 @@ export function Field({ label, help, error, multiline, style, ...rest }: TextInp
         ]}
       />
       {error ? <Txt variant="small" color={colors.brick}>{error}</Txt> : null}
-      {help && !error ? <Txt variant="small" color={colors.inkSoft}>{help}</Txt> : null}
+      {help && showHelp && !error ? <Txt variant="small" color={colors.inkSoft}>{help}</Txt> : null}
     </View>
   );
 }

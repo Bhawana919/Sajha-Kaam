@@ -9,7 +9,7 @@ import { Field, useErrorText } from '@/components/forms';
 import { Bell, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
-import { Button, Panel, StateView, Tag } from '@/components/ui';
+import { Button, HelpLine, Panel, StateView, Tag } from '@/components/ui';
 import { useT } from '@/i18n';
 import { colors, space } from '@/theme';
 
@@ -50,7 +50,7 @@ export default function Teams() {
   const [openId, setOpenId] = useState<string | null>(null);
   return (
     <Screen title={t('teams.title')} right={<Bell />}>
-      <Txt color={colors.inkSoft}>{t('teams.help')}</Txt>
+      <HelpLine text={t('teams.help')} />
       {q.isLoading ? <StateView state="loading" /> : null}
       {q.data && !q.data.length ? <StateView state="empty" message={t('teams.empty')} /> : null}
       {q.data?.map((item) => (

@@ -176,6 +176,34 @@ class Job(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utcnow)
 
 
+class RoomTask(SQLModel, table=True):
+    """A task in the job's shared room. The room opens once the agreement is final; the member and the
+    Team Leader keep the list, and the client can follow it."""
+
+    __tablename__ = "room_tasks"
+    id: str = Field(default_factory=new_id, primary_key=True)
+    job_id: str = Field(foreign_key="jobs.id", index=True)
+    title: str
+    due_date: str = ""  # YYYY-MM-DD, optional
+    done: bool = False
+    created_by: str = Field(foreign_key="users.id")
+    created_at: datetime = Field(default_factory=utcnow)
+    done_at: datetime | None = None
+
+
+class RoomFile(SQLModel, table=True):
+    """Work in progress shared in the room (a link or an upload). Only the member and the Team Leader see
+    these; the client sees work only after the Leader approves it."""
+
+    __tablename__ = "room_files"
+    id: str = Field(default_factory=new_id, primary_key=True)
+    job_id: str = Field(foreign_key="jobs.id", index=True)
+    label: str
+    link: str
+    added_by: str = Field(foreign_key="users.id")
+    created_at: datetime = Field(default_factory=utcnow)
+
+
 class JobApplication(SQLModel, table=True):
     """Someone going for a job a client posted to everyone: a Team Leader with that skill, or a member
     who is a Mentor (level 5) in a team with that skill. The client chooses one."""

@@ -175,6 +175,8 @@ class MemberOut(BaseModel):
     evidence: Evidence
     open_jobs: int
     jobs_30d: int = 0  # jobs given to them in the last 30 days (fairness view)
+    active_jobs: int = 0  # jobs in hand now (any team)
+    job_limit: int = 1  # how many they may hold at once (badge and weekly hours)
     progress: Progress | None = None
     last_change: BadgeChange | None = None
 
@@ -385,6 +387,47 @@ class JobDetail(BaseModel):
     applications: list[ApplicationOut] = Field(default_factory=list)  # the client's open job only
 
 
+class RoomTaskOut(BaseModel):
+    id: str
+    title: str
+    due_date: str
+    done: bool
+    done_at: datetime | None
+
+
+class RoomFileOut(BaseModel):
+    id: str
+    label: str
+    link: str
+    added_by: str  # the person's name
+    created_at: datetime
+
+
+class RoomOut(BaseModel):
+    """The job's shared room. The client sees tasks and the deadline; files stay between member and Leader."""
+    role: Literal["member", "leader", "client"]
+    can_edit: bool
+    due_at: datetime | None
+    tasks: list[RoomTaskOut]
+    files: list[RoomFileOut]
+
+
+class TaskIn(BaseModel):
+    title: str = Field(min_length=2, max_length=160)
+    due_date: str = Field(default="", max_length=10)
+
+
+class TaskPatch(BaseModel):
+    done: bool | None = None
+    title: str | None = Field(default=None, max_length=160)
+    due_date: str | None = Field(default=None, max_length=10)
+
+
+class FileIn(BaseModel):
+    label: str = Field(default="", max_length=120)
+    link: str = Field(min_length=9, max_length=500)
+
+
 class AssignIn(BaseModel):
     junior_id: str
 
@@ -440,6 +483,8 @@ class DeskOut(BaseModel):
     join_requests: int
     with_clients: int
     deadlines: list[JobOut] = Field(default_factory=list)  # active jobs, soonest due first
+    supervising: int = 0  # jobs the Leader supervises now
+    supervise_limit: int = 8
     money: list[TeamMoney] = Field(default_factory=list)
     member_earnings: list[MemberEarning] = Field(default_factory=list)
 
@@ -455,6 +500,8 @@ class JuniorHome(BaseModel):
     open_jobs: list[JobOut] = Field(default_factory=list)  # Mentors only: client jobs they may apply for
     earnings: list[MyMoney] = Field(default_factory=list)
     team_status: list[MyTeamStatus] = Field(default_factory=list)
+    active_jobs: int = 0  # jobs in hand now
+    job_limit: int = 1  # how many at once (the highest badge across teams, and weekly hours)
 
 
 class ClientHome(BaseModel):

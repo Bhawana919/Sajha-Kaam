@@ -12,7 +12,7 @@ import { Field, useErrorText } from '@/components/forms';
 import { Bell, ListEditor, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
-import { Button, Chip, Panel, Section } from '@/components/ui';
+import { Button, Chip, HelpLine, Panel, Section } from '@/components/ui';
 import { useT } from '@/i18n';
 import { money } from '@/lib/format';
 import { colors, space } from '@/theme';
@@ -35,7 +35,7 @@ export function JobForm(props: Props) {
   const anchorSide = props.who === 'anchor';
   const editing = anchorSide ? props.editing : undefined;
 
-  const [skill, setSkill] = useState(anchorSide ? props.skill : 'web');
+  const [skill, setSkill] = useState(anchorSide ? props.skill : 'video');
   const [title, setTitle] = useState(editing?.title ?? '');
   const [deliverables, setDeliverables] = useState<string[]>(editing?.deliverables ?? []);
   const [doneWhen, setDoneWhen] = useState<string[]>(editing?.done_when ?? []);
@@ -98,7 +98,7 @@ export function JobForm(props: Props) {
           busy={check.isPending || saving.isPending} onPress={submit} />
       </View>
     }>
-      <Txt color={colors.inkSoft}>{anchorSide ? t('write.help') : t('post.help')}</Txt>
+      <HelpLine text={anchorSide ? t('write.help') : t('post.help')} />
       {editing?.change_note ? (
         <Panel tone="honey">
           <Txt variant="label">{t('write.clientAsked')}</Txt>

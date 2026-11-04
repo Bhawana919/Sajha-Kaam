@@ -40,6 +40,18 @@ def video_signature(now: int | None = None) -> dict:
             "upload_url": f"https://api.cloudinary.com/v1_1/{c['cloud_name']}/video/upload"}
 
 
+ROOM_FOLDER = "sajha-kaam/rooms"
+ROOM_FORMATS = "jpg,jpeg,png,webp,gif,mp4,mov,webm,m4v,pdf"
+
+
+def file_signature(now: int | None = None) -> dict:
+    """A signature for one room upload (images, videos or a PDF) straight to Cloudinary."""
+    c = settings().cloudinary
+    params = {"allowed_formats": ROOM_FORMATS, "folder": ROOM_FOLDER, "timestamp": int(now or time.time())}
+    return {**params, "api_key": c["api_key"], "cloud_name": c["cloud_name"], "signature": sign(params, c["api_secret"]),
+            "upload_url": f"https://api.cloudinary.com/v1_1/{c['cloud_name']}/auto/upload"}
+
+
 def is_our_video(link: str, host: str, path: str) -> bool:
     """A video uploaded through the app: on our Cloudinary account, in our folder."""
     c = settings().cloudinary

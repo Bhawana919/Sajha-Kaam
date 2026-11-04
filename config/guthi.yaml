@@ -21,6 +21,13 @@ promotion:
 # instructor-to-student limit in flight training.
 beginner_limit: 2
 
+# Nobody can promise more work than they can do well.
+capacity:
+  member_by_level: {1: 1, 2: 2, 3: 2, 4: 3, 5: 3}  # active jobs at once, by badge
+  hours_per_job: 10        # and at most one active job per 10 hours a week the member said they have
+  leader_supervises: 8     # jobs a Team Leader supervises at once (all members together)
+  team_members: 8          # members in one team
+
 # Demo accounts all use this password (DEMO_MODE only).
 demo_password: kaam-demo
 
