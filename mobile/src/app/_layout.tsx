@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { wakeServer } from '@/api/client';
 import { applyLocale } from '@/i18n';
 import { useMotionOK } from '@/lib/motion';
 import '@/lib/offline';
@@ -36,6 +37,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     void load();
+    wakeServer(); // the free server may be asleep: start waking it while the app opens
   }, [load]);
   useEffect(() => {
     if (hydrated && locale) applyLocale(locale);

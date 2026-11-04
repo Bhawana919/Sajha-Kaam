@@ -2,9 +2,10 @@
 // that scrolls with the content. No header border, no centred titles, no subtitle under every title.
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useWaking } from '@/api/client';
 import { applyLocale, useT } from '@/i18n';
 import { useOffline } from '@/lib/offline';
 import { usePrefs } from '@/state/prefs';
@@ -55,6 +56,19 @@ export function OfflineBanner() {
     <View style={styles.offline} accessibilityRole="alert" accessibilityLiveRegion="polite">
       <Icon name="wifiOff" size={20} color={colors.white} />
       <Txt variant="small" color={colors.white} style={{ flex: 1 }}>{t('common.offline')}</Txt>
+    </View>
+  );
+}
+
+/** Shown while the server wakes from sleep (free hosting): calm, so nobody thinks the app is broken. */
+export function WakingBanner() {
+  const { t } = useT();
+  const waking = useWaking((s) => s.waking);
+  if (!waking) return null;
+  return (
+    <View style={[styles.offline, { backgroundColor: colors.pine }]} accessibilityRole="alert" accessibilityLiveRegion="polite">
+      <ActivityIndicator color={colors.white} size="small" />
+      <Txt variant="small" color={colors.white} style={{ flex: 1 }}>{t('common.waking')}</Txt>
     </View>
   );
 }
@@ -112,6 +126,7 @@ export function Screen({ title, back, scroll = true, children, edges = ['top'], 
       <DhakaBand height={10} />
       {header ? <TopBar back={back} right={right} /> : null}
       <OfflineBanner />
+      <WakingBanner />
       {scroll ? (
         <ScrollView contentContainerStyle={{ paddingBottom: space.xxxl }} keyboardShouldPersistTaps="handled">
           {body}

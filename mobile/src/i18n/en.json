@@ -22,7 +22,8 @@
     "more": "More",
     "less": "Less",
     "close": "Close",
-    "howItWorks": "How this works"
+    "howItWorks": "How this works",
+    "waking": "Waking up the server… the first visit takes about a minute."
   },
   "lang": {
     "switchA11y": "Change language. Current language: English."

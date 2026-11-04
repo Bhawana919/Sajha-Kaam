@@ -1,12 +1,14 @@
 // HTTP client with the session token and one automatic refresh on 401.
 // EXPO_PUBLIC_API_URL points at the backend (default: http://localhost:8000 for the browser).
+import { create } from 'zustand';
+
 import { useSession } from '@/state/session';
 
 import { ApiError } from './errors';
 
 export { ApiError };
 
-// "same-origin": the hosted web app, where Firebase Hosting forwards /v1 to the API on the same address.
+// "same-origin": the hosted web app, served by the API itself on the same address.
 const configured = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
 const sameOrigin = configured === 'same-origin' && typeof window !== 'undefined' && !!window.location;
 const API_URL = (sameOrigin ? window.location.origin : configured).replace(/\/$/, '');
@@ -17,6 +19,53 @@ export function workUrl(link: string): string {
   return link.startsWith('/') ? `${PUBLIC_BASE}${link}` : link;
 }
 const TIMEOUT_MS = 15000;
+
+// ---------- waking a sleeping server ----------
+// The free hosting plan puts the server to sleep after 15 minutes without visitors; the first visit
+// then takes about a minute. Instead of failing, the app waits (up to 90 s), says so in a banner, and
+// retries once the server answers.
+const WAKE_MAX_MS = 90000;
+const WAKE_POLL_MS = 4000;
+
+/** Whether the app is waiting for the server to wake up (the banner reads it). */
+export const useWaking = create<{ waking: boolean }>(() => ({ waking: false }));
+let waking: Promise<boolean> | null = null;
+
+async function ping(): Promise<boolean> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10000);
+  try {
+    return (await fetch(`${API_URL}/health`, { signal: controller.signal })).ok;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Ask the server to wake as soon as the app opens, so it is usually up by the first tap. */
+export function wakeServer(): void {
+  void ping();
+}
+
+/** Wait until the server answers again (true), or give up after WAKE_MAX_MS (false). Shared by all calls. */
+function waitForServer(): Promise<boolean> {
+  waking ??= (async () => {
+    useWaking.setState({ waking: true });
+    const until = Date.now() + WAKE_MAX_MS;
+    try {
+      while (Date.now() < until) {
+        if (await ping()) return true;
+        await new Promise((r) => setTimeout(r, WAKE_POLL_MS));
+      }
+      return false;
+    } finally {
+      useWaking.setState({ waking: false });
+      waking = null;
+    }
+  })();
+  return waking;
+}
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -75,7 +124,14 @@ export async function api<T>(
     }
   };
 
-  let res = await send();
+  let res: Response;
+  try {
+    res = await send();
+  } catch (e) {
+    // No answer at all: the server may be asleep. Wait for it to wake, then try this call once more.
+    if (!(e instanceof ApiError) || e.kind !== 'network' || !(await waitForServer())) throw e;
+    res = await send();
+  }
   if (res.status === 401 && useSession.getState().tokens && init.auth !== false) {
     refreshing ??= refresh().finally(() => (refreshing = null));
     if (await refreshing) res = await send();
