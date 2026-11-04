@@ -125,36 +125,24 @@ Fresh sample data at any time: `curl.exe -X POST http://localhost:8000/demo/rese
 
 ## The 5-minute demo
 
-1. **The captions, checked live.** **Sita** opens "Instagram captions for our opening week" and pastes her
-   first draft (in [backend/app/seed.py](backend/app/seed.py) as `CAPTIONS_V1`): five captions without a
-   Nepali line or the hashtag. The quick check shows **2 of 4** and quotes **Rajan's own advice**:
-   "Every post needs one line in Nepali…" and "Every caption ends with #MomoHouseParramatta…".
-2. **Rajan** asks for changes with a short note. **Sita** pastes the fixed version (`CAPTIONS_V2`):
-   **4 of 4**. Rajan approves.
-3. **Sunita** reads the captions and taps **Accept**. The demo money is paid out: Sita gets 60% as
-   ★★ Learner. **Sita's Work Record** shows the verified job with a QR code.
-4. **The reel, posted to everyone.** **Pemba** (★★★★★ Mentor) opens "30-second opening reel for our new
-   branch", uploads his 2-minute video and taps **Apply**. **Sunita** compares Pemba and Anusha's team
-   (badges, verified jobs, video), chooses Pemba and pays. Pemba gets 80%; Anusha still checks his work.
-5. **The website, from scratch.** **Sunita** opens "A one-page website for our Parramatta branch",
-   taps **Open the work** (a real page, served at `/samples/momo-house`) and accepts it.
-6. **The job room.** Once the agreement is final, each job gets a **Room** tab: the deadline, a task list
-(it starts from the agreement's deliverables; the member and the Team Leader add, tick and date tasks)
-and files (links, photos and videos). The client follows the tasks and the deadline; drafts stay between
-the member and the Leader, and the client sees the work once the Leader approves it.
+Every home screen starts with **Do now**: one card per thing to do, each with one button.
 
-**Work limits.** Nobody can promise more than they can do well:
-
-| Who | Limit |
-|---|---|
-| Member, jobs in hand at once | ★ 1 · ★★ 2 · ★★★ 2 · ★★★★ 3 · ★★★★★ 3, and at most one per 10 hours a week they said they have |
-| Team Leader, jobs supervised at once | 8 (at most 2 of them by Starters) |
-| Team size | 8 members |
-
-Screens show it as "1/2 jobs in hand" and "supervising 1 of 8". The numbers are in [config/guthi.yaml](config/guthi.yaml).
-
-**Fair by design.** **Rajan → Team**: badges go up by the rules, what each member needs next, and how
-   jobs were shared. Tap **नेपाली** to show the whole app in Nepali.
+1. **The captions, checked live.** **Sita**: tap **Send** on "Instagram captions for our opening week", paste
+   her first draft (`CAPTIONS_V1` in [backend/app/seed.py](backend/app/seed.py)) and send. The quick check
+   shows **2 of 4** and quotes **Rajan's own advice**: "Every post needs one line in Nepali…" and "Every
+   caption ends with #MomoHouseParramatta…".
+2. **Rajan**: tap **Check**, write a short note and **Ask for changes**. **Sita**: tap **Fix**, paste the fixed
+   version (`CAPTIONS_V2`): **4 of 4**. **Rajan**: **Approve and send to client**.
+3. **Sunita**: tap **See it**, read the captions, **Accept the work**. The demo money is paid out: Sita gets
+   60% as ★★ Learner. Open **Sita's Work Record**: the verified job with a QR code.
+4. **The reel, posted to everyone.** **Pemba** (★★★★★ Mentor): tap **Open** on the reel, **Upload my video**,
+   **Apply**. **Sunita**: tap **Choose**, compare Pemba and Anusha's team (badges, verified jobs, video),
+   **Choose Pemba**, then **Pay**. Pemba gets 80%; Anusha still checks his work.
+5. **The website, from scratch.** **Sunita**: tap **See it** on "A one-page website for our Parramatta branch",
+   **Open the work** (a real page, served at `/samples/momo-house`) and accept it.
+6. **The job room.** Open any agreed job's **Room** tab: the deadline, tasks with tick boxes, and files.
+7. **Fair by design.** **Rajan → Team**: each member's badge, "1/2 jobs in hand", what they need for the next
+   badge, and "Badge went up by the rules". Tap **नेपाली** to show the whole app in Nepali.
 
 ## How the main parts work
 
@@ -205,6 +193,21 @@ rest goes to the Team Leader who checks the work (more checking and teaching for
 | ★★★ Trusted | 70% | 15% | 15% |
 | ★★★★ Pro | 78% | 7% | 15% |
 | ★★★★★ Mentor | 80% | 5% | 15% |
+
+**The job room.** Once the agreement is final, each job gets a **Room** tab: the deadline, a task list
+(it starts from the agreement's deliverables; the member and the Team Leader add, tick and date tasks)
+and files (links, photos and videos). The client follows the tasks and the deadline; drafts stay between
+the member and the Leader, and the client sees the work once the Leader approves it.
+
+**Work limits.** Nobody can promise more than they can do well:
+
+| Who | Limit |
+|---|---|
+| Member, jobs in hand at once | ★ 1 · ★★ 2 · ★★★ 2 · ★★★★ 3 · ★★★★★ 3, and at most one per 10 hours a week they said they have |
+| Team Leader, jobs supervised at once | 8 (at most 2 of them by Starters) |
+| Team size | 8 members |
+
+Screens show it as "1/2 jobs in hand" and "supervising 1 of 8". The numbers are in [config/guthi.yaml](config/guthi.yaml).
 
 **Fair by design.** A Team Leader supervises at most 2 jobs by Starters at once (like an instructor's limit
 of student pilots), and everyone in the team sees how many jobs each member got in the last 30 days.
