@@ -156,7 +156,12 @@ export function Room({ job }: { job: Job }) {
           {r.can_edit && adding === 'file' ? (
             <View style={{ gap: space.sm }}>
               {uploads?.video ? (
-                progress !== null ? <Txt variant="label">{t('upload.uploading', { percent: digits(progress) })}</Txt>
+                progress !== null ? (
+                  <View style={{ gap: space.xs }} accessibilityLabel={t('upload.uploading', { percent: digits(progress) })}>
+                    <Txt variant="label">{t('upload.uploading', { percent: digits(progress) })}</Txt>
+                    <View style={styles.barTrack}><View style={[styles.barFill, { width: `${Math.max(4, progress)}%` }]} /></View>
+                  </View>
+                )
                   : <Button kind="secondary" icon="upload" label={t('room.upload')} onPress={pickAndUpload} />
               ) : null}
               {upErr ? <Txt variant="small" color={colors.brick}>{upErr}</Txt> : null}
@@ -188,6 +193,8 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   file: { flexDirection: 'row', alignItems: 'center', gap: space.md, backgroundColor: colors.white, borderRadius: radius.md,
     padding: space.md },
+  barTrack: { height: 10, borderRadius: 5, backgroundColor: colors.lineStrong, overflow: 'hidden' },
+  barFill: { height: 10, borderRadius: 5, backgroundColor: colors.pine },
   bubble: { maxWidth: '82%', borderRadius: radius.lg, paddingHorizontal: space.md, paddingVertical: space.sm, gap: 2 },
   mine: { alignSelf: 'flex-end', backgroundColor: colors.brick, borderBottomRightRadius: 6 },
   theirs: { alignSelf: 'flex-start', backgroundColor: colors.white, borderBottomLeftRadius: 6 },

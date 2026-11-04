@@ -336,10 +336,12 @@ def run(api, rajan, emma, sita, bikash, rajan_tok, members, emma_email, site, up
     with step(bikash, "Bikash uploads the promo video"):
         bikash.go(f"/job/{video_job}?tab=room")
         if upload:
+            bikash.tap("Add a file", after=0.6)
             with bikash.page.expect_file_chooser() as fc:
                 bikash.tap("Upload a photo or video", role="button", after=0.2)
             fc.value.set_files(upload)
-            bikash.see("Uploaded file", timeout=180)
+            bikash.see(Path(upload).stem, timeout=180)
+            bikash.pause(0.8)
         else:
             bikash.tap("Add a file", after=0.6)
             bikash.type("What is it?", "Promo video, first cut")
