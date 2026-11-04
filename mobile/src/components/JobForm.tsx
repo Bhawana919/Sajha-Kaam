@@ -6,10 +6,11 @@ import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 import { errorDetail } from '@/api/client';
-import { useCheckAgreement, useEditJob, usePostJob, useTemplate, useWriteJob } from '@/api/hooks';
+import { useCheckAgreement, useEditJob, useInvite, usePostJob, useTemplate, useWriteJob } from '@/api/hooks';
 import type { Job, JobIn, Person, Problem } from '@/api/types';
 import { Field, useErrorText } from '@/components/forms';
 import { Bell, ListEditor, useSkillName } from '@/components/guthi';
+import { InviteShare } from '@/components/InviteShare';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { Button, Chip, HelpLine, Panel, Section } from '@/components/ui';
@@ -23,6 +24,8 @@ type Props =
   | { who: 'client'; anchors: Person[] }
   | { who: 'anchor'; skill: string; clients: Person[]; editing?: Job; clientId?: string };
 
+const NEW_CLIENT = '__new';
+
 export function JobForm(props: Props) {
   const { t, digits } = useT();
   const tpl = useTemplate().data;
@@ -30,6 +33,7 @@ export function JobForm(props: Props) {
   const check = useCheckAgreement();
   const post = usePostJob();
   const write = useWriteJob();
+  const invite = useInvite();
   const edit = useEditJob();
   const errorText = useErrorText();
   const anchorSide = props.who === 'anchor';
@@ -71,12 +75,15 @@ export function JobForm(props: Props) {
   const serverProblems = (errorDetail(saving.error) as { problems?: Problem[] } | null)?.problems;
   const problems = serverProblems ?? check.data?.problems ?? [];
   const needsClient = anchorSide && !editing && !clientId;
+  const newClient = clientId === NEW_CLIENT;
+  const [invited, setInvited] = useState<{ code: string; job_title?: string | null } | null>(null);
 
   const done = (created: unknown) => router.replace(`/job/${(created as { id: string }).id}`);
   const submit = () => check.mutate(job, {
     onSuccess: (r) => {
       if (!r.ok) return;
       if (editing) edit.mutate({ id: editing.id, job }, { onSuccess: done });
+      else if (anchorSide && newClient) invite.mutate(job, { onSuccess: (inv) => setInvited(inv) });
       else if (anchorSide && clientId) write.mutate({ ...job, client_id: clientId }, { onSuccess: done });
       else if (!anchorSide) post.mutate(job, { onSuccess: done });
     },
@@ -94,8 +101,10 @@ export function JobForm(props: Props) {
           </Panel>
         ) : check.data?.ok ? <Txt variant="small" color={colors.green}>{t('post.allGood')}</Txt> : null}
         {needsClient ? <Txt variant="small" color={colors.warnInk}>{t('write.chooseClient')}</Txt> : null}
-        <Button label={anchorSide ? t('write.send') : t('post.post')} disabled={needsClient}
-          busy={check.isPending || saving.isPending} onPress={submit} />
+        {invited ? <InviteShare code={invited.code} team={anchorSide ? props.skill : ''} jobTitle={invited.job_title} /> : (
+          <Button label={newClient ? t('invite.makeLink') : anchorSide ? t('write.send') : t('post.post')} disabled={needsClient}
+            busy={check.isPending || saving.isPending || invite.isPending} onPress={submit} />
+        )}
       </View>
     }>
       <HelpLine text={anchorSide ? t('write.help') : t('post.help')} />
@@ -112,7 +121,9 @@ export function JobForm(props: Props) {
             {props.clients.map((c) => (
               <Chip key={c.id} label={c.headline || c.display_name} on={clientId === c.id} onToggle={() => setClientId(c.id)} />
             ))}
+            <Chip label={t('invite.newClient')} on={newClient} onToggle={() => setClientId(NEW_CLIENT)} />
           </View>
+          {newClient ? <Txt variant="small" color={colors.inkSoft}>{t('invite.newClientHelp')}</Txt> : null}
         </Section>
       ) : null}
 

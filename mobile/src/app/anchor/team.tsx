@@ -2,11 +2,12 @@
 // open spots one tap away, clients and invites.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Share, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useDesk, useInvite, useSeats, useTeam } from '@/api/hooks';
 import type { Team } from '@/api/types';
 import { Field, useErrorText } from '@/components/forms';
+import { InviteShare } from '@/components/InviteShare';
 import { BadgeChangeLine, BadgeProgress, Bell, LevelTag, useSkillName } from '@/components/guthi';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
@@ -84,16 +85,10 @@ export default function TeamScreen() {
 
           <Section title={t('team.clients')} help={t('team.clientsHelp')}>
             {q.data.clients.map((c) => <Txt key={c.id}>• {c.headline || c.display_name}</Txt>)}
-            <Button kind="secondary" icon="share" label={t('team.invite')} busy={invite.isPending} onPress={() => invite.mutate()} />
-            {invite.data ? (
-              <Panel tone="honey">
-                <Txt variant="label">{t('team.inviteCode')}</Txt>
-                <Txt variant="h2" selectable>{invite.data.code}</Txt>
-                <Txt variant="small">{t('team.inviteHow')}</Txt>
-                <Button kind="quiet" label={t('common.share')}
-                  onPress={() => Share.share({ message: t('team.inviteMessage', { code: invite.data.code, team: team.name }) })} />
-              </Panel>
-            ) : null}
+            {invite.data ? <InviteShare code={invite.data.code} team={team.name} /> : (
+              <Button kind="secondary" icon="share" label={t('team.invite')} busy={invite.isPending} onPress={() => invite.mutate(undefined)} />
+            )}
+            <Button kind="quiet" icon="post" label={t('invite.withJob')} onPress={() => router.push('/write')} />
             {invite.error ? <Txt color={colors.brick}>{errorText(invite.error)}</Txt> : null}
           </Section>
 

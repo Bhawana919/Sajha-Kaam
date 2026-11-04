@@ -84,3 +84,21 @@ def test_anchor_signup_needs_a_team(client):
     assert client.post("/v1/auth/register", json=base).status_code == 422
     ok = client.post("/v1/auth/register", json={**base, "team_name": "Kiran's Design Team", "team_skill": "design"})
     assert ok.status_code == 201
+
+
+def test_an_invite_link_carries_the_agreement_to_a_new_client(client):
+    rajan = auth(client, RAJAN_ID)
+    job = {**GOOD_JOB, "title": "Captions for our Diwali sale"}
+    inv = client.post("/v1/anchor/invites", json={"job": job}, headers=rajan).json()
+    assert inv["job_title"] == "Captions for our Diwali sale"
+    info = client.get(f"/v1/invites/{inv['code']}").json()  # the join page, before sign-up
+    assert info["leader"]["display_name"] == "Rajan Shrestha" and info["job_title"] == job["title"] and not info["used"]
+    signup = {"role": "client", "display_name": "Kamala Shah", "email": "kamala@shop.example", "password": "long-pass-123",
+              "headline": "Kamala Fashion, Sydney", "country": "Australia", "invite_code": inv["code"]}
+    token = client.post("/v1/auth/register", json=signup).json()["access_token"]
+    home = client.get("/v1/client/home", headers={"Authorization": f"Bearer {token}"}).json()
+    assert [j["title"] for j in home["to_agree"]] == ["Captions for our Diwali sale"]
+    assert [a["display_name"] for a in home["anchors"]] == ["Rajan Shrestha"]
+    assert client.get(f"/v1/invites/{inv['code']}").json()["used"] is True
+    # A bad agreement is refused when the link is made, not when the client joins.
+    assert client.post("/v1/anchor/invites", json={"job": {**job, "done_when": []}}, headers=rajan).status_code == 422

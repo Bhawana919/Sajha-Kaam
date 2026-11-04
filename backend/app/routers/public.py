@@ -13,9 +13,9 @@ from sqlmodel import Session, select
 
 from app.db import get_session
 from app.models import LogEntry, Pod, User
-from app.schemas import LogbookOut
+from app.schemas import InviteInfo, LogbookOut
 from app.services import agreement, signing, work
-from app.services.views import entry_out, pod_out
+from app.services.views import entry_out, person, pod_out
 
 router = APIRouter(tags=["public"])
 
@@ -40,6 +40,13 @@ def keys() -> dict:
 @router.get("/v1/public/logbook/{slug}", response_model=LogbookOut)
 def logbook_json(slug: str, session: Session = Depends(get_session)) -> LogbookOut:
     return _logbook(session, slug)
+
+
+@router.get("/v1/invites/{code}", response_model=InviteInfo)
+def invite(code: str, session: Session = Depends(get_session)) -> InviteInfo:
+    """The join page: who invited the client, and the job waiting for them (no sign-in needed)."""
+    i = work.invite_info(session, code)
+    return InviteInfo(**{**i, "leader": person(i["leader"])})
 
 
 @router.get("/samples/momo-house", response_class=HTMLResponse, include_in_schema=False)

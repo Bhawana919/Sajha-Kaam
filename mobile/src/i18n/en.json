@@ -664,5 +664,24 @@
     "httpsOnly": "Use a link that starts with https://",
     "clientNote": "You can follow the tasks and the deadline here. Drafts stay with the team; you'll see the work when the Leader approves it.",
     "addFile": "Add a file"
+  },
+  "invite": {
+    "newClient": "A new client (send a link)",
+    "newClientHelp": "You'll get a link to send them. When they join, this agreement is waiting for them to agree.",
+    "makeLink": "Check and make the invite link",
+    "ready": "Your invite link is ready",
+    "readyJob": "Link ready: send it to your client",
+    "whatsapp": "Send on WhatsApp",
+    "share": "Share another way",
+    "message": "Join my team {{team}} on Sajha Kaam to post your jobs: {{link}}",
+    "messageJob": "Here is the agreement for “{{title}}” on Sajha Kaam. Open the link, join, and tap Agree: {{link}}",
+    "withJob": "Write a job for a new client, with a link",
+    "joinTitle": "Join Sajha Kaam",
+    "invitedBy": "You were invited by",
+    "jobWaiting": "Waiting for you to agree",
+    "joinHelp": "Create your client account. It takes a minute, and you can read the agreement before you agree.",
+    "join": "Join and see the agreement",
+    "notFound": "This invite link doesn't work. Ask your Team Leader for a new one.",
+    "used": "This invite was already used. Sign in to see your jobs."
   }
 }

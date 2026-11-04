@@ -420,9 +420,17 @@ def evidence(session: Session, pod: Pod, junior_id: str) -> dict:
 
 # ---------- clients and invites ----------
 
-def create_invite(session: Session, anchor: User) -> Invite:
-    pod_of_anchor(session, anchor.id)
-    inv = Invite(anchor_id=anchor.id)
+def create_invite(session: Session, anchor: User, job_spec: dict | None = None) -> Invite:
+    """A link a Team Leader shares with a client they know (WhatsApp, email). With a job agreement in it,
+    the client finds that agreement waiting the moment they join."""
+    pod = pod_of_anchor(session, anchor.id)
+    spec = {}
+    if job_spec:
+        if job_spec.get("skill") != pod.skill:
+            raise HTTPException(422, "anchor_skill_mismatch")
+        _agreement_fields(job_spec)  # the same template rules, checked now rather than when the client joins
+        spec = {k: v for k, v in job_spec.items() if k not in ("client_id", "send_to_anchor")}
+    inv = Invite(anchor_id=anchor.id, job_spec=spec)
     session.add(inv)
     session.commit()
     session.refresh(inv)
@@ -436,6 +444,22 @@ def use_invite(session: Session, code: str, client: User) -> None:
     inv.used_by = client.id
     session.add_all([inv, AnchorClient(anchor_id=inv.anchor_id, client_id=client.id)])
     notify.send(session, [inv.anchor_id], "client_joined", client.id)
+    if inv.job_spec:
+        session.flush()
+        job = anchor_create_job(session, session.get(User, inv.anchor_id), client.id, dict(inv.job_spec))
+        inv.job_id = job.id
+        session.add(inv)
+
+
+def invite_info(session: Session, code: str) -> dict:
+    """What the join page shows before sign-up: who invited you, their team, and the job, if any."""
+    inv = session.get(Invite, code.strip().upper())
+    if inv is None:
+        raise HTTPException(404, "invite_not_found")
+    leader, pod = session.get(User, inv.anchor_id), pod_of_anchor(session, inv.anchor_id)
+    return {"code": inv.code, "leader": leader, "team_name": pod.name, "skill": pod.skill,
+            "job_title": inv.job_spec.get("title") if inv.job_spec else None,
+            "budget_minor": inv.job_spec.get("budget_minor") if inv.job_spec else None, "used": bool(inv.used_by)}
 
 
 def my_anchors(session: Session, client_id: str) -> list[User]:

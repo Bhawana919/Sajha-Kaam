@@ -143,7 +143,15 @@ export function useDecide() {
   });
 }
 
-export const useInvite = () => useMutation({ mutationFn: () => api<{ code: string }>('/v1/anchor/invites', { method: 'POST' }) });
+/** A join link for a client; with a job, the agreement waits for them when they join. */
+export const useInvite = () =>
+  useMutation({ mutationFn: (job?: JobIn) =>
+    api<{ code: string; job_title?: string | null }>('/v1/anchor/invites', { method: 'POST', body: job ? { job } : {} }) });
+/** The join page: who invited the client and what job waits for them. */
+export const useInviteInfo = (code: string) =>
+  useQuery({ queryKey: ['invite', code], enabled: !!code, retry: false,
+    queryFn: () => api<{ code: string; leader: { display_name: string; headline: string }; team_name: string; skill: string;
+      job_title: string | null; budget_minor: number | null; used: boolean }>(`/v1/invites/${code}`, { auth: false }) });
 
 export function useNoteActions() {
   const qc = useQueryClient();

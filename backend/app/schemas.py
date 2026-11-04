@@ -212,6 +212,17 @@ class TeamOut(BaseModel):
 
 class InviteOut(BaseModel):
     code: str
+    job_title: str | None = None
+
+
+class InviteInfo(BaseModel):
+    code: str
+    leader: PersonOut
+    team_name: str
+    skill: str
+    job_title: str | None
+    budget_minor: int | None
+    used: bool
 
 
 # ---------- agreement and jobs ----------
@@ -235,6 +246,10 @@ class JobIn(BaseModel):
     revisions: int = 1
     allow_ai: bool = False
     send_to_anchor: str | None = None  # an Anchor the client is linked with; empty = open to all Anchors
+
+
+class InviteIn(BaseModel):
+    job: JobIn | None = None  # the agreement the client will find waiting when they join
 
 
 class AnchorJobIn(JobIn):

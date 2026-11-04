@@ -16,6 +16,7 @@ from app.schemas import (
     DecideIn,
     DeskOut,
     Evidence,
+    InviteIn,
     InviteOut,
     JobIn,
     JobOut,
@@ -158,8 +159,11 @@ def pause(junior_id: str, body: PauseIn, user: User = Depends(anchor_only),
 
 
 @router.post("/anchor/invites", response_model=InviteOut, status_code=201)
-def invite(user: User = Depends(anchor_only), session: Session = Depends(get_session)) -> InviteOut:
-    return InviteOut(code=work.create_invite(session, user).code)
+def invite(body: InviteIn | None = None, user: User = Depends(anchor_only),
+           session: Session = Depends(get_session)) -> InviteOut:
+    """A join link for a client the Leader knows; with `job`, the agreement waits for them when they join."""
+    inv = work.create_invite(session, user, body.job.model_dump() if body and body.job else None)
+    return InviteOut(code=inv.code, job_title=inv.job_spec.get("title") if inv.job_spec else None)
 
 
 @router.get("/anchor/notes", response_model=list[NoteOut])

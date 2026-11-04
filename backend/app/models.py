@@ -133,6 +133,10 @@ class Invite(SQLModel, table=True):
     anchor_id: str = Field(foreign_key="users.id", index=True)
     used_by: str | None = None
     created_at: datetime = Field(default_factory=utcnow)
+    # An invite can carry the job agreement: when the client joins through the link, the job is
+    # created for them, waiting for them to agree.
+    job_spec: dict = _json(dict)
+    job_id: str | None = None
 
 
 class Job(SQLModel, table=True):
