@@ -9,6 +9,11 @@ slide by itself. **Nobody clicks. You just speak when your cue appears.**
 - **SAY** is the words, timed to fit with room to breathe.
 - If you fall behind, drop the *italic* sentence. If you're ahead, pause and let the app play.
 - **No hand-over sentences** ("Now Shova will…"). Each speaker starts the moment their cue appears.
+- **TIME** under each cue gives the slot, roughly how long the words take at a calm pace, and when to start.
+  In Act 2 your words take about half the slot, on purpose: say them, then let the real app play.
+- **Checkpoints:** 0:45 Bhawana starts slide 5 · 2:35 Shova starts slide 9 · 3:55 Santoshi starts slide 12 ·
+  4:42 Bhawana starts slide 14. In rehearsal, if you're more than 3 seconds late at a checkpoint, drop the
+  *italic* sentences before it.
 
 ---
 
@@ -26,8 +31,8 @@ Each speaker's share:
 
 | Speaker | Speaking time | Words |
 |---|---|---|
-| Santoshi | about 1:20 | about 145 |
-| Bhawana | about 1:55, plus the closing invitation | about 205 |
+| Santoshi | about 1:15 | about 140 |
+| Bhawana | about 1:45, plus the closing invitation | about 200 |
 | Shova | about 1:20 | about 95 |
 
 ---
@@ -53,18 +58,21 @@ Each speaker's share:
 
 ### Slide 1 · Talent, but no way in (0:00–0:15) · **Santoshi**
 **CUE:** Sita at her laptop in Pokhara (then the "Experience required" notice).
+**TIME:** 15 s slot · about 13 s of speaking · start the instant the cue appears; no pause.
 **SAY:**
 > Nepal is full of skilled, ambitious young people. Sita builds websites. Bikash edits video. But nothing connects them to clients abroad, and every job asks for experience they can't get.
 
 ### Slide 2 · So they leave (0:15–0:22) · **Santoshi**
 **CUE:** the departure gate, with the counter climbing.
+**TIME:** 7 s slot · about 4 s of speaking · say it slowly, then let the plane and the counter finish in silence.
 **SAY:**
 > So every year, around two hundred thousand people leave.
 
 ### Slide 3 · The other side (0:22–0:36) · **Santoshi**
 **CUE:** Emma's thought bubbles, a web page and a video (then Rajan with a coffee).
+**TIME:** 14 s slot · about 11 s of speaking · start right on the cue.
 **SAY:**
-> In Melbourne, Emma needs a website and a promo video, but she doesn't trust strangers online. She trusts Rajan, a Nepali marketer. He has the clients, but no time.
+> In Melbourne, Emma needs a website and a video, but won't trust strangers online. She trusts Rajan, a Nepali marketer with clients but no time.
 
 ---
 
@@ -72,41 +80,49 @@ Each speaker's share:
 
 ### Slide 4 · Sajha Kaam (0:36–0:45) · **Bhawana**
 **CUE:** the red thread from Melbourne to Pokhara and Kathmandu.
+**TIME:** 9 s slot · about 7 s of speaking · start the instant the cue appears; no pause.
 **SAY:**
-> Sajha Kaam ties them together. Nepali professionals abroad become Team Leaders, and young Nepalis do the work, guided every step. *Here it is, working.*
+> Sajha Kaam ties them together: Nepali professionals abroad lead, and young Nepalis do the work.
 
 ### Slide 5 · A Leader brings the client (0:45–1:15) · **Bhawana**
 **CUE:** card **"1 · Leader brings the client"**, then Rajan's phone filling in a job.
+**TIME:** 30 s slot · about 16 s of speaking · start as the card appears, then stop and let the real app play.
 **SAY:**
 > Rajan writes the job: what will be delivered, when it's finished, the deadline and the price. He sends Emma one link. She joins, agrees, and pays, *and the money is held until she accepts the work.*
 
 ### Slide 6 · Or the client posts it (1:15–1:38) · **Bhawana**
 **CUE:** card **"2 · Client posts"**, then the "verified only" gate.
+**TIME:** 23 s slot · about 10 s of speaking · start as the card appears, then stop and let the real app play.
 **SAY:**
 > Clients can also post a job themselves. Only verified Team Leaders, and top Mentors, can apply to lead it. *Emma compares them and chooses.*
 
 ### Slide 7 · The Leader builds the team (1:38–2:02) · **Bhawana**
 **CUE:** card **"3 · Team"**, then share cards on two phones.
+**TIME:** 24 s slot · about 11 s of speaking · start as the card appears, then stop and let the real app play.
 **SAY:**
 > Rajan taps Find people. Everyone with the skill sees the job and their own share. *Sita and Bikash ask to join, and Rajan approves them.*
 
 ### Slide 8 · Guided, not done for them (2:02–2:35) · **Bhawana**
 **CUE:** card **"4 · Guided"**, then the job room.
+**TIME:** 33 s slot · about 16 s of speaking · start as the card appears, then stop and let the real app play.
 **SAY:**
 > In the job room they talk, share drafts and upload work. Rajan doesn't do the work, he guides it. He asks Sita for one change. *She fixes it, and only then does it go to Emma.*
 
 ### Slide 9 · First pay (2:35–3:10) · **Shova**
 **CUE:** card **"5 · First pay"**, then Emma's new café page.
+**TIME:** 35 s slot · about 17 s of speaking · start as the card appears, then stop and let the real app play.
 **SAY:**
 > Emma sees her new page and accepts. The money is released: Sajha Kaam keeps fifteen percent, the member gets fifty to eighty percent by badge, and Rajan earns the rest for leading. *Sita and Bikash just got their first pay.*
 
 ### Slide 10 · Proof, and the journey (3:10–3:32) · **Shova**
 **CUE:** card **"6 · Proof"**, then the Work Record stamp.
+**TIME:** 22 s slot · about 14 s of speaking · start right on the cue.
 **SAY:**
 > Every job becomes a verified entry on a public Work Record: the experience Sita never had. *Badges grow by public rules, from Starter to Mentor, and no Leader can hold anyone back.*
 
 ### Slide 11 · From member to Leader (3:32–3:55) · **Shova**
 **CUE:** card **"7 · Leaders"**, then Pemba's phone.
+**TIME:** 23 s slot · about 10 s of speaking · start as the card appears, then stop and let the real app play.
 **SAY:**
 > A Mentor can start her own team, because her record is the proof. *Anyone else applies with proof, and we verify them.*
 
@@ -116,21 +132,25 @@ Each speaker's share:
 
 ### Slide 12 · How it earns, how it grows (3:55–4:25) · **Santoshi**
 **CUE:** the gold coin splitting into three jars (then threads spreading into a net).
+**TIME:** 30 s slot · about 19 s of speaking · start right on the cue, then let the net finish drawing.
 **SAY:**
 > Sajha Kaam earns fifteen percent of every job, only when a client accepts the work. It grows through trust: Leaders bring the clients they already know, every finished job is public proof, *and every member who becomes a Leader brings more work home.*
 
 ### Slide 13 · Fair by design (4:25–4:42) · **Santoshi**
 **CUE:** the "Fair play" card.
+**TIME:** 17 s slot · about 14 s of speaking · start right on the cue.
 **SAY:**
 > And it's fair by design. The rules are public, payment is held safely, *and each Leader can take at most two beginner jobs at a time, so no one is kept cheap.*
 
 ### Slide 14 · Opportunity comes home (4:42–5:00) · **Bhawana**
 **CUE:** Sita and Bikash at their desks in Nepal (then a plane flying in, and the logo).
+**TIME:** 18 s slot · about 10 s of speaking · slow down; let the last line land, and the logo shows in silence.
 **SAY (slow, the last line):**
 > Sita and Bikash didn't have to leave to work for the world. The work came home. Sajha Kaam: shared work. साझा काम।
 
 ### Slide 15 · Try it yourself (5:00 →, stays on screen) · **Bhawana**
 **CUE:** "Try it yourself" · **sajha-kaam.onrender.com** · QR code.
+**TIME:** stays on screen · about 17 s of speaking, then questions.
 **SAY:**
 > That's Sajha Kaam, live today at **sajha-kaam dot onrender dot com**. Scan the code and tap any demo person under "Try it as someone", no sign-up needed. We're Bhawana, Shova and Santoshi. Thank you, we'd love your questions.
 

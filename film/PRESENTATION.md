@@ -26,12 +26,12 @@ So every year, around two hundred thousand people leave.
 
 **[0:22 · 3 · The other side]**
 *Drawn: Emma's café in Melbourne, a stranger she won't trust, Rajan with a coffee and a full calendar.*
-In Melbourne, Emma needs a website and a promo video, but she doesn't trust strangers online. She trusts Rajan, a Nepali marketer. He has the clients, but no time.
+In Melbourne, Emma needs a website and a video, but won't trust strangers online. She trusts Rajan, a Nepali marketer with clients but no time.
 · · ·
 
 **[0:36 · 4 · Sajha Kaam]**
 *Drawn: the thread from Melbourne to Pokhara and Kathmandu, and Rajan's "Team Leader" tag.*
-Sajha Kaam ties them together. Nepali professionals abroad become Team Leaders, and young Nepalis do the work, guided every step. Here it is, working.
+Sajha Kaam ties them together: Nepali professionals abroad lead, and young Nepalis do the work.
 · · ·
 
 ## ACT 2 · How it works: drawn, then real (0:45 – 3:55)
