@@ -14,6 +14,10 @@ import {Item, PlayStep, Section, loadDemo, totalFrames} from './timeline';
 import {S11_3} from '../scenes/story/B10B11';
 import {Phone} from '../props/kit';
 
+/** Speed ramp: skip `skip` source frames, play `head` source frames in `headOut` output frames, then the tail at 1x. */
+export const rampSrc = (r: {skip: number; head: number; headOut: number; n: number}, local: number) =>
+  Math.min(r.n - 1, Math.round(local < r.headOut ? r.skip + (local * r.head) / Math.max(1, r.headOut) : r.skip + r.head + (local - r.headOut)));
+
 export type DemoProps = {items: Item[]; pan: number; sections: Section[]; vo: boolean};
 
 /* ------------------------------------------------------------------ */
@@ -25,13 +29,13 @@ const PanComp: React.FC<TransitionPresentationComponentProps<Record<string, neve
   const x = presentationDirection === 'exiting' ? -p * 1920 : (1 - p) * 1920;
   return <AbsoluteFill style={{transform: `translateX(${x}px)`}}>{children}</AbsoluteFill>;
 };
-const pan = (): TransitionPresentation<Record<string, never>> => ({component: PanComp, props: {}});
+export const pan = (): TransitionPresentation<Record<string, never>> => ({component: PanComp, props: {}});
 
 /* ------------------------------------------------------------------ */
 /* Chapter card                                                       */
 /* ------------------------------------------------------------------ */
 
-const Chapter: React.FC<{n: number; title: string}> = ({n, title}) => {
+export const Chapter: React.FC<{n: number; title: string}> = ({n, title}) => {
   const f = useCurrentFrame();
   const tw = title.length * 56;
   const x0 = 960 - (tw + 210) / 2;
@@ -128,7 +132,7 @@ const PhoneFrame: React.FC<{slot: PhoneSlot; draw: number; seed: number; dim: nu
   );
 };
 
-const Group: React.FC<{steps: PlayStep[]; pan: number}> = ({steps, pan}) => {
+export const Group: React.FC<{steps: PlayStep[]; pan: number}> = ({steps, pan}) => {
   const f = useCurrentFrame();
   const pair = steps.length === 2;
   const slots: PhoneSlot[] = pair
@@ -214,8 +218,8 @@ const Group: React.FC<{steps: PlayStep[]; pan: number}> = ({steps, pan}) => {
               background: C.cream,
             }}
           >
-            <Freeze frame={local}>
-              <OffthreadVideo src={staticFile(s.clip)} muted playbackRate={s.rate} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+            <Freeze frame={s.ramp ? rampSrc(s.ramp, local) : local}>
+              <OffthreadVideo src={staticFile(s.clip)} muted playbackRate={s.ramp ? 1 : s.rate} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
             </Freeze>
             {inactive ? <AbsoluteFill style={{background: C.paper, opacity: 0.45}} /> : null}
           </div>

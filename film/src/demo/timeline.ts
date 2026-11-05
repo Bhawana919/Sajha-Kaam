@@ -14,7 +14,7 @@ export type Plan = {
   panFrames?: number;
 };
 
-export type PlayStep = Step & {rate: number; frames: number; key: string};
+export type PlayStep = Step & {rate: number; frames: number; key: string; ramp?: {skip: number; head: number; headOut: number; n: number}};
 export type Item = (
   | {kind: 'card'; card: 'intro' | 'close'}
   | {kind: 'chapter'; n: number; title: string}

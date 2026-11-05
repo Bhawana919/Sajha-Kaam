@@ -6,11 +6,14 @@ import {BEATS, STORY_FRAMES, Story, FittedShots, beatFrames, calcStory} from './
 import {Demo, calcDemo} from './demo/Demo';
 import {BrushAsset, BrushAssetProps} from './scenes/BrushAsset';
 import {BgOptions} from './scenes/BgOptions';
+import {Pitch, calcPitch} from './pitch/Pitch';
+import {PITCH_FRAMES} from './lib/pitchTiming';
 
 const BEAT_COMPS: React.FC[] = BEATS.map((b, i) => () => <FittedShots shots={b.shots} frames={beatFrames(i)} />);
 
 export const RemotionRoot: React.FC = () => (
   <>
+    <Composition id="SajhaKaamPitch" component={Pitch} durationInFrames={PITCH_FRAMES} fps={30} width={1920} height={1080} defaultProps={{steps: []}} calculateMetadata={calcPitch} />
     <Composition id="SajhaKaamStory" component={Story} durationInFrames={STORY_FRAMES} fps={30} width={1920} height={1080} defaultProps={{vo: false}} calculateMetadata={calcStory} />
     <Composition id="SajhaKaamDemo" component={Demo} durationInFrames={300} fps={30} width={1920} height={1080} defaultProps={{items: [], pan: 20, sections: [], vo: false}} calculateMetadata={calcDemo} />
     {BEATS.map((b, i) => (
