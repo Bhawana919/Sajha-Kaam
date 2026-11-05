@@ -1,0 +1,155 @@
+{
+  "_about": "Editorial plan for SajhaKaamDemo. Steps come from demo/manifest.json. 'steps' is keyed by the manifest line (so re-numbered clips still match): a shorter on-screen line and a playback rate for long typing. Chapters use the manifest's 'chapter' field when present, otherwise 'chapterBefore' (also keyed by line). Inserts are placed before/after a step, matched by line. Unknown lines just play at 1x with their manifest line. 'trimEnd' (seconds) cuts the end of a clip (e.g. a live-server spinner still turning); 'defaultRate' applies to steps without their own rate.",
+  "chapterTitles": {
+    "1": "Rajan brings his client",
+    "2": "Find people",
+    "3": "Work room",
+    "4": "Check & approve",
+    "5": "Accept & pay",
+    "6": "First pay",
+    "7": "Work Record & badges",
+    "8": "A client posts directly",
+    "9": "Leaders"
+  },
+  "chapterBefore": {
+    "Rajan writes the job for Emma's café": 1,
+    "Rajan finds people with the skill": 2,
+    "One room for the work: tasks and messages": 3,
+    "Sita sends her page for checking": 4,
+    "Emma sees her new page": 5,
+    "Sita's first pay, to eSewa": 6,
+    "Sita's first verified job, on her Work Record": 7,
+    "Emma posts a job herself": 8,
+    "Pemba, a ★★★★★ Mentor, starts her own team": 9
+  },
+  "steps": {
+    "Rajan writes the job for Emma's café": {
+      "line": "Rajan writes the job",
+      "rate": 2.0
+    },
+    "One link, sent to Emma on WhatsApp": {
+      "line": "One link, sent to Emma"
+    },
+    "Emma opens the link and joins": {
+      "line": "Emma opens it and joins",
+      "rate": 1.8
+    },
+    "She reads the terms and agrees": {
+      "line": "She reads, then agrees"
+    },
+    "She pays: held until she accepts": {
+      "line": "Paid, and held safely"
+    },
+    "And the promo video: agree, pay": {
+      "line": "Same for the promo video"
+    },
+    "Rajan finds people with the skill": {
+      "line": "Rajan finds the right people",
+      "rate": 1.3
+    },
+    "Sita sees her share and asks to join": {
+      "line": "Sita sees her share",
+      "rate": 1.5
+    },
+    "Bikash asks to join the video": {
+      "line": "Bikash asks to join",
+      "rate": 1.9
+    },
+    "One room for the work: tasks and messages": {
+      "line": "One room for the work"
+    },
+    "Bikash uploads the promo video": {
+      "line": "Bikash uploads the video",
+      "rate": 1.6
+    },
+    "Sita sends her page for checking": {
+      "line": "Sita sends her page",
+      "rate": 1.7
+    },
+    "Rajan checks: one change, please": {
+      "line": "One change, please",
+      "rate": 1.4
+    },
+    "Sita fixes it and sends again": {
+      "line": "Sita fixes it",
+      "rate": 1.8
+    },
+    "Approved and sent to Emma": {
+      "line": "Approved, sent to Emma",
+      "rate": 1.5
+    },
+    "Sita's first pay, to eSewa": {
+      "line": "Sita's first pay",
+      "rate": 1.4
+    },
+    "Bikash's first pay, to Khalti": {
+      "line": "Bikash's first pay",
+      "rate": 1.4
+    },
+    "Rajan's share, for checking the work": {
+      "line": "Rajan's share, for checking"
+    },
+    "Sita's first verified job, on her Work Record": {
+      "line": "Her first Work Record entry"
+    },
+    "Badges grow by public rules, not by the Leader": {
+      "line": "Badges follow public rules"
+    },
+    "Pemba, a ★★★★★ Mentor, starts her own team": {
+      "line": "Pemba, ★★★★★ Mentor, leads"
+    },
+    "Others send proof; Sajha Kaam verifies them": {
+      "line": "Sajha Kaam checks new Leaders",
+      "trimEnd": 3.35
+    },
+    "Emma posts a job herself": {
+      "line": "Emma posts a job herself",
+      "rate": 2.0,
+      "trimEnd": 3.3
+    },
+    "Anusha, a verified Leader, applies": {
+      "line": "Anusha, a verified Leader"
+    },
+    "Pemba, a Mentor, applies with her video": {
+      "line": "Pemba applies with a video",
+      "rate": 1.3
+    },
+    "Emma compares them and chooses": {
+      "line": "Emma compares, then chooses"
+    },
+    "Bikash sends the video": {
+      "line": "Bikash sends the video",
+      "rate": 1.9
+    }
+  },
+  "inserts": [
+    {
+      "after": "One link, sent to Emma on WhatsApp",
+      "kind": "invite",
+      "seconds": 4.5
+    },
+    {
+      "after": "One link, sent to Emma on WhatsApp",
+      "kind": "open",
+      "seconds": 3.5
+    },
+    {
+      "before": "Rajan finds people with the skill",
+      "kind": "notify",
+      "seconds": 4
+    },
+    {
+      "after": "Accept and release",
+      "kind": "release",
+      "seconds": 5
+    },
+    {
+      "after": "Bikash's first pay, to Khalti",
+      "kind": "sms",
+      "seconds": 4.5
+    }
+  ],
+  "chapterSeconds": 2.5,
+  "panFrames": 20,
+  "defaultRate": 1.3
+}
