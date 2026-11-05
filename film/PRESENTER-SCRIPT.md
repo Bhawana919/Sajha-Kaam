@@ -1,6 +1,6 @@
 # Sajha Kaam: presenter script
 
-**5 minutes · Google Meet · three speakers: Safalta Gelal, Bhawana Ojha, Shova Gelal**
+**5 minutes · Google Meet · three speakers: Santoshi Gelal, Bhawana Ojha, Shova Gelal**
 
 Read this on your phone or on paper, **not** on the screen you share. The film plays and moves from slide to
 slide by itself. **Nobody clicks. You just speak when your cue appears.**
@@ -16,17 +16,17 @@ slide by itself. **Nobody clicks. You just speak when your cue appears.**
 
 | Slides | Time | Speaker | Why this speaker |
 |---|---|---|---|
-| 1–3 | 0:00–0:36 | **Safalta** | The problem: youth, jobs, migration, trust. The economic case. |
+| 1–3 | 0:00–0:36 | **Santoshi** | The problem: youth, jobs, migration, trust. The economic case. |
 | 4–8 | 0:36–2:35 | **Bhawana** | The product: how work comes in, the agreement, the team, the job room. |
 | 9–11 | 2:35–3:55 | **Shova** | The product: payment, Work Record, badges, becoming a Leader. |
-| 12–13 | 3:55–4:42 | **Safalta** | The business: how it earns, how it grows, why it's fair. |
+| 12–13 | 3:55–4:42 | **Santoshi** | The business: how it earns, how it grows, why it's fair. |
 | 14–15 | 4:42–end | **Bhawana** | The close and the invitation to try it. |
 
 Each speaker's share:
 
 | Speaker | Speaking time | Words |
 |---|---|---|
-| Safalta | about 1:20 | about 145 |
+| Santoshi | about 1:20 | about 145 |
 | Bhawana | about 1:55, plus the closing invitation | about 205 |
 | Shova | about 1:20 | about 95 |
 
@@ -34,7 +34,7 @@ Each speaker's share:
 
 ## Before you go live (15 minutes earlier)
 
-1. **One person shares the screen. We suggest Shova**, so the two longer speakers (Bhawana and Safalta) just
+1. **One person shares the screen. We suggest Shova**, so the two longer speakers (Bhawana and Santoshi) just
    speak and read. Whoever shares should have the fastest, steadiest internet.
 2. **Wake the server.** Open **https://sajha-kaam.onrender.com** once, since the free server can take up to a minute to wake.
 3. **The sharer sets up the film:**
@@ -49,19 +49,19 @@ Each speaker's share:
 
 ---
 
-## ACT 1 · THE GAP · *Safalta*
+## ACT 1 · THE GAP · *Santoshi*
 
-### Slide 1 · Talent, but no way in (0:00–0:15) · **Safalta**
+### Slide 1 · Talent, but no way in (0:00–0:15) · **Santoshi**
 **CUE:** Sita at her laptop in Pokhara (then the "Experience required" notice).
 **SAY:**
 > Nepal is full of skilled, ambitious young people. Sita builds websites. Bikash edits video. But nothing connects them to clients abroad, and every job asks for experience they can't get.
 
-### Slide 2 · So they leave (0:15–0:22) · **Safalta**
+### Slide 2 · So they leave (0:15–0:22) · **Santoshi**
 **CUE:** the departure gate, with the counter climbing.
 **SAY:**
 > So every year, around two hundred thousand people leave.
 
-### Slide 3 · The other side (0:22–0:36) · **Safalta**
+### Slide 3 · The other side (0:22–0:36) · **Santoshi**
 **CUE:** Emma's thought bubbles, a web page and a video (then Rajan with a coffee).
 **SAY:**
 > In Melbourne, Emma needs a website and a promo video, but she doesn't trust strangers online. She trusts Rajan, a Nepali marketer. He has the clients, but no time.
@@ -112,14 +112,14 @@ Each speaker's share:
 
 ---
 
-## ACT 3 · WHY IT WORKS · *Safalta, then Bhawana*
+## ACT 3 · WHY IT WORKS · *Santoshi, then Bhawana*
 
-### Slide 12 · How it earns, how it grows (3:55–4:25) · **Safalta**
+### Slide 12 · How it earns, how it grows (3:55–4:25) · **Santoshi**
 **CUE:** the gold coin splitting into three jars (then threads spreading into a net).
 **SAY:**
 > Sajha Kaam earns fifteen percent of every job, only when a client accepts the work. It grows through trust: Leaders bring the clients they already know, every finished job is public proof, *and every member who becomes a Leader brings more work home.*
 
-### Slide 13 · Fair by design (4:25–4:42) · **Safalta**
+### Slide 13 · Fair by design (4:25–4:42) · **Santoshi**
 **CUE:** the "Fair play" card.
 **SAY:**
 > And it's fair by design. The rules are public, payment is held safely, *and each Leader can take at most two beginner jobs at a time, so no one is kept cheap.*
@@ -132,7 +132,7 @@ Each speaker's share:
 ### Slide 15 · Try it yourself (5:00 →, stays on screen) · **Bhawana**
 **CUE:** "Try it yourself" · **sajha-kaam.onrender.com** · QR code.
 **SAY:**
-> That's Sajha Kaam, live today at **sajha-kaam dot onrender dot com**. Scan the code and tap any demo person under "Try it as someone", no sign-up needed. We're Bhawana, Shova and Safalta. Thank you, we'd love your questions.
+> That's Sajha Kaam, live today at **sajha-kaam dot onrender dot com**. Scan the code and tap any demo person under "Try it as someone", no sign-up needed. We're Bhawana, Shova and Santoshi. Thank you, we'd love your questions.
 
 *(The sharer pauses the video on this card and pastes the link in the chat.)*
 
@@ -140,7 +140,7 @@ Each speaker's share:
 
 ## Questions: who answers
 
-**Safalta: business, money, market**
+**Santoshi: business, money, market**
 - **How does it make money?** 15% of every accepted job, and nothing when work isn't accepted, so our income follows real value delivered.
 - **Why would a Leader do this?** They earn the Leader's share of every job just for guiding and checking, without doing the work: 35% with a Starter, down to 5% with a Mentor, because a beginner needs more guidance.
 - **What stops a Leader keeping beginners cheap?** Badges rise automatically by public rules. A Leader can only lower a badge or pause one promotion, with a reason the member sees, and can take at most 2 beginner jobs at once.
@@ -166,8 +166,8 @@ Each speaker's share:
    swap it for an easier one if needed. Keep the meaning the same.
 2. **Run with the film, together (3 runs, about 30 min).** Play `pitch-with-link.mp4`, everyone speaks on
    their cues. On run 1, notice where you're late. By run 3, nobody should need the italic sentences.
-3. **Hand-over drill (10 min).** Practise only the switches: slide 3 → 4 (Safalta → Bhawana),
-   8 → 9 (Bhawana → Shova), 11 → 12 (Shova → Safalta), 13 → 14 (Safalta → Bhawana). Start on the cue, with no pause.
+3. **Hand-over drill (10 min).** Practise only the switches: slide 3 → 4 (Santoshi → Bhawana),
+   8 → 9 (Bhawana → Shova), 11 → 12 (Shova → Santoshi), 13 → 14 (Santoshi → Bhawana). Start on the cue, with no pause.
 4. **Questions round (20 min).** One person asks the questions above in random order; the right person answers in one or two sentences.
 5. **Full dress rehearsal in Google Meet (15 min).** Exactly as on the day: one person shares the Chrome tab,
    everyone unmuted, headphones on. Time it.
