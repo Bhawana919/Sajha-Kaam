@@ -17,58 +17,61 @@ Two recordings:
 
 ## Recording 1: Story (about 3:00)
 
-**[1 · Melbourne, morning]**
-This is Emma. She runs Harbour Café in Melbourne. Her coffee is great. Her website is not. She needs a simple landing page and a short promo video, but she doesn't know who to trust online.
+*Answers Challenge 3: link Nepali talent with global clients and the diaspora, and bring opportunity home.*
+
+**[1 · The gap]**
+Nepal is full of skilled, ambitious young people. Sita builds websites in Pokhara. Bikash edits video in Kathmandu. But nothing connects them to clients abroad, and every job asks for experience they can't get. So every year, around two hundred thousand people leave.
 · · ·
 
-**[2 · Rajan]**
-Rajan is a regular. He's a Nepali digital marketer, and Emma trusts him. He could do it himself, but his calendar is already full.
+**[2 · The other side]**
+In Melbourne, Emma runs Harbour Café. She needs a landing page and a promo video, but she doesn't trust strangers online. She trusts Rajan, a Nepali digital marketer. He has the clients and the know-how, but no time.
 · · ·
 
-**[3 · Nepal]**
-Across the sea, in Pokhara, Sita builds websites. In Kathmandu, Bikash films and edits video. They have the skills. But every job asks for one thing they don't have yet: experience.
+**[3 · The solution]**
+Sajha Kaam ties them together. Nepali professionals abroad become Team Leaders. They bring global work home, and young Nepalis do it, guided every step.
 · · ·
 
-**[4 · The thread]**
-Sajha Kaam ties them together. Rajan becomes a Team Leader. He brings the client he already knows, and young Nepalis like Sita and Bikash do the work, with Rajan checking it.
+**[4 · A Leader brings the client]**
+Rajan writes the job and sends Emma one link on WhatsApp. She joins, and the job is already waiting.
 · · ·
 
-**[5 · The agreement]**
-Before anyone starts, everything is agreed: what will be delivered, a clear "finished when" list, the deadline and the price. Both sides agree, and it's locked.
+**[5 · Or the client posts it]**
+Or a client posts the job in Sajha Kaam. Only verified Team Leaders can apply to lead it, and the client chooses.
 · · ·
 
-**[6 · Payment held]**
-Emma pays when she agrees. The money is held safely. Nobody gets paid until she accepts the work.
+**[6 · The agreement]**
+Before work starts, both sides agree: what's delivered, when it's finished, the deadline and the price. Emma pays, and the money is held until she accepts.
 · · ·
 
-**[7 · The work room]**
-Each job has its own room, with tasks, messages and files. Sita and Bikash ask questions and share drafts. Rajan asks for changes before anything reaches Emma.
+**[7 · The team]**
+Rajan taps Find people. Everyone with the skill sees the job and their own share. Sita and Bikash ask to join, and Rajan approves.
 · · ·
 
-**[8 · The money]**
-When Emma accepts, the money is released and shared openly. Sajha Kaam always keeps fifteen percent. The member's share grows with their badge, from fifty percent for a Starter to eighty percent for a Mentor. The Team Leader earns the rest for checking the work.
+**[8 · Guidance and feedback]**
+In the job room, Rajan doesn't do the work. He guides it. He asks Sita for one change. She learns, and it gets better. Only then does it reach Emma.
 · · ·
 
-**[9 · Badges]**
-Badges go up by themselves, by public rules: verified jobs, work approved on the first try, deliveries on time. A Leader can't hold anyone back to keep more money. They can only lower a badge or pause one promotion, with a reason the member can see. And each Leader can have at most two beginner jobs at a time.
+**[9 · First pay]**
+Emma accepts, and the money is released: Sita and Bikash's first pay. Sajha Kaam keeps fifteen percent. The member's share grows with their badge, from fifty to eighty percent. Rajan earns the rest, for leading.
 · · ·
 
-**[10 · Work Record]**
-Every finished job becomes a verified entry on the member's public Work Record. That's the experience Sita never had, and now anyone can check it.
+**[10 · Proof]**
+Each job becomes a verified entry on a public Work Record: the proof of experience Sita never had.
 · · ·
 
-**[11 · Leaders]**
-Members grow, from Starter to Mentor. A Mentor can start her own team, because her record is the proof. Anyone else applies with proof of their work, and Sajha Kaam checks it. Clients trust verified Leaders.
+**[11 · The journey]**
+Members grow from Starter to Mentor, by public rules. A Leader can't hold anyone back for profit, and takes only two beginner jobs at a time.
 · · ·
 
-**[12 · How it grows]**
-Leaders bring the clients they already know. Every finished job is proof, and every new Leader brings more clients. One thread becomes a net.
+**[12 · From member to Leader]**
+A Mentor can start her own team. Others apply with proof, and Sajha Kaam verifies them. Every new Leader brings more work home.
 · · ·
 
-**[13 · Close]**
-Sita and Bikash just got their first pay. Emma's café has a new face. Sajha Kaam: shared work. साझा काम।
+**[13 · Opportunity comes home]**
+Sita and Bikash didn't have to leave to work for the world. The work came home. Sajha Kaam: shared work. साझा काम।
 
-*(About 450 words, roughly 3 minutes at a calm pace with the pauses.)*
+*(About 350 spoken words, roughly 3 minutes at a calm pace with the pauses. The figure in beat 1 comes from the hackathon's own challenge statement.)*
+
 
 ---
 

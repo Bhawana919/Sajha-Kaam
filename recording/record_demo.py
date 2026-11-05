@@ -26,6 +26,7 @@ CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 VIEW = {"width": 390, "height": 844}
 PW = "kaam-demo"
 TYPE_DELAY = 45  # ms per key: readable typing
+BLANK_JPEG = 30_000  # bytes: below this a 780×1688 screen is an empty, loading page
 
 TOUCH_JS = """
 // Links to outside apps (WhatsApp, a work link) open nothing here: the film animates that hand-off.
@@ -95,6 +96,13 @@ class Phone:
         frames, self.frames = self.frames or [], None
         if not frames:
             raise RuntimeError(f"no frames captured on {self.name}")
+        # A screen that is still loading is a blank cream page: a tiny JPEG. Hold the last real frame
+        # through it instead, and start the clip on the first real one.
+        real = [f for f in frames if len(f[1]) >= BLANK_JPEG]
+        self.dropped = (len(frames) - len(real), min(len(f[1]) for f in frames) // 1000)
+        if real:
+            self.rec_start = max(self.rec_start, real[0][0]) if len(frames[0][1]) < BLANK_JPEG else self.rec_start
+            frames = real
         path.parent.mkdir(parents=True, exist_ok=True)
         ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", "30", "-i", "-",
                                "-vf", "scale=780:1688:force_original_aspect_ratio=decrease,pad=780:1688:(ow-iw)/2:0:color=0xF7F0E4",
@@ -113,8 +121,11 @@ class Phone:
         return time.monotonic() - self.t0
 
     def go(self, path: str):
-        self.page.goto(self.base + path)
-        self.page.wait_for_load_state("networkidle")
+        self.page.goto(self.base + path, wait_until="load")
+        try:
+            self.page.wait_for_load_state("networkidle", timeout=8000)
+        except Exception:
+            pass  # a page that keeps a connection open (fonts, polling) is still ready
         self.pause(0.6)
 
     def pause(self, s: float = 0.5):
@@ -190,7 +201,9 @@ class step:
             secs = self.phone.stop_rec(OUT / "clips" / f"step{n:02d}.mp4")
             STEPS.append({"who": self.phone.name, "line": self.line, "seconds": round(secs, 2), "pair": self.pair,
                           "chapter": CHAPTER[0]})
-            print(f"  ✓ {self.phone.name}: {self.line} ({secs:.1f} s)", flush=True)
+            d, smallest = getattr(self.phone, "dropped", (0, 0))
+            print(f"  ✓ {self.phone.name}: {self.line} ({secs:.1f} s, {d} blank frames held over, smallest {smallest} KB)",
+                  flush=True)
         else:
             self.phone.frames = None
         return False
@@ -198,7 +211,10 @@ class step:
 
 def shoot(phone: Phone, tag: str):
     (OUT / "shots").mkdir(parents=True, exist_ok=True)
-    phone.page.screenshot(path=str(OUT / "shots" / f"{tag}-{phone.name}.png"))
+    try:
+        phone.page.screenshot(path=str(OUT / "shots" / f"{tag}-{phone.name}.png"), timeout=8000)
+    except Exception:
+        pass  # a stuck page must not hide the real error
 
 
 def main():
@@ -449,7 +465,10 @@ def client_posts(api, emma, anusha, pemba, emma_tok):
         anusha.tap("Apply", role="button", after=1.5)
     with step(pemba, "Pemba, a Mentor, applies with her video", pair=True):
         pemba.go(f"/job/{reel}")
-        pemba.type("Your 2-minute video (link)", "https://vimeo.com/76979871")
+        # With uploads on, the form offers "Upload my video" and a link field under another label.
+        video_field = ("Or paste a link instead (YouTube, Google Drive, Vimeo, Loom)"
+                       if pemba.page.get_by_text("Upload my video").count() else "Your 2-minute video (link)")
+        pemba.type(video_field, "https://vimeo.com/76979871")
         pemba.type("Note for the client (optional)", "I film cafés and treks in Kathmandu.")
         pemba.tap("Apply", role="button", after=1.5)
     with step(emma, "Emma compares them and chooses", hold=1.8):
